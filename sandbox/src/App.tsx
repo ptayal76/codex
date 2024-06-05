@@ -7,6 +7,7 @@ import SearchBar from "./SearchBar";
 import SearchResults from "./SearchResults";
 import FormComponent from './CreateKBCluster.jsx';
 import NavigationDrawer from './NavigationDrawer.jsx';
+import GrafanaLogs from './GrafanaLogs.jsx'
 import "./styles.css";
 
 export default function App() {
@@ -51,24 +52,32 @@ export default function App() {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'createCluster':
+        return <FormComponent />;
+      case 'GrafanaLogs':
+        return <GrafanaLogs />;
+      case 'other':
+      default:
+        return (
+          <>
+            <TabsComponent />
+            <ScrollableComponent response={scrollableData} />
+            <StyledComponent />
+            <ResponsiveComponent />
+          </>
+        );
+    }
+  };
   return (
     <div className="app-container">
       <NavigationDrawer onTabChange={handleTabChange} />
       <div className="main-content">
-        <h1>React Search and Tabs Component</h1>
         <SearchBar onSearch={handleSearch} />
         <SearchResults results={results} />
         <div className="grid-container">
-          {activeTab === 'createCluster' ? (
-            <FormComponent />
-          ) : (
-            <>
-              <TabsComponent />
-              <ScrollableComponent response={scrollableData} />
-              <StyledComponent />
-              <ResponsiveComponent />
-            </>
-          )}
+          {renderContent()}
         </div>
       </div>
     </div>

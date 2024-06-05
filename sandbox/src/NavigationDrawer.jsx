@@ -19,6 +19,18 @@ const NavigationDrawer = ({ onTabChange }) => {
           Create Cluster
         </div>
         <div
+          className={`tab ${activeTab === 'Grafana Logs' && 'active'}`}
+          onClick={() => handleTabClick('GrafanaLogs')}
+        >
+          Grafana Logs
+        </div>
+        <div
+          className={`tab ${activeTab === 'Cluster Info' && 'active'}`}
+          onClick={() => handleTabClick('Cluster Info')}
+        >
+          Cluster Info
+        </div>
+        <div
           className={`tab ${activeTab === 'other' && 'active'}`}
           onClick={() => handleTabClick('other')}
         >
