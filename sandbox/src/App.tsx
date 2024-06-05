@@ -5,11 +5,14 @@ import StyledComponent from "./StyledComponent";
 import ResponsiveComponent from "./ResponsiveComponent";
 import SearchBar from "./SearchBar";
 import SearchResults from "./SearchResults";
+import FormComponent from './CreateKBCluster.jsx';
+import NavigationDrawer from './NavigationDrawer.jsx';
 import "./styles.css";
 
 export default function App() {
   const [results, setResults] = useState([]);
   const [scrollableData, setScrollableData] = useState([]);
+  const [activeTab, setActiveTab] = useState('other');
 
   useEffect(() => {
     const callApi = async () => {
@@ -45,20 +48,28 @@ export default function App() {
     ];
     setResults(dummyResults);
   };
-
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
   return (
-    <div className="App">
-      <h1>React Search and Tabs Component</h1>
-      <SearchBar onSearch={handleSearch} />
-      <SearchResults results={results} />
-      <div className="grid-container">
-        <TabsComponent />
-        <ScrollableComponent response={scrollableData}/>
-        <StyledComponent />
-        <div>
-          {/* {data ? <pre>{JSON.stringify(data, null, 2)}</pre> : "Loading..."} */}
+    <div className="app-container">
+      <NavigationDrawer onTabChange={handleTabChange} />
+      <div className="main-content">
+        <h1>React Search and Tabs Component</h1>
+        <SearchBar onSearch={handleSearch} />
+        <SearchResults results={results} />
+        <div className="grid-container">
+          {activeTab === 'createCluster' ? (
+            <FormComponent />
+          ) : (
+            <>
+              <TabsComponent />
+              <ScrollableComponent response={scrollableData} />
+              <StyledComponent />
+              <ResponsiveComponent />
+            </>
+          )}
         </div>
-        <ResponsiveComponent />
       </div>
     </div>
   );

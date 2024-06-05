@@ -1,0 +1,27 @@
+.nav-drawer {
+    width: 200px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #333;
+    color: white;
+  }
+  
+  .tabs {
+    margin-top: 20px;
+  }
+  
+  .tab {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .tab:hover {
+    background-color: #444;
+  }
+  
+  .tab.active {
+    background-color: #555;
+  }
+  
