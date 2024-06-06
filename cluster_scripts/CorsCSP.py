@@ -1,19 +1,24 @@
 #! /usr/bin/env python3
 #
 # Example Input Args: https://asda.csb.app 172.32.46.211 8443
+# url: "https://172.32.46.211:8443"
+# domain: "https://asda.csb.app"
 #
 
 import requests
 import sys
 import json
+import os
 
-domain = sys.argv[1]
-cluster_ip = sys.argv[2]
-cluster_port = sys.argv[3]
+# domain = "https://asda.csb.app"
+# cluster_ip = "172.32.46.211"
+# cluster_port = "8443"
 
+input_url = sys.argv[1]
+domain = sys.argv[2]
 
 def check_cors():
-    url = f"https://{cluster_ip}:{cluster_port}/api/rest/2.0/auth/token/full"
+    url = f"{input_url}/api/rest/2.0/auth/token/full"
 
     payload = json.dumps({
         "username": "tsadmin",
@@ -63,7 +68,7 @@ def check_cors():
 
 
 def check_csp():
-    url = f"https://{cluster_ip}:{cluster_port}/callosum/v1/v2/auth/session/login"
+    url = f"{input_url}/callosum/v1/v2/auth/session/login"
     payload = 'username=tsadmin&password=secret&remember_me=false'
     headers = {
         # 'Content-Type': 'application/x-www-form-urlencoded',
@@ -129,3 +134,10 @@ if __name__ == '__main__':
         response["csp_content"] = ""
 
     print(response)
+    
+    #print(parsed_data)
+    file_name = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../CorsCsp.txt"))
+    #file_name = "/Users/tanmay.pani/codex/CorsCsp.txt"
+    print(file_name)
+    with open(file_name, "w") as json_file:
+        json.dump(response, json_file)

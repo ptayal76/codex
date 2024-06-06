@@ -93,6 +93,18 @@ app.get('/commands-array', (req, res) => {
       }
   });
 });
+app.get('/patches-array', (req, res) => {
+  fs.readFile('./sandbox/cluster_scripts/appliedPatches.txt', 'utf8', (err, data) => {
+      if (err) {
+          console.error(err);
+          res.status(500).send('Error reading file');
+      } else {
+          // Remove leading and trailing brackets and quotes
+          const stringArray = data.slice(2, -2).split("', '");
+          res.json(stringArray);
+      }
+  });
+});
 
 app.post('/run-AWS-cluster', (req,res) => {
   const {
@@ -163,6 +175,66 @@ app.post('/run-check-cluster-script', (req, res) => {
     console.error(`Failed to start Python script: ${err}`);
     res.status(500).json({ status: "Error", error: `Failed to start Python script: ${err.message}` });
   });
+});
+
+app.post('/trigger-kibana',(req, res) => {
+  const {
+    clusterId,
+    initialTime, 
+    endTime,
+    msg
+  } = req.body;
+
+
+  console.log(req.body)
+  // const fullPath = path.join(__dirname, 'cluster_scripts/CorsCSP.py');
+  const fullPath = path.join(__dirname, 'Kibana/final-script.py');
+
+  const pythonProcess = spawn(pythonExecutable, [fullPath, '--cluster_id',clusterId,'--initial_time', initialTime, '--end_time', endTime, '--msg', msg]);
+  pythonProcess.stdout.on('data', (data) => {
+      console.log("test : " + data);
+  });
+
+  const JSONFilePath = './Kibana.txt';
+  pythonProcess.on('close', (code) => {
+    console.log(`child process exited with code ${code}`);
+    fs.readFile(JSONFilePath, 'utf8', (err, fileData) => {
+      if (err) {
+        console.error(`readFile error: ${err}`);
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ json: fileData });
+      console.log(fileData);
+    });
+  });
+});
+
+app.post('/check-csp-cors-validation', (req, res) => {
+  const { cluster_url, domain } = req.body;
+  console.log("cluster_url : ", cluster_url);
+  console.log("domain: ", domain);
+  const fullPath = path.join(__dirname, 'cluster_scripts/CorsCSP.py');
+  const pythonProcess = spawn(pythonExecutable, [fullPath,cluster_url, domain]);
+  console.log("Python script started");
+  // pythonProcess.stdout.on('data', (data) => {
+  //   console.log("Output from Python script: ", data);
+  // });
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Python script stderr: ${data}`);
+});
+
+  const JSONFilePath = './CorsCsp.txt';
+  pythonProcess.on('close', (code) => {
+    fs.readFile(JSONFilePath, 'utf8', (err, fileData) => {
+      if (err) {
+        console.error(`readFile error: ${err}`);
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(fileData);
+      // cleanup
+      console.log("fileData:", fileData);
+    });
+  })
 });
 
 app.listen(PORT, () => {

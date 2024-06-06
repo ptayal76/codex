@@ -59,6 +59,12 @@ const NavigationDrawer = ({ onTabChange }) => {
             Kibana Logs
           </div>
           <div
+              className={`tab ${activeTab === 'checkConfig' && 'active'}`}
+              onClick={() => handleTabClick('checkConfig')}
+          >
+            Check Configuration
+          </div>
+          <div
               className={`tab ${activeTab === 'Sandbox' && 'active'}`}
               onClick={() => handleTabClick('Sandbox')}
           >

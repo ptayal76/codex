@@ -12,6 +12,7 @@ import "./styles.css";
 import ClusterDetails from './Clusterdetails.jsx';
 import Sandbox from "./Sanbox.jsx";
 import KibanaLogsContainer from './KibanaLogsContainer/kibanaLogsContainer.jsx';
+import CheckConfigurations from "./checkConfigurations.jsx";
 import Heading from './Heading';
 
 export default function App() {
@@ -75,6 +76,8 @@ export default function App() {
         return <Sandbox />;
       case 'KibanaLogs':
           return <KibanaLogsContainer/>;
+      case 'checkConfig':
+        return <CheckConfigurations/>
       case 'other':
       default:
         return (

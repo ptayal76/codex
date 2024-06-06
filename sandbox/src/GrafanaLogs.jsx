@@ -107,12 +107,11 @@ const GrafanaLogs = ({ subTab }) => {
           onChange={handleSearchChange}
           className="search-field"
         />
-        <select value={filterStatus} onChange={handleFilterChange} className="filter-select">
+        {/* <select value={filterStatus} onChange={handleFilterChange} className="filter-select">
           <option value="">All Status</option>
           <option value="success">Success</option>
           <option value="failure">Failure</option>
-          {/* Add more options as needed */}
-        </select>
+        </select> */}
       </div>
       <CSVDataTable data={filteredData} />
     </div>

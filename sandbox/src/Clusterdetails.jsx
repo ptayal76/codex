@@ -1,26 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ClusterDetails.css';
-import { CNAME,generateRandomString } from './constants';
+import { CNAME, generateRandomString } from './constants';
 
 const ClusterDetails = () => {
   const [jsonData, setJsonData] = useState(null);
   const [clusterVersion, setClusterVersion] = useState('');
   const [commands, setCommands] = useState([]);
+  const [appliedPatches, setAppliedPatches] = useState([]);
   const [flagsData, setFlagsData] = useState(null);
   const [jsonSearchTerm, setJsonSearchTerm] = useState('');
   const [commandsSearchTerm, setCommandsSearchTerm] = useState('');
   const [flagsSearchTerm, setFlagsSearchTerm] = useState('');
-  const [isloading,setIsloading] = useState(true)
+  const [appliedPatchesSearchTerm, setAppliedPatchesSearchTerm] = useState('');
+  const [versionInfo, setVersionInfo] = useState('');
+  const [isloading, setIsloading] = useState(false);
   const flagsRef = useRef(null);
   const clusterdata = {
     cluster_name: CNAME
-  }
-  const renderData = () => {
+  };
+
+  useEffect(() => {
     fetch('./cluster_scripts/clusterDetails.txt')
       .then(response => response.text())
       .then(text => {
         try {
-          console.log(text);
           const json = JSON.parse(text);
           setJsonData(json);
         } catch (error) {
@@ -34,16 +37,33 @@ const ClusterDetails = () => {
         setClusterVersion(text);
       });
 
-      const fetchCommands = async () => {
-        try {
-            const response = await fetch('http://localhost:4000/commands-array');
-            const data = await response.json();
-            setCommands(data);
-        } catch (error) {
-            console.error(error);
-        }
+    const fetchCommands = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/commands-array');
+        const data = await response.json();
+        setCommands(data);
+      } catch (error) {
+        console.error(error);
+      }
     };
     fetchCommands();
+
+    const fetchPatches = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/patches-array');
+        const data = await response.json();
+        setAppliedPatches(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchPatches();
+
+    fetch('./cluster_scripts/version.txt')
+    .then(response => response.text())
+    .then(text => {
+      setVersionInfo(text);
+    });
 
     fetch('./cluster_scripts/flagDetails.txt')
       .then(response => response.text())
@@ -55,7 +75,7 @@ const ClusterDetails = () => {
           console.error('Error parsing JSON:', error);
         }
       });
-  };
+  }, []);
 
   const renderJson = (data, searchTerm = '') => {
     const filterData = (data) => {
@@ -116,7 +136,7 @@ const ClusterDetails = () => {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(clusterVersion);
-    alert('Cluster Version copied to clipboard');
+    // alert('Cluster Version copied to clipboard');
   };
 
   const handleJsonSearchChange = (event) => {
@@ -131,8 +151,16 @@ const ClusterDetails = () => {
     setFlagsSearchTerm(event.target.value);
   };
 
+  const handleAppliedPatchesSearchChange = (event) => {
+    setAppliedPatchesSearchTerm(event.target.value);
+  };
+
   const filteredCommands = commands.filter(command =>
     command.toLowerCase().includes(commandsSearchTerm.toLowerCase())
+  );
+
+  const filteredAppliedPatches = appliedPatches.filter(patch =>
+    patch.toLowerCase().includes(appliedPatchesSearchTerm.toLowerCase())
   );
 
   const scrollToFlags = () => {
@@ -143,6 +171,7 @@ const ClusterDetails = () => {
 
   const getClusterInfo = async (e) => {
     e.preventDefault();
+    setIsloading(true);
     const response = await fetch('http://localhost:4000/run-check-cluster-script', {
       method: 'POST',
       headers: {
@@ -153,84 +182,113 @@ const ClusterDetails = () => {
 
     if (response.ok) {
       const data = await response.json();
-      console.log("hello")
       renderData();
       setIsloading(false);
-      // parseCSV(data.csvContent);
     } else {
-      console.log(response)
       console.error('Error running the script');
+      setIsloading(false);
     }
-  }
-  
+  };
 
   return (
     <div className="json-viewer-container">
       <div className="scroll-button-container">
         <button onClick={getClusterInfo} className="scroll-button">Get Cluster Information</button>
       </div>
-        {isloading? <p>Loading...</p> : 
+      {isloading ? <p>Loading...</p> :
         <div>
-          <div className="cluster-version">
-        <span className="cluster-version-text">
-          Cluster Version: <strong>{clusterVersion}</strong>
-        </span>
-        <button onClick={handleCopy} className="copy-button">Copy</button>
-      </div>
-      <div className="scroll-button-container">
-        <button onClick={scrollToFlags} className="scroll-button">Go to Flags</button>
-      </div>
-      <div className="tables-container">
-        <div className="json-viewer">
-          <h1>Cluster Details</h1>
-          <input
-            type="text"
-            placeholder="Search JSON..."
-            value={jsonSearchTerm}
-            onChange={handleJsonSearchChange}
-            className="search-input"
-          />
-          {jsonData ? renderJson(jsonData, jsonSearchTerm) : <p>Loading...</p>}
+          <div className="info-container">
+            <div className="cluster-version">
+              <span className="cluster-version-text">
+                Cluster Id: <strong>{clusterVersion}</strong>
+              </span>
+              <button onClick={handleCopy} className="copy-button">Copy</button>
+            </div>
+            <div className="version-info">
+              <pre>{versionInfo}</pre>
+            </div>
+          </div>
+          <div className="scroll-button-container">
+            <button onClick={scrollToFlags} className="scroll-button">Go to Flags</button>
+          </div>
+          <div className="tables-wrapper">
+            <div className="tables-container left">
+              <div className="applied-patches-table">
+                <h1>Applied Patches</h1>
+                <input
+                  type="text"
+                  placeholder="Search Applied Patches..."
+                  value={appliedPatchesSearchTerm}
+                  onChange={handleAppliedPatchesSearchChange}
+                  className="search-input"
+                />
+                <table className="json-table">
+                  <thead>
+                    <tr>
+                      <th>Patches</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredAppliedPatches.map((patch, index) => (
+                      <tr key={index}>
+                        <td>{patch}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="json-viewer">
+                <h1>Cluster Details</h1>
+                <input
+                  type="text"
+                  placeholder="Search JSON..."
+                  value={jsonSearchTerm}
+                  onChange={handleJsonSearchChange}
+                  className="search-input"
+                />
+                {jsonData ? renderJson(jsonData, jsonSearchTerm) : <p>Loading...</p>}
+              </div>
+            </div>
+            <div className="tables-container right">
+              <div className="commands-table">
+                <h1>Commands</h1>
+                <input
+                  type="text"
+                  placeholder="Search Commands..."
+                  value={commandsSearchTerm}
+                  onChange={handleCommandsSearchChange}
+                  className="search-input"
+                />
+                <table className="json-table">
+                  <thead>
+                    <tr>
+                      <th>Commands</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredCommands.map((command, index) => (
+                      <tr key={index}>
+                        <td>{command}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div ref={flagsRef} className="flags-table">
+                <h1>Flags</h1>
+                <input
+                  type="text"
+                  placeholder="Search Flags..."
+                  value={flagsSearchTerm}
+                  onChange={handleFlagsSearchChange}
+                  className="search-input"
+                />
+                {flagsData ? renderJson(flagsData, flagsSearchTerm) : <p>Loading...</p>}
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="commands-table">
-          <h1>Commands</h1>
-          <input
-            type="text"
-            placeholder="Search Commands..."
-            value={commandsSearchTerm}
-            onChange={handleCommandsSearchChange}
-            className="search-input"
-          />
-          <table className="json-table">
-            <thead>
-              <tr>
-                <th>Commands</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCommands.map((command, index) => (
-                <tr key={index}>
-                  <td>{command}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div ref={flagsRef} className="flags-table">
-        <h1>Flags</h1>
-        <input
-          type="text"
-          placeholder="Search Flags..."
-          value={flagsSearchTerm}
-          onChange={handleFlagsSearchChange}
-          className="search-input"
-        />
-        {flagsData ? renderJson(flagsData, flagsSearchTerm) : <p>Loading...</p>}
-      </div>
-        </div>
-        }
-      
+      }
     </div>
   );
 };
