@@ -64,10 +64,9 @@ export default function App() {
   // };
 
   const renderContent = () => {
-    if (activeTab === 'GrafanaLogs1' || activeTab === 'GrafanaLogs2' || activeTab === 'GrafanaLogs3') {
-      return <GrafanaLogs subTab={activeTab} />;
-    }
     switch (activeTab) {
+      case 'GrafanaLogs':
+        return <GrafanaLogs />;
       case 'checkCluster':
         return <ClusterDetails />;
       case 'createCluster':
@@ -97,7 +96,6 @@ export default function App() {
         <SearchBar onSearch={handleSearch} />
         {/* <SearchResults results={results} /> */}
         <div>
-          
           {renderContent()}
         </div>
       </div>

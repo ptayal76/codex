@@ -80,6 +80,7 @@ const GrafanaLogs = ({ subTab }) => {
 
   return (
     <div className="container">
+      <p className="text-3xl">Grafana Logs</p>
         <h1>{subTab}</h1>
       <form onSubmit={handleSubmit} className="input-form">
         {Object.keys(formInputs).map((key) => (

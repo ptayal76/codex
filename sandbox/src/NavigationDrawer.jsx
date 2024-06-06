@@ -3,16 +3,21 @@ import './NavigationDrawer.css';
 
 const NavigationDrawer = ({ onTabChange }) => {
   const [activeTab, setActiveTab] = useState('checkCluster');
-  const [isGrafanaLogsOpen, setIsGrafanaLogsOpen] = useState(false);
+  // const [isGrafanaLogsOpen, setIsGrafanaLogsOpen] = useState(false);
+
+  // const handleTabClick = (tab) => {
+  //   if (tab === 'GrafanaLogs') {
+  //     setIsGrafanaLogsOpen(!isGrafanaLogsOpen);
+  //   } else {
+  //     setActiveTab(tab);
+  //     onTabChange(tab);
+  //     // setIsGrafanaLogsOpen(false); // Close dropdown if another tab is clicked
+  //   }
+  // };
 
   const handleTabClick = (tab) => {
-    if (tab === 'GrafanaLogs') {
-      setIsGrafanaLogsOpen(!isGrafanaLogsOpen);
-    } else {
-      setActiveTab(tab);
-      onTabChange(tab);
-      // setIsGrafanaLogsOpen(false); // Close dropdown if another tab is clicked
-    }
+    setActiveTab(tab);
+    onTabChange(tab);
   };
 
   // const handleSubTabClick = (subTab) => {
@@ -40,28 +45,12 @@ const NavigationDrawer = ({ onTabChange }) => {
             Create Cluster
           </div>
           <div
-              className={`tab ${activeTab === 'GrafanaLogs' && 'active'}`}
-              onClick={() => handleTabClick('GrafanaLogs')}
-          >
-            <img src="/static/icons/grafana-icon.svg" alt="Grafana Logs" className="tab-icon"/>
-            Grafana Logs
-          </div>
-          {isGrafanaLogsOpen && (
-              <div className="sub-tabs flex flex-col p-2 gap-2">
-                <div className="tab" onClick={() => handleTabClick('GrafanaLogs1')}>
-                  <img src="/static/icons/api-svgrepo-com.svg" alt="V2 Public Apis" className="tab-icon"/>
-                  V2 Public Apis
-                </div>
-                <div className="tab" onClick={() => handleTabClick('GrafanaLogs2')}>
-                  <img src="/static/icons/api-svgrepo-com.svg" alt="V1 Public Apis" className="tab-icon"/>
-                  V1 Public Apis
-                </div>
-                <div className="tab" onClick={() => handleTabClick('GrafanaLogs3')}>
-                  <img src="/static/icons/api-svgrepo-com.svg" alt="Internal Apis" className="tab-icon"/>
-                  Internal Apis
-                </div>
-              </div>
-          )}
+          className={`tab ${activeTab === 'GrafanaLogs' && 'active'}`}
+          onClick={() => handleTabClick('GrafanaLogs')}
+        >
+          <img src="/static/icons/grafana-icon.svg" alt="Grafana Logs" className="tab-icon"/>
+          Grafana Logs
+        </div>
           <div
               className={`tab ${activeTab === 'KibanaLogs' && 'active'}`}
               onClick={() => handleTabClick('KibanaLogs')}
