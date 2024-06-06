@@ -12,7 +12,7 @@ import "./styles.css";
 import ClusterDetails from './Clusterdetails.jsx';
 import Sandbox from "./Sanbox.jsx";
 import KibanaLogsContainer from './KibanaLogsContainer/kibanaLogsContainer.jsx';
-
+import Heading from './Heading';
 
 export default function App() {
   const [results, setResults] = useState([]);
