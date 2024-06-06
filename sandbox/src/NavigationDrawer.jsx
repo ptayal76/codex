@@ -29,8 +29,8 @@ const NavigationDrawer = ({ onTabChange }) => {
               className={`tab ${activeTab === 'checkCluster' && 'active'}`}
               onClick={() => handleTabClick('checkCluster')}
           >
-            <img src="/static/icons/settings-svgrepo-com.svg" alt="Check Cluster" className="tab-icon"/>
-            Check Cluster
+            <img src="/static/icons/settings-svgrepo-com.svg" alt="Cluster Info" className="tab-icon"/>
+            Cluster Info
           </div>
           <div
               className={`tab ${activeTab === 'createCluster' && 'active'}`}
