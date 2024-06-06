@@ -1,6 +1,7 @@
 import { useState } from "react";
 import MyTable from './Table/table.jsx';
 import './kibanaLogsContainer.css';
+import '../GrafanaLogs.css';
 import { message } from "antd";
 
 function KibanaLogsContainer() {
@@ -73,9 +74,9 @@ function KibanaLogsContainer() {
     };
 
     return (
-        <div className="flex flex-col gap-8">
+        <div className="container">
             <p className="text-3xl">Kibana Logs</p>
-            <form onSubmit={handleSubmit} className="input-form flex flex-col">
+            <form onSubmit={handleSubmit} className="input-form">
                 {Object.keys(formInputs).map((key) => (
                     <div key={key} className="input-group">
                         <label className="input-label">
@@ -85,7 +86,8 @@ function KibanaLogsContainer() {
                                 name={key}
                                 value={formInputs[key]}
                                 onChange={handleInputChange}
-                                className="input-field" />
+                                className="input-field"
+                            />
                         </label>
                     </div>
                 ))}
