@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './NavigationDrawer.css';
 
 const NavigationDrawer = ({ onTabChange }) => {
-  const [activeTab, setActiveTab] = useState('other');
+  const [activeTab, setActiveTab] = useState('checkCluster');
   const [isGrafanaLogsOpen, setIsGrafanaLogsOpen] = useState(false);
 
   const handleTabClick = (tab) => {
