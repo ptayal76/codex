@@ -1,4 +1,4 @@
-const CNAME="metadata"
+var CNAME="champagne-master-aws"
 
 const generateRandomString = (length) => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -9,3 +9,5 @@ const generateRandomString = (length) => {
     }
     return result;
   };
+
+  export {CNAME,generateRandomString};

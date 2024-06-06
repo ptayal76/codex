@@ -2,13 +2,13 @@
     "clusterId": "672764c0-dc60-11ee-a6bf-13c83",
     "clusterName": "champagne-master-aws",
     "healthState": "HEALTHY",
-    "operationalState": "GENERIC_COMMAND",
+    "operationalState": "CLUSTER_ARCHIVED_LOGS",
     "operationalStateStatus": "SUCCEEDED",
     "active": true,
     "currentVersion": "10.1.0.cl-58",
     "upgradeVersion": "",
     "underMaintenance": false,
-    "timeStamp": 1717660709921,
+    "timeStamp": 1717684539777,
     "dynamicSenseMetadata": {
         "Lease": "2024-03-08 08:56:01.049032838 +0000 UTC m=+3983173.909479669",
         "LAST_IDLE_ALERT_TIMESTAMP": "1716131823605"

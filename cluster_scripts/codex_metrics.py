@@ -26,6 +26,12 @@ def parse_cmd(argv):
         '''
     )
     parser.add_argument(
+        "--scenario_type",
+        required=True,
+        type=int,
+        help="scenario"
+    )
+    parser.add_argument(
         "--cluster_name",
         required=False,
         type=str,
@@ -427,13 +433,9 @@ def main(argv):
     # gitSha = getSha(imageTag, token)
     # print(f"Git SHA for tag {imageTag}: {gitSha}")
     if scenario == 1:
-        currentVersion, upgradeVersion = getClusterCurrentAndUpgradeVersion(clusterName)
-        imageTag=currentVersion
-        version_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/version.txt'
-        with open(version_file_path, 'w', encoding='utf-8') as f:
-            f.write(f'Current version {currentVersion}\nUpgrade version {upgradeVersion}')
         clusterDetails = getClusterInformation(clusterName)
-        clusterDetails_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/clusterDetails.json'
+        clusterDetails_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/clusterDetails.txt'
+        # clusterDetails_file_path = '/Users/piyush.tayal/Downloads/clusterDetails99.txt'
         with open(clusterDetails_file_path, 'w', encoding='utf-8') as f:
             json.dump(clusterDetails,f, ensure_ascii=False, indent=4)
         # print(f"Cluster details for {clusterName}: {clusterDetails}")
@@ -447,21 +449,23 @@ def main(argv):
         with open(commands_file_path, 'w', encoding='utf-8') as f:
             f.write(str(commands))
         # print(f"Commands for {clusterName}: {commands}")
+        currentVersion, upgradeVersion = getClusterCurrentAndUpgradeVersion(clusterName)
+        imageTag=currentVersion
+        version_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/version.txt'
+        with open(version_file_path, 'w', encoding='utf-8') as f:
+            f.write(f'Current version {currentVersion}\nUpgrade version {upgradeVersion}')
         appliedPatches = getAppliedPatches(clusterName)
         appliedPatches_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/appliedPatches.txt'
         with open(appliedPatches_file_path, 'w', encoding='utf-8') as f:
             f.write(str(appliedPatches))
+        flagDetails = getflagDetails(clusterName)
+        flagDetails_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/flagDetails.txt'
+        with open(flagDetails_file_path, 'w', encoding='utf-8') as f:
+            json.dump(flagDetails,f, ensure_ascii=False, indent=4)
         sha = getSha(imageTag,token)
         sha_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/sha.txt'
         with open(sha_file_path, 'w', encoding='utf-8') as f:
             f.write(f'{sha}')
-        # print(f"Applied patches for {clusterName}: {appliedPatches}")
-        # print(f"Current version for {clusterName}: {currentVersion}")
-        # print(f"Upgrade version for {clusterName}: {upgradeVersion}")
-        flagDetails = getflagDetails(clusterName)
-        flagDetails_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/flagDetails.json'
-        with open(flagDetails_file_path, 'w', encoding='utf-8') as f:
-            json.dump(flagDetails,f, ensure_ascii=False, indent=4)
     elif scenario == 2:
         gcp = createGCPSaasCluster(clusterName, ownerEmail, imageTag)
         gcp_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/gcp.txt'

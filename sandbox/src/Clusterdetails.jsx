@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ClusterDetails.css';
+import { CNAME,generateRandomString } from './constants';
 
 const ClusterDetails = () => {
   const [jsonData, setJsonData] = useState(null);
@@ -9,14 +10,17 @@ const ClusterDetails = () => {
   const [jsonSearchTerm, setJsonSearchTerm] = useState('');
   const [commandsSearchTerm, setCommandsSearchTerm] = useState('');
   const [flagsSearchTerm, setFlagsSearchTerm] = useState('');
-
+  const [isloading,setIsloading] = useState(true)
   const flagsRef = useRef(null);
-
-  useEffect(() => {
-    fetch('./cluster_scripts/clusterDetails.json')
+  const clusterdata = {
+    cluster_name: CNAME
+  }
+  const renderData = () => {
+    fetch('./cluster_scripts/clusterDetails.txt')
       .then(response => response.text())
       .then(text => {
         try {
+          console.log(text);
           const json = JSON.parse(text);
           setJsonData(json);
         } catch (error) {
@@ -41,7 +45,7 @@ const ClusterDetails = () => {
     };
     fetchCommands();
 
-    fetch('./cluster_scripts/flagDetails.json')
+    fetch('./cluster_scripts/flagDetails.txt')
       .then(response => response.text())
       .then(text => {
         try {
@@ -51,7 +55,7 @@ const ClusterDetails = () => {
           console.error('Error parsing JSON:', error);
         }
       });
-  }, []);
+  };
 
   const renderJson = (data, searchTerm = '') => {
     const filterData = (data) => {
@@ -137,9 +141,37 @@ const ClusterDetails = () => {
     }
   };
 
+  const getClusterInfo = async (e) => {
+    e.preventDefault();
+    const response = await fetch('http://localhost:4000/run-check-cluster-script', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(clusterdata),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("hello")
+      renderData();
+      setIsloading(false);
+      // parseCSV(data.csvContent);
+    } else {
+      console.log(response)
+      console.error('Error running the script');
+    }
+  }
+  
+
   return (
     <div className="json-viewer-container">
-      <div className="cluster-version">
+      <div className="scroll-button-container">
+        <button onClick={getClusterInfo} className="scroll-button">Get Cluster Information</button>
+      </div>
+        {isloading? <p>Loading...</p> : 
+        <div>
+          <div className="cluster-version">
         <span className="cluster-version-text">
           Cluster Version: <strong>{clusterVersion}</strong>
         </span>
@@ -196,6 +228,9 @@ const ClusterDetails = () => {
         />
         {flagsData ? renderJson(flagsData, flagsSearchTerm) : <p>Loading...</p>}
       </div>
+        </div>
+        }
+      
     </div>
   );
 };

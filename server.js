@@ -135,22 +135,38 @@ app.post('/run-GCP-cluster', (req,res) => {
 
 app.post('/run-check-cluster-script', (req, res) => {
   const {
-    cluster_name,
-    owner_email,
-    image_tag,
-    feature,
-    team,
-    token
+    cluster_name
   } = req.body;
-  console.log(req.body);
+  console.log(cluster_name);
   const scriptPath = path.join(__dirname, 'cluster_scripts', 'codex_metrics.py');
   console.log(scriptPath);
-  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--image_tag', image_tag, '--owner_email', owner_email, '--feature', feature, '--team', team, '--token', token]);
-  pythonProcess.stdout.on('data', () => {
-      return res.status(200).json({status: "Successfull"});
+  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--scenario_type', 1]);
+  console.log("Starting Python script...");
+
+  let scriptOutput = '';
+
+  pythonProcess.stdout.on('data', (data) => {
+    scriptOutput += data.toString();
+    console.log(`stdout: ${data}`);
   });
+
   pythonProcess.stderr.on('data', (data) => {
-      console.error(`Python script stderr: ${data}`);
+    console.error(`Python script stderr: ${data}`);
+  });
+
+  pythonProcess.on('close', (code) => {
+    console.log(`Python script exited with code ${code}`);
+    if (code === 0) {
+      console.log("Script run successfully");
+      res.status(200).json({ status: "Successful" });
+    } else {
+      res.status(500).json({ status: "Error", error: `Python script exited with code ${code}` });
+    }
+  });
+
+  pythonProcess.on('error', (err) => {
+    console.error(`Failed to start Python script: ${err}`);
+    res.status(500).json({ status: "Error", error: `Failed to start Python script: ${err.message}` });
   });
 });
 

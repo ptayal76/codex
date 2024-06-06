@@ -1,19 +1,26 @@
 import React, { useState } from "react";
+import { useGlobalState } from './GlobalState.jsx';
 
+// import {CNAME,generateRandomString} from './constants'
 const SearchBar = ({ onSearch }) => {
-  const [query, setQuery] = useState("");
-
+  const { cname, setCname } = useGlobalState();
+  const [query, setQuery] = useState(cname);
+  const handleChange = (e) => {
+    setCname(e.target.value)
+    setQuery(e.target.value)
+  };
   const handleSearch = () => {
     onSearch(query);
   };
 
   return (
     <div className="search-bar">
+      Cluster Name
       <input
         type="text"
         placeholder="Search..."
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={handleChange}
         className="search-input"
       />
       <button onClick={handleSearch} className="search-button">

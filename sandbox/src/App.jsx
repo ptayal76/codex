@@ -94,8 +94,8 @@ export default function App() {
       <Heading />
       <NavigationDrawer onTabChange={handleTabChange} />
       <div className="main-content">
-        {/* <SearchBar onSearch={handleSearch} />
-        <SearchResults results={results} /> */}
+        <SearchBar onSearch={handleSearch} />
+        {/* <SearchResults results={results} /> */}
         <div>
           
           {renderContent()}
