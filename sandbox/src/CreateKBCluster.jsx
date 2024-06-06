@@ -66,8 +66,9 @@ const CreateKBCluster = () => {
   };
 
   return (
+    <div className='forms'>
     <div className="form-container">
-      <h2>Create Cluster</h2>
+      <h2>Create K8s Cluster</h2>
       <form onSubmit={handleSubmit}>
       <div className="form-group">
           <label>name:</label>
@@ -122,6 +123,121 @@ const CreateKBCluster = () => {
         </div>
         <button type="submit" className="submit-btn">Submit</button>
       </form>
+    </div>
+    <div className="form-container">
+      <h2>Create AWS SaaS Cluster</h2>
+      <form onSubmit={handleSubmit}>
+      <div className="form-group">
+          <label>name:</label>
+          <input
+            type="text"
+            name="resource_name"
+            value={formData.resource_name}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Team:</label>
+          <input
+            type="text"
+            name="team"
+            value={formData.team}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Size:</label>
+          <input
+            type="number"
+            name="size"
+            value={formData.size}
+            onChange={handleChange}
+            max="4"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Lease:</label>
+          <input
+            type="text"
+            name="lease"
+            value={formData.lease}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Image TAG:</label>
+          <input
+            type="text"
+            name="image"
+            value={formData.image_tag}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <button type="submit" className="submit-btn">Submit</button>
+      </form>
+    </div>
+    <div className="form-container">
+      <h2>Create GCP SaaSCluster</h2>
+      <form onSubmit={handleSubmit}>
+      <div className="form-group">
+          <label>name:</label>
+          <input
+            type="text"
+            name="resource_name"
+            value={formData.resource_name}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Team:</label>
+          <input
+            type="text"
+            name="team"
+            value={formData.team}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Size:</label>
+          <input
+            type="number"
+            name="size"
+            value={formData.size}
+            onChange={handleChange}
+            max="4"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Lease:</label>
+          <input
+            type="text"
+            name="lease"
+            value={formData.lease}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Image TAG:</label>
+          <input
+            type="text"
+            name="image"
+            value={formData.image_tag}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <button type="submit" className="submit-btn">Submit</button>
+      </form>
+    </div>
     </div>
   );
 };

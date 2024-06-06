@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import CSVDataTable from "./CSVDataTable";
 import './GrafanaLogs.css';
 
-const GrafanaLogs = () => {
+const GrafanaLogs = ({ subTab }) => {
   const [csvData, setCsvData] = useState([]);
   const [formInputs, setFormInputs] = useState({
     input_start_date: '2024-03-01T00:00:00',
@@ -25,7 +25,7 @@ const GrafanaLogs = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const response = await fetch('http://localhost:4000/run-script', {
+    const response = await fetch('http://localhost:4000/run-grafana-script', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -80,6 +80,7 @@ const GrafanaLogs = () => {
 
   return (
     <div className="container">
+        <h1>{subTab}</h1>
       <form onSubmit={handleSubmit} className="input-form">
         {Object.keys(formInputs).map((key) => (
           <div key={key} className="input-group">

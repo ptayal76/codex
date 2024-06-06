@@ -1,0 +1,13 @@
+.sandbox-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .sandbox-iframe {
+    width: 100%;
+    height: calc(100vh - 200px); /* Adjust based on your design */
+    border: none;
+  }
+  
