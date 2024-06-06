@@ -1,13 +1,22 @@
 .sandbox-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-  }
-  
-  .sandbox-iframe {
-    width: 100%;
-    height: calc(100vh - 200px); /* Adjust based on your design */
-    border: none;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.iframe-wrapper {
+  width: 80%;
+  height: calc(100vh - 200px); /* Adjust based on your design */
+  overflow: hidden;
+  position: relative;
+}
+
+.sandbox-iframe {
+  position: absolute;
+  top: 0;
+  left: -24%; /* Move the iframe to the left by 20% to show only the right 80% */
+  width: 125%; /* Make the iframe wider so that 80% of it fills the container */
+  height: 100%;
+  border: none;
+}
