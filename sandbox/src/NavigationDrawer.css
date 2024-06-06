@@ -37,4 +37,26 @@
   .nav-drawer .sub-tabs .tab:hover {
     background-color: #f0f0f0;
   }
-  
+
+.tab {
+    display: flex;
+    align-items: center;
+}
+
+.tab-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+}
+
+.tab-content {
+    display: flex;
+    align-items: center;
+}
+
+.ts-icon {
+    width: 128px; /* Adjust the width as needed */
+    height: 128px; /* Adjust the height as needed */
+    margin: auto; /* Center the icon horizontally */
+    margin-bottom: 16px;
+}
