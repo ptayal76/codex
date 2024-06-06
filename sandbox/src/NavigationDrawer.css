@@ -25,3 +25,16 @@
     background-color: #555;
   }
   
+  .nav-drawer .sub-tabs {
+    padding-left: 20px;
+  }
+  
+  .nav-drawer .sub-tabs .tab {
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .nav-drawer .sub-tabs .tab:hover {
+    background-color: #f0f0f0;
+  }
+  

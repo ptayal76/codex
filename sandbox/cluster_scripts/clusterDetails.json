@@ -1,0 +1,93 @@
+{
+    "clusterId": "672764c0-dc60-11ee-a6bf-13c83",
+    "clusterName": "champagne-master-aws",
+    "healthState": "HEALTHY",
+    "operationalState": "GENERIC_COMMAND",
+    "operationalStateStatus": "SUCCEEDED",
+    "active": true,
+    "currentVersion": "10.1.0.cl-58",
+    "upgradeVersion": "",
+    "underMaintenance": false,
+    "timeStamp": 1717651423180,
+    "dynamicSenseMetadata": {
+        "Lease": "2024-03-08 08:56:01.049032838 +0000 UTC m=+3983173.909479669",
+        "LAST_IDLE_ALERT_TIMESTAMP": "1716131823605"
+    },
+    "customerId": "champagne-master-aws",
+    "customerName": null,
+    "opportunityID": "champagne-master-aws",
+    "assetId": "champagne-master-aws",
+    "productSKU": [
+        "TS-INTERNAL-4B-ROW"
+    ],
+    "cloudConsumption": "4B",
+    "requestId": "670b031d-dc60-11ee-a6bf-99085",
+    "clusterIp": [
+        "10.254.3.12"
+    ],
+    "tsInstanceType": "r5.8xlarge",
+    "region": "us-west-2",
+    "bastionIp": "bastion-us-west-2.thoughtspotstaging.cloud",
+    "numberOfNodes": 1,
+    "diskSize": 900,
+    "environment": "AWS",
+    "requestedCustomerURL": "champagne-master-aws",
+    "provisionedCustomerURL": "champagne-master-aws.thoughtspotstaging.cloud",
+    "baseAmi": "ami-0f0ec5a93362b0fed",
+    "baseReleaseVersion": "9.10.0.cl-188",
+    "elbArn": "arn:aws:elasticloadbalancing:us-west-2:575580285474:loadbalancer/app/672764c0-dc60-11ee-a6bf-13c83/9a950ef59971561e",
+    "instanceId": "i-064b0f59c838f20b6",
+    "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:575580285474:loadbalancer/app/672764c0-dc60-11ee-a6bf-13c83/9a950ef59971561e",
+    "vpcId": "vpc-0e0413618b8f4e266",
+    "clusterSubnetId": "subnet-0b9ade7007e310596",
+    "clusterS3Arn": "arn:aws:s3:::672764c0-dc60-11ee-a6bf-13c83-s3",
+    "natGatewayIp": "35.163.128.71",
+    "activationURL": null,
+    "commonTags": {
+        "Environment": "staging",
+        "ResourceShared": "false",
+        "Ephemeral": "true",
+        "Terraform": "true",
+        "MultiNode": "false",
+        "Classification": "internal-only"
+    },
+    "paid": false,
+    "adminEmail": "sara.yasmeen@thoughtspot.com",
+    "timezone": "UTC",
+    "nebulaRequest": false,
+    "testInstance": false,
+    "customAMI": null,
+    "createdTime": "2024-03-07T10:23:52.081",
+    "migrating": false,
+    "confidantVaultMetadata": null,
+    "backupAmi": null,
+    "ear": false,
+    "okta": false,
+    "lastUpgradeTime": 1717607645528,
+    "idleSense": true,
+    "idleSenseDisableTerminationTime": 0,
+    "clusterInfraDryRun": false,
+    "tenantConfigDryRun": false,
+    "allowedOrigin": null,
+    "supportEmails": null,
+    "productTypes": null,
+    "instancePlacement": {
+        "i-064b0f59c838f20b6": "us-west-2a"
+    },
+    "eulaInfos": [
+        {
+            "eulaId": "684fc91c-be0c-4df3-b4cb-33c83f547cbe",
+            "eulaURL": "https://www.thoughtspot.com/legal/thoughtspot-cloud-subscription-agreement",
+            "eulaVersion": "13_May_2022",
+            "productType": "ENTERPRISE",
+            "eulaGracePeriod": 0,
+            "active": true,
+            "timeStamp": 1676576318590
+        }
+    ],
+    "replicationRegion": null,
+    "orgsEulaInfos": null,
+    "debugMode": false,
+    "expirationTime": 0,
+    "cloudStorage": false
+}
