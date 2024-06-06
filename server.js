@@ -99,6 +99,40 @@ app.get('/commands-array', (req, res) => {
   });
 });
 
+app.post('/run-AWS-cluster', (req,res) => {
+  const {
+    cluster_name,
+    owner_email,
+  } = req.body;
+  console.log(req.body);
+  const scriptPath = path.join(__dirname, 'cluster_scripts', 'codex_metrics.py');
+  console.log(scriptPath);
+  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--owner_email', owner_email, '--scenario_type', 3]);
+  pythonProcess.stdout.on('data', () => {
+      return res.status(200).json({status: "Successfull"});
+  });
+  pythonProcess.stderr.on('data', (data) => {
+      console.error(`Python script stderr: ${data}`);
+  });
+})
+
+app.post('/run-GCP-cluster', (req,res) => {
+  const {
+    cluster_name,
+    owner_email,
+  } = req.body;
+  console.log(req.body);
+  const scriptPath = path.join(__dirname, 'cluster_scripts', 'codex_metrics.py');
+  console.log(scriptPath);
+  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--owner_email', owner_email, '--scenario_type', 2]);
+  pythonProcess.stdout.on('data', () => {
+      return res.status(200).json({status: "Successfull"});
+  });
+  pythonProcess.stderr.on('data', (data) => {
+      console.error(`Python script stderr: ${data}`);
+  });
+})
+
 app.post('/run-check-cluster-script', (req, res) => {
   const {
     cluster_name,
@@ -113,22 +147,6 @@ app.post('/run-check-cluster-script', (req, res) => {
   console.log(scriptPath);
   const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--image_tag', image_tag, '--owner_email', owner_email, '--feature', feature, '--team', team, '--token', token]);
   pythonProcess.stdout.on('data', () => {
-      // console.log(`Python script stdout: ${data}`);
-      // var string = data + '';
-      // const logsArray=string.split('\n');
-      // const csvFilePathLine = logsArray.find(line => line.includes('data save path:'));
-      // if (!csvFilePathLine) {
-      //   return res.status(500).json({ error: 'CSV file path not found in logs' });
-      // }
-      // const csvFilePath = csvFilePathLine.split('data save path: ')[1].trim();
-      // fs.readFile(csvFilePath, 'utf8', (err, data) => {
-      //   if (err) {
-      //     console.error(`readFile error: ${err}`);
-      //     return res.status(500).json({ error: err.message });
-      //   }
-  
-      //   res.json({ csvContent: data });
-      // });
       return res.status(200).json({status: "Successfull"});
   });
   pythonProcess.stderr.on('data', (data) => {

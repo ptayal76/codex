@@ -102,7 +102,6 @@ def getClusterInformation(clusterName):
     if not clusterDetails:
         print(f"Cluster {clusterName} not found")
         return None
-    # clusterDetails.append(getSha())
     return clusterDetails
 
 def getCommands(clusterName):
@@ -132,6 +131,28 @@ def getAppliedPatches(clusterName):
             if "patch_id" in workflow["metadata"]:
                 patches.append(workflow["metadata"]["patch_id"])
     return patches
+
+def applyPatches(userEmail, clusterName, patchIds):
+    clusterId = getClusterVersion(clusterName)
+    if not clusterId:
+        return None
+    url = f"{hostname}/api/v2/clusters/patch"
+    for patchId in patchIds:
+        data = {
+            "clusterIds": [
+                clusterId
+            ],
+            "patchId": patchId
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Email": userEmail
+        }
+        response = requests.post(url, auth=HTTPBasicAuth(username, password), json=data, headers=headers)
+        if response.status_code != 200:
+            print(f"Error applying patch {patchId}")
+    return response.status_code
 
 def applyTSCLICommands(user_email, clusterName, commands):
     clusterId = getClusterVersion(clusterName)
@@ -204,37 +225,37 @@ def getflagDetails(clusterName):
     response = requests.get(url, auth=HTTPBasicAuth(username, password), headers=headers)
     data = response.json()
     flagDetails = {}
-    filtered_services = []
+    filteredServices = []
     if "services" in data:
         services = data["services"]
         for service in services:
-            filtered_service = {}
+            filteredService = {}
             if "tasks" in service:
                 tasks = service["tasks"]
-                filtered_tasks = []
+                filteredTasks = []
                 for task in tasks:
-                    filtered_task = {}
+                    filteredTask = {}
                     if "flags" in task:
                         flags = task["flags"]
-                        filtered_flags = []
+                        filteredFlags = []
                         for flag in flags:
-                            filtered_flag = {}
+                            filteredFlag = {}
                             if "overriden" in flag and flag["overriden"] == True:
-                                filtered_flag["name"] = flag["name"]
-                                filtered_flag["value"] = flag["value"]
-                                filtered_flags.append(filtered_flag)
-                        if filtered_flags:
-                            filtered_task["flags"] = filtered_flags
-                    if filtered_task:
-                        filtered_task["name"] = task["name"]
-                        filtered_tasks.append(filtered_task)
-                if filtered_tasks:
-                    filtered_service["tasks"] = filtered_tasks
-            if filtered_service:
-                filtered_service["name"] = service["name"]
-                filtered_services.append(filtered_service)
-    if filtered_services:
-        flagDetails['services'] = filtered_services
+                                filteredFlag["name"] = flag["name"]
+                                filteredFlag["value"] = flag["value"]
+                                filteredFlags.append(filteredFlag)
+                        if filteredFlags:
+                            filteredTask["flags"] = filteredFlags
+                    if filteredTask:
+                        filteredTask["name"] = task["name"]
+                        filteredTasks.append(filteredTask)
+                if filteredTasks:
+                    filteredService["tasks"] = filteredTasks
+            if filteredService:
+                filteredService["name"] = service["name"]
+                filteredServices.append(filteredService)
+    if filteredServices:
+        flagDetails['services'] = filteredServices
     return flagDetails
 
 def createAWSSaasCluster(clusterName, ownerEmail, imageTag, feature, team):
@@ -334,6 +355,64 @@ def createGCPSaasCluster(clusterName, ownerEmail, imageTag):
     response = requests.post(url, headers=headers, data=request_body_json)
     return response
 
+def enableLogCollection(clusterName, userEmail):
+    clusterId = getClusterVersion(clusterName)
+    if not clusterId:
+        return None
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Email": userEmail
+    }
+    url = f"{hostname}/api/v2/clusters/{clusterId}/logcollection/enable"
+    response = requests.post(url, auth=HTTPBasicAuth(username, password), headers=headers)
+    return response.status_code
+
+def disableLogCollection(clusterName, userEmail):
+    clusterId = getClusterVersion(clusterName)
+    if not clusterId:
+        return None
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Email": userEmail
+    }
+    url = f"{hostname}/api/v2/clusters/{clusterId}/logcollection/disable"
+    response = requests.post(url, auth=HTTPBasicAuth(username, password), headers=headers)
+    return response.status_code
+
+def getArchivedLogs(clusterName, userEmail, files, logDuration, services, startDate):
+    clusterId = getClusterVersion(clusterName)
+    if not clusterId:
+        return None
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Email": userEmail
+    }
+    url = f"{hostname}/api/v2/clusters/{clusterId}/archivedlogs"
+    request_body = {
+        "files": files,
+        "logDuration": logDuration,
+        "services": services,
+        "startDate": startDate
+    }
+    response = requests.post(url, auth=HTTPBasicAuth(username, password), headers=headers, json=request_body)
+    return response.status_code
+
+def getLogCollectionStatus(clusterName, userEmail):
+    clusterId = getClusterVersion(clusterName)
+    if not clusterId:
+        return None
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Email": userEmail
+    }
+    url = f"{hostname}/api/v2/clusters/{clusterId}/logcollection"
+    response = requests.get(url, auth=HTTPBasicAuth(username, password), headers=headers)
+    return response.status_code
+
 def main(argv):
     args = parse_cmd(argv)
     clusterName = args.cluster_name
@@ -341,42 +420,58 @@ def main(argv):
     imageTag = args.image_tag
     feature = args.feature
     team = args.team
-    token = args.token
+    token=args.token
+    scenario = args.scenario_type
     # response = createGCPSaasCluster(clusterName, ownerEmail, imageTag, feature, team)
     # print(response.json())
     # gitSha = getSha(imageTag, token)
     # print(f"Git SHA for tag {imageTag}: {gitSha}")
-    clusterDetails = getClusterInformation(clusterName)
-    clusterDetails_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/clusterDetails.json'
-    with open(clusterDetails_file_path, 'w', encoding='utf-8') as f:
-        json.dump(clusterDetails,f, ensure_ascii=False, indent=4)
-    # print(f"Cluster details for {clusterName}: {clusterDetails}")
-    clusterVersion = getClusterVersion(clusterName)
-    clusterVersion_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/clusterVersion.txt'
-    with open(clusterVersion_file_path, 'w', encoding='utf-8') as f:
-        f.write(str(clusterVersion))
-    # print(f"Cluster version for {clusterName}: {clusterVersion}")
-    commands = getCommands(clusterName)
-    commands_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/commands.txt'
-    with open(commands_file_path, 'w', encoding='utf-8') as f:
-        f.write(str(commands))
-    # print(f"Commands for {clusterName}: {commands}")
-    appliedPatches = getAppliedPatches(clusterName)
-    appliedPatches_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/appliedPatches.txt'
-    with open(appliedPatches_file_path, 'w', encoding='utf-8') as f:
-        f.write(str(appliedPatches))
-    # print(f"Applied patches for {clusterName}: {appliedPatches}")
-    currentVersion, upgradeVersion = getClusterCurrentAndUpgradeVersion(clusterName)
-    version_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/version.txt'
-    with open(version_file_path, 'w', encoding='utf-8') as f:
-        f.write(f'{currentVersion}\n{upgradeVersion}')
-    # print(f"Current version for {clusterName}: {currentVersion}")
-    # print(f"Upgrade version for {clusterName}: {upgradeVersion}")
-    flagDetails = getflagDetails(clusterName)
-    flagDetails_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/flagDetails.json'
-    with open(flagDetails_file_path, 'w', encoding='utf-8') as f:
-        json.dump(flagDetails,f, ensure_ascii=False, indent=4)
-    # print(f"Flag details for {clusterName}: {flagDetails}")
+    if scenario == 1:
+        currentVersion, upgradeVersion = getClusterCurrentAndUpgradeVersion(clusterName)
+        imageTag=currentVersion
+        version_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/version.txt'
+        with open(version_file_path, 'w', encoding='utf-8') as f:
+            f.write(f'Current version {currentVersion}\nUpgrade version {upgradeVersion}')
+        clusterDetails = getClusterInformation(clusterName)
+        clusterDetails_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/clusterDetails.json'
+        with open(clusterDetails_file_path, 'w', encoding='utf-8') as f:
+            json.dump(clusterDetails,f, ensure_ascii=False, indent=4)
+        # print(f"Cluster details for {clusterName}: {clusterDetails}")
+        clusterVersion = getClusterVersion(clusterName)
+        clusterVersion_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/clusterVersion.txt'
+        with open(clusterVersion_file_path, 'w', encoding='utf-8') as f:
+            f.write(str(clusterVersion))
+        # print(f"Cluster version for {clusterName}: {clusterVersion}")
+        commands = getCommands(clusterName)
+        commands_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/commands.txt'
+        with open(commands_file_path, 'w', encoding='utf-8') as f:
+            f.write(str(commands))
+        # print(f"Commands for {clusterName}: {commands}")
+        appliedPatches = getAppliedPatches(clusterName)
+        appliedPatches_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/appliedPatches.txt'
+        with open(appliedPatches_file_path, 'w', encoding='utf-8') as f:
+            f.write(str(appliedPatches))
+        sha = getSha(imageTag,token)
+        sha_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/sha.txt'
+        with open(sha_file_path, 'w', encoding='utf-8') as f:
+            f.write(f'{sha}')
+        # print(f"Applied patches for {clusterName}: {appliedPatches}")
+        # print(f"Current version for {clusterName}: {currentVersion}")
+        # print(f"Upgrade version for {clusterName}: {upgradeVersion}")
+        flagDetails = getflagDetails(clusterName)
+        flagDetails_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/flagDetails.json'
+        with open(flagDetails_file_path, 'w', encoding='utf-8') as f:
+            json.dump(flagDetails,f, ensure_ascii=False, indent=4)
+    elif scenario == 2:
+        gcp = createGCPSaasCluster(clusterName, ownerEmail, imageTag)
+        gcp_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/gcp.txt'
+        with open(gcp_file_path, 'w', encoding='utf-8') as f:
+            f.write(str(gcp))
+    elif scenario == 3:
+        aws = createAWSSaasCluster(clusterName,ownerEmail,imageTag,feature,team)
+        aws_file_path = '/Users/piyush.tayal/Downloads/codex-be/sandbox/cluster_scripts/aws.txt'
+        with open(aws_file_path, 'w', encoding='utf-8') as f:
+            f.write(str(aws))
 
 if __name__ == "__main__":
     main(sys.argv)
