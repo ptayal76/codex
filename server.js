@@ -4,7 +4,9 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
-
+const { spawn } = require('child_process');
+const path = require('path');
+const fs= require('fs');
 const app = express();
 const PORT = 4000;
 
@@ -14,63 +16,39 @@ app.use(bodyParser.json());
 app.use(express.json());
 const pythonExecutable = '/usr/local/bin/python3'; // Replace with your actual path
 
-const tabsData = [
-  { id: 1, content: 'Content for Tab 1: Some text and information.' },
-  { id: 2, content: 'Content for Tab 2: Some list items.' },
-  { id: 3, content: 'Content for Tab 3: Some image or other data.' },
-];
+// Path to your Python executable on macOS
+const pythonExecutable = '/usr/bin/python3'; // Replace with your actual path
 
-const scrollableData = [
-  { id: 1, message: 'Scrollable message 1' },
-  { id: 2, message: 'Scrollable message 2' },
-  { id: 3, message: 'Scrollable message 3' },
-];
+app.post('/trigger-kibana',(req, res) => {
+  const {
+    clusterId,
+    initialTime, 
+    endTime,
+    msg
+  } = req.body;
 
-const styledData = {
-  title: 'Styled Component Title',
-  description: 'Description for styled component.',
-};
 
-const responsiveData = [
-  { id: 1, name: 'John Doe', age: 28 },
-  { id: 2, name: 'Jane Doe', age: 25 },
-];
+  const fullPath = path.join(__dirname, '/Kibana/final-script.py');
 
-const searchData = [
-  {
-    title: 'Result for query 1',
-    link: '#',
-    description: 'This is a description for result 1.',
-  },
-  {
-    title: 'Result for query 2',
-    link: '#',
-    description: 'This is a description for result 2.',
-  },
-];
+  const pythonProcess = spawn(pythonExecutable, [fullPath, '--cluster_id',clusterId,'--initial_time', initialTime, '--end_time', endTime, '--msg', msg]);
+  pythonProcess.stdout.on('data', (data) => {
+      console.log(data);
+  });
 
-app.get('/api/tabs', (req, res) => {
-  res.json(tabsData);
-});
-
-app.get('/api/scrollable', (req, res) => {
-  res.json(scrollableData);
-});
-
-app.get('/api/styled', (req, res) => {
-  res.json(styledData);
-});
-
-app.get('/api/responsive', (req, res) => {
-  res.json(responsiveData);
-});
-
-app.get('/api/search', (req, res) => {
-  const query = req.query.q;
-  const results = searchData.filter(item =>
-    item.title.toLowerCase().includes(query.toLowerCase())
-  );
-  res.json(results);
+  const JSONFilePath = './kibana.json';
+  pythonProcess.on('close', (code) => {
+    console.log(`child process exited with code ${code}`);
+    fs.readFile(JSONFilePath, 'utf8', (err, fileData) => {
+      if (err) {
+        console.error(`readFile error: ${err}`);
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ json: fileData });
+      
+      // cleanup
+      console.log(fileData);
+    });
+  });
 });
 
 app.get('/', (req, res) => {

@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
     "body-parser": "^1.20.2",
     "child_process": "^1.0.2",
     "cors": "^2.8.5",

@@ -72,7 +72,7 @@ export default function App() {
   };
   return (
     <div className="app-container">
-      <NavigationDrawer onTabChange={handleTabChange} />
+      <NavigationDrawer />
       <div className="main-content">
         <SearchBar onSearch={handleSearch} />
         <SearchResults results={results} />

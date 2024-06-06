@@ -1,0 +1,64 @@
+/* src/components/Table.css */
+.table-container {
+  padding: 20px;
+}
+
+.search-bar {
+  margin-bottom: 10px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.filters {
+  margin-bottom: 10px;
+}
+
+.filters div {
+  margin-bottom: 5px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+th {
+  cursor: pointer;
+  background-color: #f2f2f2;
+  position: relative;
+}
+
+th .arrow {
+  display: inline-block;
+  width: 16px; /* Fixed width for the arrow */
+  text-align: center;
+}
+
+.row-details {
+  margin-top: 20px;
+}
+
+.row-details pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.row-details table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.row-details th, .row-details td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
