@@ -18,20 +18,20 @@ from datetime import datetime, timedelta
 # Customise these values for automation. These can be taken as input args.
 
 # start month to capture the metric. Inclusive. Format: '2020-01-01T00:00:00'
-input_start_date = '2023-06-24T16:16:00'
+input_start_date = '2024-06-05T19:04:00'
 
 # end month to capture the metric. Exclusive. Format: '2020-03-01T00:00:00'
-input_end_date = '2024-05-25T16:17:00'
+input_end_date = '2024-06-06T19:04:00'
 
 # grafana expression params
 metricName = "request_duration_seconds"
-saasEnv = "staging|prod"
+saasEnv = "staging"
 apiRegex = ".*"
-tenantName = "champagne"
+tenantName = "champagne-master-aws"
 statusCodeRegex = "4.*|5.*"
 
 # grafana login session cookie. Obtained from browser logged-in session to 'https://thoughtspot.grafana.net/'
-grafana_session = 'grafana_session=5ecd11e56bfb0d4ceae2e594450e80c7	'
+grafana_session = 'grafana_session=221b7c9fb212bd04df734300527a57e4	'
 
 # output directory where collected metric file per year will be saved.
 output_dir = os.path.join(os.getcwd(), "data")
@@ -52,16 +52,16 @@ def parse_args():
                         help='end date for capturing metrics. Format: YYYY-MM-DDTHH:MM:SS')
     parser.add_argument('--metricName', type=str, default='request_duration_seconds',
                         help='prism: request_duration_seconds, tomcat: http_request_duration_us')
-    parser.add_argument('--saasEnv', type=str, default='staging|prod',
+    parser.add_argument('--saasEnv', type=str, default='staging',
                         help='prod|staging|dev')
     parser.add_argument('--apiRegex', type=str, default='.*',
                         help='regex to match api path')
-    parser.add_argument('--tenantName', type=str, default='champagne',
+    parser.add_argument('--tenantName', type=str, default='champagne-master-aws',
                         help='tenant name')
     parser.add_argument('--statusCodeRegex', type=str, default='4.*|5.*',
                         help='api response status code regex to filter for: 2.*|4.*|5.*')
-    parser.add_argument('--grafana_session', type=str, default='grafana_session=',
-                        help='grafana_session=sessionId')
+    parser.add_argument('--grafana_session', type=str, default='grafana_session_id',
+                        help='cookie grafana_session=sessionId')
     return parser.parse_args()
 
 def set_vars(args):
@@ -73,7 +73,7 @@ def set_vars(args):
     apiRegex = args.apiRegex
     tenantName = args.tenantName
     statusCodeRegex = args.statusCodeRegex
-    grafana_session = args.grafana_session
+    grafana_session = f"grafana_session={args.grafana_session}"
 
 def makeQueryDict(queryRefId, queryExpr):
     query = {
