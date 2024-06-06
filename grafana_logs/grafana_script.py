@@ -73,7 +73,7 @@ def set_vars(args):
     apiRegex = args.apiRegex
     tenantName = args.tenantName
     statusCodeRegex = args.statusCodeRegex
-    grafana_session = f"grafana_session={args.grafana_session}"
+    grafana_session = args.grafana_session
 
 def makeQueryDict(queryRefId, queryExpr):
     query = {

@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
 import CSVDataTable from "./CSVDataTable";
 import './GrafanaLogs.css';
+import { useGlobalState } from './GlobalState.jsx';
+
 
 const GrafanaLogs = ({ subTab }) => {
   const [csvData, setCsvData] = useState([]);
+  const { cname, setCname } = useGlobalState();
   const [formInputs, setFormInputs] = useState({
     input_start_date: '2024-03-01T00:00:00',
     input_end_date: '2024-06-01T00:00:00',
-    metricName: 'request_duration_seconds',
-    saasEnv: 'prod',
-    apiRegex: '.*',
-    tenantName: 'metadata',
-    statusCodeRegex: '4.*|5.*',
-    grafana_session: ''
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -24,13 +21,16 @@ const GrafanaLogs = ({ subTab }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    const payload = {
+      ...formInputs,
+      'tenantName': cname
+    }
     const response = await fetch('http://localhost:4000/run-grafana-script', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(formInputs),
+      body: JSON.stringify(payload),
     });
 
     if (response.ok) {

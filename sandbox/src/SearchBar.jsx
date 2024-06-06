@@ -2,15 +2,12 @@ import React, { useState } from "react";
 import { useGlobalState } from './GlobalState.jsx';
 
 // import {CNAME,generateRandomString} from './constants'
-const SearchBar = ({ onSearch }) => {
+const SearchBar = () => {
   const { cname, setCname } = useGlobalState();
   const [query, setQuery] = useState(cname);
   const handleChange = (e) => {
     setCname(e.target.value)
     setQuery(e.target.value)
-  };
-  const handleSearch = () => {
-    onSearch(query);
   };
 
   return (
@@ -23,9 +20,6 @@ const SearchBar = ({ onSearch }) => {
         onChange={handleChange}
         className="search-input"
       />
-      <button onClick={handleSearch} className="search-button">
-        Enter
-      </button>
     </div>
   );
 };
