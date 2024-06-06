@@ -95,7 +95,7 @@ export default function App() {
       <div className="main-content">
         {/* <SearchBar onSearch={handleSearch} />
         <SearchResults results={results} /> */}
-        <div className="grid-container">
+        <div>
           
           {renderContent()}
         </div>
