@@ -17,7 +17,7 @@ import Heading from './Heading';
 export default function App() {
   const [results, setResults] = useState([]);
   const [scrollableData, setScrollableData] = useState([]);
-  const [activeTab, setActiveTab] = useState('other');
+  const [activeTab, setActiveTab] = useState('checkCluster');
 
   useEffect(() => {
     const callApi = async () => {
