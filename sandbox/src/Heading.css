@@ -1,0 +1,12 @@
+.heading {
+    background-color: #333; /* Background color */
+    color: #ffffff; /* Text color */
+    padding: 10px; /* Padding around the heading */
+    font-size: 24px; /* Font size */
+    font-weight: bold; /* Font weight */
+    text-align: center; /* Center align the text */
+    position: fixed; /* Fix the heading at the top */
+    width: 100%; /* Take full width of the viewport */
+    top: 0; /* Align the heading at the top */
+    z-index: 1000; /* Ensure the heading appears above other content */
+}
