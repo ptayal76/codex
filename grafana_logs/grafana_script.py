@@ -18,20 +18,20 @@ from datetime import datetime, timedelta
 # Customise these values for automation. These can be taken as input args.
 
 # start month to capture the metric. Inclusive. Format: '2020-01-01T00:00:00'
-input_start_date = '2024-04-24T16:16:00'
+input_start_date = '2023-06-24T16:16:00'
 
 # end month to capture the metric. Exclusive. Format: '2020-03-01T00:00:00'
 input_end_date = '2024-05-25T16:17:00'
 
 # grafana expression params
 metricName = "request_duration_seconds"
-saasEnv = "prod|staging"
+saasEnv = "staging|prod"
 apiRegex = ".*"
-tenantName = "metadata"
+tenantName = "champagne"
 statusCodeRegex = "4.*|5.*"
 
 # grafana login session cookie. Obtained from browser logged-in session to 'https://thoughtspot.grafana.net/'
-grafana_session = 'grafana_session=c6da93339e81ffdfb3d8b8f0fb1b5688	'
+grafana_session = 'grafana_session=5ecd11e56bfb0d4ceae2e594450e80c7	'
 
 # output directory where collected metric file per year will be saved.
 output_dir = os.path.join(os.getcwd(), "data")
@@ -51,12 +51,12 @@ def parse_args():
     parser.add_argument('--input_end_date', type=str, default='2024-06-01T00:00:00',
                         help='end date for capturing metrics. Format: YYYY-MM-DDTHH:MM:SS')
     parser.add_argument('--metricName', type=str, default='request_duration_seconds',
-                        help='request_duration_seconds: prism, http_request_duration_us: tomcat')
-    parser.add_argument('--saasEnv', type=str, default='prod|staging',
+                        help='prism: request_duration_seconds, tomcat: http_request_duration_us')
+    parser.add_argument('--saasEnv', type=str, default='staging|prod',
                         help='prod|staging|dev')
     parser.add_argument('--apiRegex', type=str, default='.*',
                         help='regex to match api path')
-    parser.add_argument('--tenantName', type=str, default='metadata',
+    parser.add_argument('--tenantName', type=str, default='champagne',
                         help='tenant name')
     parser.add_argument('--statusCodeRegex', type=str, default='4.*|5.*',
                         help='api response status code regex to filter for: 2.*|4.*|5.*')
@@ -80,7 +80,7 @@ def makeQueryDict(queryRefId, queryExpr):
         "refId": queryRefId,
         "datasourceId": 4,
         "expr": queryExpr,
-        "interval": "3600",
+        "interval": "600",
         "maxDataPoints": 1000,
         "instant": False,
         "range": True,
@@ -166,6 +166,7 @@ def collect_api_metric_usage(csv_writer, start_time, end_time, queryList):
         exit(1)
 
     for query in queryList:
+        print(query["expr"])
         api_metric_frames_list = result['results'][query['refId']]['frames']
         process_api_metric_frames(api_metric_frames_list, csv_writer)
 

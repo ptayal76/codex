@@ -186,3 +186,15 @@ def start_rest_api_metric_collection():
 if __name__ == '__main__':
     print(output_dir)
     start_rest_api_metric_collection()
+
+# v2 public:
+# request_duration_seconds{saas_env=~"${saas_env}", api=~".*api/rest/2.0/.*", quantile="0.95", status_code=~"4.*|5.*"}
+
+# v2 private:
+# http_request_duration_us{saas_env=~"${saas_env}", api=~"[/]*v2/.*", quantile="0.95", status=~"4.*|5.*"}
+
+# v1 public:
+# http_request_duration_us{saas_env=~"${saas_env}", api=~".*tspublic/v1/.*", quantile="0.95", status=~"4.*|5.*"}
+
+# v1 private:
+# http_request_duration_us{saas_env=~"${saas_env}", api!~".*tspublic/v1/.*|[/]*v2/.*|[/]*[a-zA-Z]+[/]*/v2/.*", quantile="0.95", status=~"4.*|5.*"}
