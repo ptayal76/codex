@@ -48,9 +48,18 @@ const NavigationDrawer = ({ onTabChange }) => {
           </div>
           {isGrafanaLogsOpen && (
               <div className="sub-tabs flex flex-col p-2 gap-2">
-                <div className="tab" onClick={() => handleTabClick('GrafanaLogs1')}>V2 Public Apis</div>
-                <div className="tab" onClick={() => handleTabClick('GrafanaLogs2')}>V1 Public Apis</div>
-                <div className="tab" onClick={() => handleTabClick('GrafanaLogs3')}>Internal Apis</div>
+                <div className="tab" onClick={() => handleTabClick('GrafanaLogs1')}>
+                  <img src="/static/icons/api-svgrepo-com.svg" alt="V2 Public Apis" className="tab-icon"/>
+                  V2 Public Apis
+                </div>
+                <div className="tab" onClick={() => handleTabClick('GrafanaLogs2')}>
+                  <img src="/static/icons/api-svgrepo-com.svg" alt="V1 Public Apis" className="tab-icon"/>
+                  V1 Public Apis
+                </div>
+                <div className="tab" onClick={() => handleTabClick('GrafanaLogs3')}>
+                  <img src="/static/icons/api-svgrepo-com.svg" alt="Internal Apis" className="tab-icon"/>
+                  Internal Apis
+                </div>
               </div>
           )}
           <div
