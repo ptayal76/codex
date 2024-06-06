@@ -7,7 +7,8 @@ import SearchBar from "./SearchBar";
 import SearchResults from "./SearchResults";
 import FormComponent from './CreateKBCluster.jsx';
 import NavigationDrawer from './NavigationDrawer.jsx';
-import GrafanaLogs from './GrafanaLogs.jsx'
+import GrafanaLogs from './GrafanaLogs.jsx';
+import KibanaLogsContainer from './KibanaLogsContainer/kibanaLogsContainer.jsx';
 import "./styles.css";
 
 export default function App() {
@@ -58,6 +59,8 @@ export default function App() {
         return <FormComponent />;
       case 'GrafanaLogs':
         return <GrafanaLogs />;
+      case 'KibanaLogs':
+        return <KibanaLogsContainer/>;
       case 'other':
       default:
         return (

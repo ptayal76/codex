@@ -4,9 +4,6 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
-const { spawn } = require('child_process');
-const path = require('path');
-const fs= require('fs');
 const app = express();
 const PORT = 4000;
 
@@ -15,9 +12,6 @@ app.use(bodyParser.json());
 
 app.use(express.json());
 const pythonExecutable = '/usr/local/bin/python3'; // Replace with your actual path
-
-// Path to your Python executable on macOS
-const pythonExecutable = '/usr/bin/python3'; // Replace with your actual path
 
 app.post('/trigger-kibana',(req, res) => {
   const {
@@ -68,15 +62,7 @@ app.post('/run-script', (req, res) => {
   } = req.body;
   console.log(req.body);
   const scriptPath = path.join(__dirname, 'grafana_logs', 'grafana_script.py');
-  // const command1 =  `source ../env/bin/activate`;
-  // exec(command1,(error,stdout,stderr) => {
-  //   if (error) {
-  //     console.error(`exec error: ${error}`);
-  //     return res.status(500).json({ error: stderr });
-  //   }
-  // })
   console.log(scriptPath);
-  // const command = `python3 ${scriptPath} --input_start_date ${input_start_date} --input_end_date ${input_end_date} --metricName ${metricName} --saasEnv ${saasEnv} --apiRegex ${apiRegex} --tenantName ${tenantName} --statusCodeRegex ${statusCodeRegex} --grafana_session grafana_session=${grafana_session}`;
   const pythonProcess = spawn(pythonExecutable, [scriptPath, '--input_start_date', input_start_date, '--input_end_date', input_end_date, '--metricName', metricName, '--saasEnv', saasEnv, '--apiRegex', apiRegex, '--tenantName', tenantName, '--statusCodeRegex', statusCodeRegex, '--grafana_session', `grafana_session=${grafana_session}`]);
   pythonProcess.stdout.on('data', (data) => {
       console.log(`Python script stdout: ${data}`);
