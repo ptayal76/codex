@@ -6,6 +6,7 @@
 .main-content {
   margin-left: 200px; /* Adjust according to the width of the Navigation Drawer */
   padding: 20px;
+  margin-top: 60px;
 }
 
 .search-bar {
