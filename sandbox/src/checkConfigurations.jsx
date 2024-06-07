@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, Input, Space } from 'antd';
+import { Button, Form, Input, Space , Spin} from 'antd';
 import NewTable from './newTable.jsx';
 import { useState ,useEffect } from 'react';
 
@@ -25,30 +25,35 @@ const SubmitButton = ({ form, children, type }) => {
 const CheckConfigurations = () => {
 const [form] = Form.useForm();
 const [jsonFile, setJsonFile]= useState(null);
-const handleSubmit = async (values) => {
-    const formData = {
-        cluster_url: values.cluster_url,
-        domain: values.domain,
-    };
-    try {
-        const response = await fetch('http://localhost:4000/check-csp-cors-validation', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        } else {
-            const res = await response.json();
-            console.log("response--json: ", res);
-            setJsonFile(res);
+    const [loading, setLoading]= useState(false);
+    const handleSubmit = async (values) => {
+        const formData = {
+            cluster_url: values.cluster_url,
+            domain: values.domain,
+        };
+        setLoading(true);
+        try {
+            const response = await fetch('http://localhost:4000/check-csp-cors-validation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            } else {
+                const res = await response.json();
+                console.log("response--json: ", res);
+                setJsonFile(res);
+            }
+        } catch (error) {
+            console.error('Error:', error);
         }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-};
+        finally{
+            setLoading(false);
+        }
+    };
   useEffect(() => {
         if (jsonFile) {
             console.log("res is taken by useEffect: ", jsonFile);
@@ -98,7 +103,14 @@ const handleSubmit = async (values) => {
           </Form.Item>
       </Form>
       {console.log("showJson",jsonFile)}
-    {jsonFile!==null?<NewTable myobject={jsonFile}/>:""}
+      {loading ? (
+          <div className="loading-container flex allign-center justify-center">
+              <Spin size="large" />
+          </div>
+      ) : (
+          jsonFile!==null?<NewTable myobject={jsonFile}/>:null
+      )
+      }
   </div>
     
   );
