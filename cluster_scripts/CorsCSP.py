@@ -56,15 +56,28 @@ def check_cors():
         'sec-fetch-site': 'cross-site'
     }
 
-    opt_resp = requests.request("OPTIONS", url, headers=headers, data=payload, verify=False)
-    # print(opt_resp.status_code)
+    try:
+        reachable = "TRUE"
+        opt_resp = requests.request("OPTIONS", url, headers=headers, data=payload, verify=False, timeout=5)
+        opt_resp.raise_for_status()  # Ensure we're raising for status on opt_resp
 
-    if opt_resp.status_code == 204:
-        return "PASS"
-    elif opt_resp.status_code == 404:
-        return "FAIL"
-    else:
-        return "UNVERIFIED"
+        if opt_resp.status_code == 204:
+            return "PASS", reachable
+        elif opt_resp.status_code == 404:
+            return "FAIL", reachable
+    except requests.exceptions.HTTPError as http_err:
+        reachable = f"HTTP error occurred: {http_err}"
+    except requests.exceptions.ConnectionError as conn_err:
+        reachable = f"Connection error occurred: {conn_err}"
+    except requests.exceptions.Timeout as timeout_err:
+        reachable = f"Timeout error occurred: {timeout_err}"
+    except requests.exceptions.RequestException as req_err:
+        reachable = f"An error occurred: {req_err}"
+
+    # Optionally print or log the error for debugging
+    print("sandeep"+reachable)
+
+    return "UNVERIFIED", reachable
 
 
 def check_csp():
@@ -123,7 +136,10 @@ def check_csp():
 
 
 if __name__ == '__main__':
-    response = {"input_domain": domain, "cors_status": check_cors()}
+    cors_status, reachable = check_cors()
+    response = {"thoughtspot_cluster": input_url, "Reachable": reachable, "embed_domain": domain, "cors_status": cors_status}
+
+
 
     if response["cors_status"] == "PASS":
         csp_status, csp_content = check_csp()
