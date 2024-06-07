@@ -80,7 +80,7 @@ const GrafanaLogs = ({ subTab }) => {
 
   return (
     <div className="container">
-      <p className="text-3xl">Grafana Logs</p>
+      <p className="text-3xl">Grafana Metrics</p>
         <h1>{subTab}</h1>
       <form onSubmit={handleSubmit} className="input-form">
         {Object.keys(formInputs).map((key) => (
@@ -97,7 +97,7 @@ const GrafanaLogs = ({ subTab }) => {
             </label>
           </div>
         ))}
-        <button type="submit" className="submit-button">Run Script</button>
+        <button type="submit" className="submit-button">Fetch Grafana Metrics</button>
       </form>
       <div style={{ marginBottom: '15px' }}>
         <input

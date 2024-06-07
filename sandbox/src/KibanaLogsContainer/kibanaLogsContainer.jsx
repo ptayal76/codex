@@ -10,8 +10,7 @@ function KibanaLogsContainer() {
     const [formInputs, setFormInputs] = useState({
         StartTimestamp: '2024-03-01T00:00:00',
         EndTimestamp: '2024-06-01T00:00:00',
-        Cluster_Id: '3d23a190-ccdc-11ed-8a31-4d8aa',
-        Cluster_Name: 'metadata',
+        Cluster_Id: '672764c0-dc60-11ee-a6bf-13c83',
         //StateToken: 'stateToken',
         //RefreshToken: 'refreshToken',
     });

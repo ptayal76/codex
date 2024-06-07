@@ -49,7 +49,7 @@ const NavigationDrawer = ({ onTabChange }) => {
           onClick={() => handleTabClick('GrafanaLogs')}
         >
           <img src="/static/icons/grafana-icon.svg" alt="Grafana Logs" className="tab-icon"/>
-          Grafana Logs
+          Grafana Metrics
         </div>
           <div
               className={`tab ${activeTab === 'KibanaLogs' && 'active'}`}
