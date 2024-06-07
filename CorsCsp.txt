@@ -1,0 +1,1 @@
+{"input_domain": "asda.ca.com", "cors_status": "FAIL", "csp_status": "UNVERIFIED", "csp_content": ""}

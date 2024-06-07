@@ -10,10 +10,10 @@ function KibanaLogsContainer() {
     const [formInputs, setFormInputs] = useState({
         StartTimestamp: '2024-03-01T00:00:00',
         EndTimestamp: '2024-06-01T00:00:00',
-        Cluster_Id: 'b78fbb7f-bcd5-11ee-98b4-41c0c',
-        Message: 'failed',
-        StateToken: 'stateToken',
-        RefreshToken: 'refreshToken',
+        Cluster_Id: '3d23a190-ccdc-11ed-8a31-4d8aa',
+        Cluster_Name: 'metadata',
+        //StateToken: 'stateToken',
+        //RefreshToken: 'refreshToken',
     });
 
     const handleSubmit = async (e) => {

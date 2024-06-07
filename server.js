@@ -11,7 +11,9 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use(express.json());
-const pythonExecutable = '/usr/local/bin/python3'; // Replace with your actual path
+// const pythonExecutable = '/usr/local/bin/python3'; // Replace with your actual path
+const pythonExecutable = '/opt/homebrew/bin/python3.11'; // Replace with your actual path
+//const pythonExecutable = '/usr/bin/python3'; // Replace with your actual path
 
 app.post('/trigger-kibana',(req, res) => {
   const {
@@ -21,15 +23,13 @@ app.post('/trigger-kibana',(req, res) => {
     msg
   } = req.body;
 
-
-  const fullPath = path.join(__dirname, '/Kibana/final-script.py');
+  const fullPath = path.join(__dirname, 'cluster_scripts/final-script.py');
 
   const pythonProcess = spawn(pythonExecutable, [fullPath, '--cluster_id',clusterId,'--initial_time', initialTime, '--end_time', endTime, '--msg', msg]);
   pythonProcess.stdout.on('data', (data) => {
       console.log(data);
   });
-
-  const JSONFilePath = './kibana.json';
+  const JSONFilePath = './Kibana.txt';
   pythonProcess.on('close', (code) => {
     console.log(`child process exited with code ${code}`);
     fs.readFile(JSONFilePath, 'utf8', (err, fileData) => {
