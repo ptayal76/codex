@@ -97,7 +97,7 @@ const GrafanaLogs = ({ subTab }) => {
             </label>
           </div>
         ))}
-        <button type="submit" className="submit-button">Run Script</button>
+        <button type="submit" className="submit-button">Fetch Grafana Metrics</button>
       </form>
       <div style={{ marginBottom: '15px' }}>
         <input
