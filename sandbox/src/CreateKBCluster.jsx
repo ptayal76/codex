@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './CreateKBCluster.css'; // Import the CSS file
-import {CNAME,generateRandomString} from './constants'
+import {generateRandomString} from "./constants.jsx"
+import { useGlobalState } from './GlobalState.jsx';
+
 const bearerToken = 'eyJraWQiOiIweUZSWHY1d2lpelVCVTR4RVdkOW5ONnBuRFZKRGFrd195MFJhWlI4R29VIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIwMHUxNGh6N2ZraXpZVUNmRTB4OCIsImVtYWlsIjoicGl5dXNoLnRheWFsQHRob3VnaHRzcG90LmNvbSIsInZlciI6MSwiaXNzIjoiaHR0cHM6Ly90aG91Z2h0c3BvdC5va3RhLmNvbSIsImF1ZCI6IjBvYXIzZHFvODQ3WU1uWUxaMHg3IiwiaWF0IjoxNzE3NTc0NzkyLCJleHAiOjE3MTc1NzgzOTIsImp0aSI6IklELkhBaDVWWDFteUhrY2JBNkFQR05XVVRudVh4djMxRDNMS2RVTWphWDB0LW8iLCJhbXIiOlsicHdkIl0sImlkcCI6IjBvYWVjOWttYWI4TVVONU1mMHk2Iiwibm9uY2UiOiJyb1lnWVRHd0Nzbml6OWtidHJ4Y1FnZ1U4clpiVlBWb3hnVHZ0aUZXMnN0VnJkRXJCOVl3SUhOQXNBN0JuZXgwIiwiYXV0aF90aW1lIjoxNzE3NDA5ODU4LCJhdF9oYXNoIjoiQ3FxalR4SXNqR0FxT09ZNjZibGE2ZyJ9.WY9WFQEOIYz6j7xLwvRx27V40-uXXgQUplHvaVcc6MWgR3e9rB1Q4PtRlMr-yB7jwyZAduLTjfdFNRDiGC5tBOSSQiUPm-YogwwhFt4MMMqZHTqR5uQBI6PUSVN74ynzY3K1bee9AT9nN0UrvifGBloiWbHPv1WtXLvP6oN2RwlB_zpP-Bw_RwUA06U0LERZuEZ9zbeEB5lfgrwOs4KCb8VUtlSGcgtU0kD9qdq6FzrngynrtUSJDTVl9glFV99kGwQmheZZMxv9HmCwyPODZafNO0QGlIsNX9Odry8CLpdzF4CzxTlM9g6yx9qh-1wVNYzFr-EjndnbeBN8BA7j8A'
 const nonce = 'roYgYTGwCsniz9kbtrxcQggU8rZbVPVoxgTvtiFW2stVrdErB9YwIHNAsA7Bnex0'
-const owner_email = 'piyush.tayal@thoughtspot.com'
+const owner_email = 'sandeep.yadav@thoughtspot.com'
 
-const cluster_name = CNAME+'-'+ generateRandomString(5)
+
 const CreateKBCluster = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { cname, setCname } = useGlobalState();
+  const [randomString] = useState(generateRandomString(5));
+  const [awsInit,setAwsInit]= useState(false)
+  const cluster_name = cname+'-'+ randomString
+  const [image_tag,setImage_tag] = useState('')
   const [k8sData, setK8sData] = useState({
     owner: owner_email,
     resource_name :"nebula-tse-testing1",
@@ -19,15 +26,54 @@ const CreateKBCluster = () => {
     type:"tpch",
     backend:"ts-k8s-athena2"
   });
+  useEffect(() => {
+    const fetchAndParseVersion = async () => {
+      try {
+        const response = await fetch('./cluster_scripts/version.txt');
+        const text = await response.text();
+        console.log(text)
+        // Find the line containing 'Upgrade version'
+        const lines = text.split('\n');
+        const upgradeVersionLine = lines.find(line => line.startsWith('Upgrade version'));
+        
+        if (upgradeVersionLine) {
+          const upgradeVersion = upgradeVersionLine.split(' ')[2];
+          console.log(upgradeVersion)
+          setImage_tag(upgradeVersion)
+          return;
+        }
+        
+        throw new Error('Upgrade version not found in file');
+      } catch (error) {
+        console.error('Error fetching or parsing version file:', error);
+        throw error;
+      }
+    };
+    fetchAndParseVersion();
+  }, [])
   const [awsData, setAwsData]= useState({
     cluster_name: cluster_name,
-    owner_email: owner_email
+    owner_email: owner_email,
+    image_tag : image_tag
   })
 
   const [gcpdata, setGcpData]= useState({
     cluster_name: cluster_name,
-    owner_email: owner_email
+    owner_email: owner_email,
+    image_tag : image_tag
   })
+  useEffect(() => {
+    // const newClusterName = `${cname}-${randomString}`;
+    const newClusterName = `test-tse2`;
+    setAwsData(prevData => ({ ...prevData, cluster_name: newClusterName }));
+    setGcpData(prevData => ({ ...prevData, cluster_name: newClusterName }));
+  }, [cname]);
+
+  useEffect(() => {
+    setAwsData(prevData => ({ ...prevData, image_tag: image_tag }));
+    setGcpData(prevData => ({ ...prevData, image_tag: image_tag }));
+  }, [image_tag]);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,6 +82,9 @@ const CreateKBCluster = () => {
       [name]: value
     });
   };
+  const handleImageChange = (e) => {
+    setImage_tag(e.target.value)
+  }
   const handleAWSchange = (e) =>{
     const { name, value } = e.target;
     setAwsData({
@@ -52,6 +101,10 @@ const CreateKBCluster = () => {
   }
   const handleAWSCluster = async (e) => {
     e.preventDefault();
+    setAwsData({
+      ...awsData,
+      image_tag: image_tag
+    });
     const response = await fetch('http://localhost:4000/run-AWS-cluster', {
       method: 'POST',
       headers: {
@@ -62,7 +115,7 @@ const CreateKBCluster = () => {
 
     if (response.ok) {
       const data = await response.json();
-      parseCSV(data.csvContent);
+      setAwsInit(true)
     } else {
       console.log(response)
       console.error('Error running the script');
@@ -71,6 +124,10 @@ const CreateKBCluster = () => {
 
   const handleGCPCluster = async (e) => {
     e.preventDefault();
+    setGcpData({
+      ...gcpdata,
+      image_tag: image_tag
+    });
     const response = await fetch('http://localhost:4000/run-GCP-cluster', {
       method: 'POST',
       headers: {
@@ -127,6 +184,8 @@ const CreateKBCluster = () => {
         setIsLoading(false); // Reset loading state after receiving response
       }
   };
+
+  
 
   return (
     <div className='forms'>
@@ -211,6 +270,16 @@ const CreateKBCluster = () => {
             required
           />
         </div>
+        <div className="form-group">
+          <label>Image TAG:</label>
+          <input
+            type="text"
+            name="image_tag"
+            value={image_tag}
+            onChange={handleImageChange}
+            required
+          />
+        </div>
       {/*
         <div className="form-group">
           <label>Size:</label>
@@ -244,6 +313,13 @@ const CreateKBCluster = () => {
           />
         </div> */}
         <button type="submit" className="submit-btn">Create</button>
+        {awsInit?
+        <div>
+        <p>Cluster Creation Initialized...</p>
+        <button className="submit-btn">Apply Patch</button>
+        <button className="submit-btn">Apply Flags</button>
+        </div>
+        :<p></p>}
       </form>
     </div>
     <div className="form-container">
@@ -267,6 +343,16 @@ const CreateKBCluster = () => {
             name="owner_email"
             value={gcpdata.owner_email}
             onChange={handleGCPchange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Image TAG:</label>
+          <input
+            type="text"
+            name="image_tag"
+            value={image_tag}
+            onChange={handleImageChange}
             required
           />
         </div>

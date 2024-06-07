@@ -1,0 +1,1 @@
+Namespace(scenario_type=3, cluster_name='test-tse1', owner_email='piyush.tayal@thoughtspot.com', image_tag='10.1.0.cl-58', feature='hello', team='ts-everywhere', token=None)

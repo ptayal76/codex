@@ -11,8 +11,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use(express.json());
-// const pythonExecutable = '/usr/local/bin/python3'; // Replace with your actual path
-const pythonExecutable = '/opt/homebrew/bin/python3.11'; // Replace with your actual path
+const pythonExecutable = '/usr/local/bin/python3'; // Replace with your actual path
+// const pythonExecutable = '/opt/homebrew/bin/python3.11'; // Replace with your actual path
 //const pythonExecutable = '/usr/bin/python3'; // Replace with your actual path
 
 app.post('/trigger-kibana',(req, res) => {
@@ -110,16 +110,26 @@ app.post('/run-AWS-cluster', (req,res) => {
   const {
     cluster_name,
     owner_email,
+    image_tag
   } = req.body;
-  console.log(req.body);
   const scriptPath = path.join(__dirname, 'cluster_scripts', 'codex_metrics.py');
   console.log(scriptPath);
-  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--owner_email', owner_email, '--scenario_type', 3]);
-  pythonProcess.stdout.on('data', () => {
-      return res.status(200).json({status: "Successfull"});
+  // const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--owner_email', owner_email, '--scenario_type', 3, '--image_tag', image_tag]);
+  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', 'test-tse2', '--owner_email', 'sandeep.yadav@thoughtspot.com', '--scenario_type', 3, '--image_tag', '10.1.0.cl-58']);
+  pythonProcess.stdout.on('data', (data) => {
+      console.log(data)
   });
   pythonProcess.stderr.on('data', (data) => {
       console.error(`Python script stderr: ${data}`);
+  });
+  pythonProcess.on('close', (code) => {
+    console.log(`Python script exited with code ${code}`);
+    if (code === 0) {
+      console.log("Script run successfully");
+      res.status(200).json({ status: "Successful" });
+    } else {
+      res.status(500).json({ status: "Error", error: `Python script exited with code ${code}` });
+    }
   });
 })
 
@@ -127,11 +137,12 @@ app.post('/run-GCP-cluster', (req,res) => {
   const {
     cluster_name,
     owner_email,
+    image_tag
   } = req.body;
   console.log(req.body);
   const scriptPath = path.join(__dirname, 'cluster_scripts', 'codex_metrics.py');
   console.log(scriptPath);
-  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--owner_email', owner_email, '--scenario_type', 2]);
+  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--owner_email', owner_email, '--scenario_type', 2, '--image_tag', image_tag]);
   pythonProcess.stdout.on('data', () => {
       return res.status(200).json({status: "Successfull"});
   });

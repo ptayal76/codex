@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ClusterDetails.css';
-import { CNAME, generateRandomString } from './constants';
+import { useGlobalState } from './GlobalState.jsx';
 
 const ClusterDetails = () => {
   const [jsonData, setJsonData] = useState(null);
@@ -13,13 +13,16 @@ const ClusterDetails = () => {
   const [flagsSearchTerm, setFlagsSearchTerm] = useState('');
   const [appliedPatchesSearchTerm, setAppliedPatchesSearchTerm] = useState('');
   const [versionInfo, setVersionInfo] = useState('');
-  const [isloading, setIsloading] = useState(false);
+  const [isloading, setIsloading] = useState(true);
+  const [scruptRunning, setScriptRunning] = useState(false);
   const flagsRef = useRef(null);
+  const { cname, setCname } = useGlobalState();
+
   const clusterdata = {
-    cluster_name: CNAME
+    cluster_name: cname
   };
 
-  useEffect(() => {
+  const renderData =() => {
     fetch('./cluster_scripts/clusterDetails.txt')
       .then(response => response.text())
       .then(text => {
@@ -75,7 +78,7 @@ const ClusterDetails = () => {
           console.error('Error parsing JSON:', error);
         }
       });
-  }, []);
+  };
 
   const renderJson = (data, searchTerm = '') => {
     const filterData = (data) => {
@@ -172,6 +175,7 @@ const ClusterDetails = () => {
   const getClusterInfo = async (e) => {
     e.preventDefault();
     setIsloading(true);
+    setScriptRunning(true);
     const response = await fetch('http://localhost:4000/run-check-cluster-script', {
       method: 'POST',
       headers: {
@@ -195,7 +199,7 @@ const ClusterDetails = () => {
       <div className="scroll-button-container">
         <button onClick={getClusterInfo} className="scroll-button">Get Cluster Information</button>
       </div>
-      {isloading ? <p>Loading...</p> :
+      {isloading ? scruptRunning? <p>Loading...</p>:<p>Press the Get info Button</p> :
         <div>
           <div className="info-container">
             <div className="cluster-version">
@@ -251,7 +255,7 @@ const ClusterDetails = () => {
             </div>
             <div className="tables-container right">
               <div className="commands-table">
-                <h1>Commands</h1>
+                <h1>Applied Commands</h1>
                 <input
                   type="text"
                   placeholder="Search Commands..."

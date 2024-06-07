@@ -6,6 +6,7 @@ import subprocess
 import requests
 from requests.auth import HTTPBasicAuth
 import json
+import os
 
 hostname = "https://life-cycle-manager.internal.thoughtspotstaging.cloud"
 username = "admin"
@@ -53,13 +54,15 @@ def parse_cmd(argv):
         "--feature",
         required=False,
         type=str,
-        help="Feature"
+        help="Feature",
+        default="hello"
     )
     parser.add_argument(
         "--team",
         required=False,
         type=str,
-        help="Team"
+        help="Team",
+        default="ts-everywhere"
     )
     parser.add_argument(
         "--token",
@@ -265,6 +268,13 @@ def getflagDetails(clusterName):
     return flagDetails
 
 def createAWSSaasCluster(clusterName, ownerEmail, imageTag, feature, team):
+    debug = os.path.dirname(os.path.realpath(__file__))+'/../sandbox/cluster_scripts/xx3.txt'
+    with open(debug, 'w', encoding='utf-8') as f:
+        f.write(clusterName)
+        f.write(ownerEmail)
+        f.write(imageTag)
+        f.write(feature)
+        f.write(team)
     url = "https://life-cycle-manager.internal.thoughtspotdev.cloud"
     common_tags = {
         "Owner" : ownerEmail,
@@ -301,7 +311,8 @@ def createAWSSaasCluster(clusterName, ownerEmail, imageTag, feature, team):
     request_body_json = json.dumps(request_body)
     url = f"{url}/api/v2/clusters"
     response = requests.post(url, auth=(username, password), headers=headers, data=request_body_json)
-    return response
+    # print(str(response))
+    return response.status_code
 
 def createGCPSaasCluster(clusterName, ownerEmail, imageTag):
 
@@ -359,7 +370,7 @@ def createGCPSaasCluster(clusterName, ownerEmail, imageTag):
 
     request_body_json = json.dumps(request_body)
     response = requests.post(url, headers=headers, data=request_body_json)
-    return response
+    return response.status_code
 
 def enableLogCollection(clusterName, userEmail):
     clusterId = getClusterVersion(clusterName)
@@ -428,52 +439,55 @@ def main(argv):
     team = args.team
     token=args.token
     scenario = args.scenario_type
+    debug = os.path.dirname(os.path.realpath(__file__))+'/../sandbox/cluster_scripts/xxx.txt'
+    with open(debug, 'w', encoding='utf-8') as f:
+        f.write(str(args))
     # response = createGCPSaasCluster(clusterName, ownerEmail, imageTag, feature, team)
     # print(response.json())
     # gitSha = getSha(imageTag, token)
     # print(f"Git SHA for tag {imageTag}: {gitSha}")
     if scenario == 1:
         clusterDetails = getClusterInformation(clusterName)
-        clusterDetails_file_path = 'clusterDetails.txt'
+        clusterDetails_file_path = os.path.dirname(os.path.realpath(__file__))+'/../sandbox/cluster_scripts/clusterDetails.txt'
         # clusterDetails_file_path = '/Users/piyush.tayal/Downloads/clusterDetails99.txt'
         with open(clusterDetails_file_path, 'w', encoding='utf-8') as f:
             json.dump(clusterDetails,f, ensure_ascii=False, indent=4)
         # print(f"Cluster details for {clusterName}: {clusterDetails}")
         clusterVersion = getClusterVersion(clusterName)
-        clusterVersion_file_path = 'clusterVersion.txt'
+        clusterVersion_file_path = os.path.dirname(os.path.realpath(__file__))+'/../sandbox/cluster_scripts/clusterVersion.txt'
         with open(clusterVersion_file_path, 'w', encoding='utf-8') as f:
             f.write(str(clusterVersion))
         # print(f"Cluster version for {clusterName}: {clusterVersion}")
         commands = getCommands(clusterName)
-        commands_file_path = 'commands.txt'
+        commands_file_path = os.path.dirname(os.path.realpath(__file__))+'/../sandbox/cluster_scripts/commands.txt'
         with open(commands_file_path, 'w', encoding='utf-8') as f:
             f.write(str(commands))
         # print(f"Commands for {clusterName}: {commands}")
         currentVersion, upgradeVersion = getClusterCurrentAndUpgradeVersion(clusterName)
         imageTag=currentVersion
-        version_file_path = 'version.txt'
+        version_file_path = os.path.dirname(os.path.realpath(__file__))+'/../sandbox/cluster_scripts/version.txt'
         with open(version_file_path, 'w', encoding='utf-8') as f:
             f.write(f'Current version {currentVersion}\nUpgrade version {upgradeVersion}')
         appliedPatches = getAppliedPatches(clusterName)
-        appliedPatches_file_path = 'appliedPatches.txt'
+        appliedPatches_file_path = os.path.dirname(os.path.realpath(__file__))+'/../sandbox/cluster_scripts/appliedPatches.txt'
         with open(appliedPatches_file_path, 'w', encoding='utf-8') as f:
             f.write(str(appliedPatches))
         flagDetails = getflagDetails(clusterName)
-        flagDetails_file_path = 'flagDetails.txt'
+        flagDetails_file_path = os.path.dirname(os.path.realpath(__file__))+'/../sandbox/cluster_scripts/flagDetails.txt'
         with open(flagDetails_file_path, 'w', encoding='utf-8') as f:
             json.dump(flagDetails,f, ensure_ascii=False, indent=4)
         sha = getSha(imageTag,token)
-        sha_file_path = 'sha.txt'
+        sha_file_path = os.path.dirname(os.path.realpath(__file__))+'/../sandbox/cluster_scripts/sha.txt'
         with open(sha_file_path, 'w', encoding='utf-8') as f:
             f.write(f'{sha}')
     elif scenario == 2:
         gcp = createGCPSaasCluster(clusterName, ownerEmail, imageTag)
-        gcp_file_path = 'gcp.txt'
+        gcp_file_path = os.path.dirname(os.path.realpath(__file__))+'/../sandbox/cluster_scripts/gcp.txt'
         with open(gcp_file_path, 'w', encoding='utf-8') as f:
             f.write(str(gcp))
     elif scenario == 3:
         aws = createAWSSaasCluster(clusterName,ownerEmail,imageTag,feature,team)
-        aws_file_path = 'aws.txt'
+        aws_file_path = os.path.dirname(os.path.realpath(__file__))+'/../sandbox/cluster_scripts/aws.txt'
         with open(aws_file_path, 'w', encoding='utf-8') as f:
             f.write(str(aws))
 
