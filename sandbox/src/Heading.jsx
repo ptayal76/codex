@@ -4,7 +4,7 @@ import './Heading.css'; // Import the CSS file for styling
 const Heading = () => {
     return (
         <div className="heading">
-            <h1>ThoughtSpot Unified Debug Portal</h1>
+            <h1>ThoughtSpot Diagnostic Portal</h1>
         </div>
     );
 };
