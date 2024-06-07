@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import CSVDataTable from "./CSVDataTable";
 import './GrafanaLogs.css';
 import { useGlobalState } from './GlobalState.jsx';
-
+import { Spin } from "antd";
 
 const GrafanaLogs = ({ subTab }) => {
   const [csvData, setCsvData] = useState([]);
   const { cname, setCname } = useGlobalState();
   const [formInputs, setFormInputs] = useState({
-    input_start_date: '2024-06-06T08:00:00',
+    input_start_date: '2023-06-06T08:00:00',
     input_end_date: '2024-06-07T09:00:00',
   });
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,26 +19,36 @@ const GrafanaLogs = ({ subTab }) => {
     setFormInputs(prevState => ({ ...prevState, [name]: value }));
   };
 
+  const [loading, setLoading] = useState(false);
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const payload = {
-      ...formInputs,
-      'tenantName': cname
+    setLoading(true);
+    try{
+      const payload = {
+        ...formInputs,
+        'tenantName': cname
+      }
+      const response = await fetch('http://localhost:4000/run-grafana-script', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        parseCSV(data.csvContent);
+      } else {
+        console.log(response)
+        console.error('Error running the script');
+      }
     }
-    const response = await fetch('http://localhost:4000/run-grafana-script', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      parseCSV(data.csvContent);
-    } else {
-      console.log(response)
-      console.error('Error running the script');
+    catch (error) {
+      console.error('Error:', error);
+      // Handle errors
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -113,7 +123,14 @@ const GrafanaLogs = ({ subTab }) => {
           <option value="failure">Failure</option>
         </select> */}
       </div>
-      <CSVDataTable data={filteredData} />
+      {loading ? (
+          <div className="loading-container flex allign-center justify-center">
+            <Spin size="large" />
+          </div>
+      ) : (
+          <CSVDataTable data={filteredData} />
+      )
+      }
     </div>
   );
 };

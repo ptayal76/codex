@@ -2,7 +2,7 @@ import { useState } from "react";
 import MyTable from './Table/table.jsx';
 import './kibanaLogsContainer.css';
 import '../GrafanaLogs.css';
-import { message } from "antd";
+import { Spin } from "antd";
 
 function KibanaLogsContainer() {
     const [tableData, setTableData] = useState([]);
@@ -15,8 +15,10 @@ function KibanaLogsContainer() {
         //RefreshToken: 'refreshToken',
     });
 
+    const [loading, setLoading] = useState(false);
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         console.log("Form submitted!");
         try {
             const response = await fetch('http://localhost:4000/trigger-kibana', {
@@ -41,6 +43,9 @@ function KibanaLogsContainer() {
         } catch (error) {
             console.error('Error:', error);
             // Handle errors
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -92,7 +97,13 @@ function KibanaLogsContainer() {
                 ))}
                 <button type="submit" className="submit-button">Fetch Logs</button>
             </form>
-            {tableData.length ? <MyTable tableRowData={tableRowData} innerJSON={tableData} /> : ""}
+            {loading ? (
+                <div className="loading-container flex allign-center justify-center">
+                    <Spin size="large" />
+                </div>
+            ) : (
+                tableData.length ? <MyTable tableRowData={tableRowData} innerJSON={tableData} />: null
+            )}
         </div>
     );
 }
