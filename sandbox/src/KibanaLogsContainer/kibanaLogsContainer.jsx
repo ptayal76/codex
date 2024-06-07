@@ -91,9 +91,9 @@ function KibanaLogsContainer() {
                         </label>
                     </div>
                 ))}
-                <button type="submit" className="submit-button">Run Script</button>
+                <button type="submit" className="submit-button">Fetch Logs</button>
             </form>
-            {tableData.length ? <MyTable tableRowData={tableRowData} innerJSON={tableData} /> : <p>hit submit to see Logs</p>}
+            {tableData.length ? <MyTable tableRowData={tableRowData} innerJSON={tableData} /> : ""}
         </div>
     );
 }

@@ -23,11 +23,13 @@ const SubmitButton = ({ form, children, type }) => {
   );
 };
 const CheckConfigurations = () => {
-  const [form] = Form.useForm();
-  const [jsonFile, setJsonFile]= useState(null);
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const formData = form.getFieldsValue(['cluster_url', 'domain']);
+const [form] = Form.useForm();
+const [jsonFile, setJsonFile]= useState(null);
+const handleSubmit = async (values) => {
+    const formData = {
+        cluster_url: values.cluster_url,
+        domain: values.domain,
+    };
     try {
         const response = await fetch('http://localhost:4000/check-csp-cors-validation', {
             method: 'POST',
@@ -55,38 +57,48 @@ const CheckConfigurations = () => {
 
   return (
   <div className='flex flex-col'>
-    <Form form={form} name="validateOnly" layout="vertical" autoComplete="off" onSubmitCapture={handleSubmit}>
-      <Form.Item
-        name="cluster_url"
-        label="Cluster Host URL"
-        rules={[
-          {
-            required: true,
-          },
-        ]}
+      <Form
+          form={form}
+          name="validateOnly"
+          layout="vertical"
+          autoComplete="off"
+          onFinish={handleSubmit}
+          initialValues={{
+              cluster_url: "https://172.32.46.211:8443",
+              domain: "https://asda.csb.app",
+          }}
       >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        name="domain"
-        label="Embed Enviroment Domain"
-        rules={[
-          {
-            required: true,
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item>
-        <Space>
-          <SubmitButton form={form} type={"csp"}>Validate CSP & CORS</SubmitButton>
-          <Button htmlType="reset">Reset</Button>
-        </Space>
-      </Form.Item>
-    </Form>
-    {console.log("showJson",jsonFile)}
-    {jsonFile!==null?<NewTable myobject={jsonFile}/>:"search to load data"}
+          <Form.Item
+              name="cluster_url"
+              label="Cluster Host URL"
+              rules={[
+                  {
+                      required: true,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item
+              name="domain"
+              label="Embed Enviroment Domain"
+              rules={[
+                  {
+                      required: true,
+                  },
+              ]}
+          >
+              <Input />
+          </Form.Item>
+          <Form.Item>
+              <Space>
+                  <SubmitButton form={form} type={"csp"}>Validate CSP & CORS</SubmitButton>
+                  <Button htmlType="reset">Reset</Button>
+              </Space>
+          </Form.Item>
+      </Form>
+      {console.log("showJson",jsonFile)}
+    {jsonFile!==null?<NewTable myobject={jsonFile}/>:""}
   </div>
     
   );
