@@ -8,8 +8,8 @@ const GrafanaLogs = ({ subTab }) => {
   const [csvData, setCsvData] = useState([]);
   const { cname, setCname } = useGlobalState();
   const [formInputs, setFormInputs] = useState({
-    input_start_date: '2024-03-01T00:00:00',
-    input_end_date: '2024-06-01T00:00:00',
+    input_start_date: '2024-06-06T08:00:00',
+    input_end_date: '2024-06-07T09:00:00',
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");

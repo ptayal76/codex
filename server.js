@@ -58,7 +58,7 @@ app.post('/run-grafana-script', (req, res) => {
   console.log(req.body);
   const scriptPath = path.join(__dirname, 'grafana_logs', 'grafana_script.py');
   console.log(scriptPath);
-  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--input_start_date', input_start_date, '--input_end_date', input_end_date, '--metricName', 'request_duration_seconds', '--saasEnv', 'staging|prod', '--apiRegex', '.*', '--tenantName', tenantName, '--statusCodeRegex', '4.*|5.*', '--grafana_session', `grafana_session=394f57efee55330070b5b4643875329e`]);
+  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--input_start_date', input_start_date, '--input_end_date', input_end_date, '--metricName', 'request_duration_seconds', '--saasEnv', 'staging|prod', '--apiRegex', '.*', '--tenantName', tenantName, '--statusCodeRegex', '4.*|5.*', '--grafana_session', `grafana_session=cb34ab726fe81f25e4a86731fe323c49`]);
   pythonProcess.stdout.on('data', (data) => {
       console.log(`Python script stdout: ${data}`);
       var string = data + '';

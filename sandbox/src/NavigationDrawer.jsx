@@ -34,7 +34,7 @@ const NavigationDrawer = ({ onTabChange }) => {
               className={`tab ${activeTab === 'checkCluster' && 'active'}`}
               onClick={() => handleTabClick('checkCluster')}
           >
-            <img src="/static/icons/settings-svgrepo-com.svg" alt="Cluster Info" className="tab-icon"/>
+            <img src="/static/icons/Infobox_info_icon.svg" alt="Cluster Info" className="tab-icon"/>
             Cluster Info
           </div>
           <div
@@ -62,6 +62,7 @@ const NavigationDrawer = ({ onTabChange }) => {
               className={`tab ${activeTab === 'checkConfig' && 'active'}`}
               onClick={() => handleTabClick('checkConfig')}
           >
+            <img src="/static/icons/settings-svgrepo-com.svg" alt="Cluster Info" className="tab-icon"/>
             Check Configuration
           </div>
           <div
