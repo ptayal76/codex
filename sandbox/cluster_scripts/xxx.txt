@@ -1,1 +1,1 @@
-Namespace(scenario_type=1, cluster_name='', owner_email=None, image_tag=None, feature='hello', team='ts-everywhere', token=None)
+lol-ktDVopiyush.tayal@thoughtspot.com9.12.5.cl-220
