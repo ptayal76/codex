@@ -64,7 +64,7 @@ const CreateKBCluster = () => {
   })
   useEffect(() => {
     // const newClusterName = `${cname}-${randomString}`;
-    const newClusterName = `test-tse2`;
+    const newClusterName = `champagne-master-aws-clone`;
     setAwsData(prevData => ({ ...prevData, cluster_name: newClusterName }));
     setGcpData(prevData => ({ ...prevData, cluster_name: newClusterName }));
   }, [cname]);
