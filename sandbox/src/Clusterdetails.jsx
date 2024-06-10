@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ClusterDetails.css';
 import { useGlobalState } from './GlobalState.jsx';
+import {Spin} from "antd";
 
 const ClusterDetails = () => {
   const [jsonData, setJsonData] = useState(null);
@@ -199,7 +200,9 @@ const ClusterDetails = () => {
       <div className="scroll-button-container">
         <button onClick={getClusterInfo} className="scroll-button">Get Cluster Information</button>
       </div>
-      {isloading ? scruptRunning? <p>Loading...</p>:<p>Press the Get info Button</p> :
+      {isloading ? scruptRunning? <div className="loading-container flex allign-center justify-center">
+            <Spin size="large" />
+          </div>:"" :
         <div>
           <div className="info-container">
             <div className="cluster-version">

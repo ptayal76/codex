@@ -11,8 +11,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use(express.json());
-const pythonExecutable = '/usr/local/bin/python3'; // Replace with your actual path
-// const pythonExecutable = '/opt/homebrew/bin/python3.11'; // Replace with your actual path
+//const pythonExecutable = '/usr/local/bin/python3'; // Replace with your actual path
+const pythonExecutable = '/opt/homebrew/bin/python3.11'; // Replace with your actual path
 //const pythonExecutable = '/usr/bin/python3'; // Replace with your actual path
 
 app.post('/trigger-kibana',(req, res) => {
@@ -58,7 +58,7 @@ app.post('/run-grafana-script', (req, res) => {
   console.log(req.body);
   const scriptPath = path.join(__dirname, 'grafana_logs', 'grafana_script.py');
   console.log(scriptPath);
-  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--input_start_date', input_start_date, '--input_end_date', input_end_date, '--metricName', 'request_duration_seconds', '--saasEnv', 'staging|prod', '--apiRegex', '.*', '--tenantName', tenantName, '--statusCodeRegex', '2.*|4.*|5.*', '--grafana_session', `grafana_session=194dcdddf42b0660abc1c7858c5910b3`]);
+  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--input_start_date', input_start_date, '--input_end_date', input_end_date, '--metricName', 'request_duration_seconds', '--saasEnv', 'staging|prod', '--apiRegex', '.*', '--tenantName', tenantName, '--statusCodeRegex', '2.*|4.*|5.*', '--grafana_session', `grafana_session=b53bd67c3622ba88c376bf9bbd1f1d84`]);
   pythonProcess.stdout.on('data', (data) => {
       console.log(`Python script stdout: ${data}`);
       var string = data + '';
@@ -115,7 +115,7 @@ app.post('/run-AWS-cluster', (req,res) => {
   const scriptPath = path.join(__dirname, 'cluster_scripts', 'codex_metrics.py');
   console.log(scriptPath);
   // const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--owner_email', owner_email, '--scenario_type', 3, '--image_tag', image_tag]);
-  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', 'test-tse2', '--owner_email', 'sandeep.yadav@thoughtspot.com', '--scenario_type', 3, '--image_tag', '10.1.0.cl-58']);
+  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', 'champagne-master-aws-clone', '--owner_email', 'sandeep.yadav@thoughtspot.com', '--scenario_type', 3, '--image_tag', '10.1.0.cl-58']);
   pythonProcess.stdout.on('data', (data) => {
       console.log(data)
   });
