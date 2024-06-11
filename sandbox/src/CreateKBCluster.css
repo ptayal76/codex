@@ -48,4 +48,37 @@
   .submit-btn:hover {
     background-color: #0056b3;
   }
+  .commands-table-container {
+    margin-top: 20px;
+  }
+  
+  .commands-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .commands-table th,
+  .commands-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .commands-table th {
+    background-color: #f2f2f2;
+    color: #333;
+  }
+  
+  .commands-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .commands-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .commands-table input[type="checkbox"] {
+    transform: scale(1.2);
+  }
   

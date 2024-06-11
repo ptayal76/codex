@@ -4,7 +4,6 @@ import ScrollableComponent from "./ScrollableComponent.jsx";
 import StyledComponent from "./StyledComponent.jsx";
 import ResponsiveComponent from "./ResponsiveComponent.jsx";
 import SearchBar from "./SearchBar.jsx";
-import SearchResults from "./SearchResults.jsx";
 import FormComponent from './CreateKBCluster.jsx';
 import NavigationDrawer from './NavigationDrawer.jsx';
 import GrafanaLogs from './GrafanaLogs.jsx';

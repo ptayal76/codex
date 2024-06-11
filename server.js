@@ -11,8 +11,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use(express.json());
-//const pythonExecutable = '/usr/local/bin/python3'; // Replace with your actual path
-const pythonExecutable = '/opt/homebrew/bin/python3.11'; // Replace with your actual path
+const pythonExecutable = '/usr/local/bin/python3'; // Replace with your actual path
+// const pythonExecutable = '/opt/homebrew/bin/python3.11'; // Replace with your actual path
 //const pythonExecutable = '/usr/bin/python3'; // Replace with your actual path
 
 app.post('/trigger-kibana',(req, res) => {
@@ -112,10 +112,13 @@ app.post('/run-AWS-cluster', (req,res) => {
     owner_email,
     image_tag
   } = req.body;
-  const scriptPath = path.join(__dirname, 'cluster_scripts', 'codex_metrics.py');
-  console.log(scriptPath);
-  // const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--owner_email', owner_email, '--scenario_type', 3, '--image_tag', image_tag]);
-  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', 'champagne-master-aws-clone', '--owner_email', 'sandeep.yadav@thoughtspot.com', '--scenario_type', 3, '--image_tag', '10.1.0.cl-58']);
+  const scriptPath = path.join(__dirname, 'cluster_scripts', 'codex-metrics-final.py');
+  // console.log(scriptPath);
+  console.log(cluster_name)
+  console.log(owner_email)
+  console.log(image_tag)
+  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--owner_email', owner_email, '--scenario_type', 3, '--image_tag', image_tag]);
+  // const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', 'champagne-master-aws-clone2', '--owner_email', 'piyush.tayal@thoughtspot.com', '--scenario_type', 3, '--image_tag', '9.12.5.cl-220']);
   pythonProcess.stdout.on('data', (data) => {
       console.log(data)
   });
@@ -126,7 +129,19 @@ app.post('/run-AWS-cluster', (req,res) => {
     console.log(`Python script exited with code ${code}`);
     if (code === 0) {
       console.log("Script run successfully");
-      res.status(200).json({ status: "Successful" });
+      fs.readFile('./sandbox/cluster_scripts/aws.txt', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Error reading file');
+        } else {
+            // Remove leading and trailing brackets and quotes
+            if(data=='201'){
+              res.status(200).json({ status: "Successful" });
+            }else{
+              res.status(500).json({ status: "Error", error: `Cluster not created` });
+            }
+        }
+    });
     } else {
       res.status(500).json({ status: "Error", error: `Python script exited with code ${code}` });
     }
@@ -140,7 +155,7 @@ app.post('/run-GCP-cluster', (req,res) => {
     image_tag
   } = req.body;
   console.log(req.body);
-  const scriptPath = path.join(__dirname, 'cluster_scripts', 'codex_metrics.py');
+  const scriptPath = path.join(__dirname, 'cluster_scripts', 'codex-metrics-final.py');
   console.log(scriptPath);
   const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--owner_email', owner_email, '--scenario_type', 2, '--image_tag', image_tag]);
   pythonProcess.stdout.on('data', () => {
@@ -149,16 +164,39 @@ app.post('/run-GCP-cluster', (req,res) => {
   pythonProcess.stderr.on('data', (data) => {
       console.error(`Python script stderr: ${data}`);
   });
+  pythonProcess.on('close', (code) => {
+    console.log(`Python script exited with code ${code}`);
+    if (code === 0) {
+      console.log("Script run successfully");
+      fs.readFile('./sandbox/cluster_scripts/gcp.txt', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Error reading file');
+        } else {
+            // Remove leading and trailing brackets and quotes
+            if(data=='201'){
+              res.status(200).json({ status: "Successful" });
+            }else{
+              res.status(500).json({ status: "Error", error: `Cluster not created` });
+            }
+        }
+    });
+    } else {
+      res.status(500).json({ status: "Error", error: `Python script exited with code ${code}` });
+    }
+  });
 })
 
 app.post('/run-check-cluster-script', (req, res) => {
   const {
-    cluster_name
+    cluster_name,
+    env
   } = req.body;
   console.log(cluster_name);
-  const scriptPath = path.join(__dirname, 'cluster_scripts', 'codex_metrics.py');
+  console.log(env);
+  const scriptPath = path.join(__dirname, 'cluster_scripts', 'codex-metrics-final.py');
   console.log(scriptPath);
-  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--scenario_type', 1]);
+  const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--scenario_type', 1,'--env',env]);
   console.log("Starting Python script...");
 
   let scriptOutput = '';

@@ -1,0 +1,43 @@
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adjust the gap between input and dropdown as needed */
+    margin-bottom: 20px; /* Add some space below the search bar */
+  }
+  
+  .label {
+    margin-right: 10px; /* Space between label and input */
+    font-weight: bold; /* Make the label bold */
+  }
+  
+  .search-input {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    flex-grow: 1; /* Allow the input to take available space */
+  }
+  
+  .env-dropdown {
+    padding: 8px;
+    font-size: 14px;
+    width: 100px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff; /* White background */
+    color: #333; /* Dark text color */
+    cursor: pointer; /* Pointer cursor on hover */
+    -webkit-appearance: none; /* Remove default arrow in WebKit browsers */
+    -moz-appearance: none; /* Remove default arrow in Mozilla browsers */
+    appearance: none; /* Remove default arrow */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23333" d="M2 0L0 2h4zM2 5L0 3h4z"/></svg>'); /* Custom arrow */
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px;
+  }
+  
+  .env-dropdown:focus {
+    border-color: #007bff; /* Blue border on focus */
+    outline: none; /* Remove default outline */
+  }
+  

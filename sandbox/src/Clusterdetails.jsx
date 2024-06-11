@@ -18,9 +18,11 @@ const ClusterDetails = () => {
   const [scruptRunning, setScriptRunning] = useState(false);
   const flagsRef = useRef(null);
   const { cname, setCname } = useGlobalState();
+  const { cenv, setCenv } = useGlobalState();
 
   const clusterdata = {
-    cluster_name: cname
+    cluster_name: cname,
+    env: cenv
   };
 
   const renderData =() => {
