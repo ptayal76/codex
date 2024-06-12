@@ -13,6 +13,7 @@ import Sandbox from "./Sanbox.jsx";
 import KibanaLogsContainer from './KibanaLogsContainer/kibanaLogsContainer.jsx';
 import CheckConfigurations from "./checkConfigurations.jsx";
 import Heading from './Heading';
+import { ClusterProvider } from './ClusterContext';
 
 export default function App() {
   const [results, setResults] = useState([]);
@@ -91,6 +92,7 @@ export default function App() {
   };
 
   return (
+    <ClusterProvider>
     <div className="app-container">
       <Heading />
       <NavigationDrawer onTabChange={handleTabChange} />
@@ -102,5 +104,6 @@ export default function App() {
         </div>
       </div>
     </div>
+    </ClusterProvider>
   );
 }

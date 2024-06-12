@@ -7,14 +7,21 @@ import requests
 from requests.auth import HTTPBasicAuth
 import json
 import os
+from dotenv import load_dotenv
+from pathlib import Path
 
+env_path = Path('.') / '.env'
+
+# Load the .env file
+load_dotenv(dotenv_path=env_path)
 hostnameProd = "https://life-cycle-manager.internal.thoughtspot.cloud"
 hostnameDev = "https://life-cycle-manager.internal.thoughtspotdev.cloud"
 hostnameStaging = "https://life-cycle-manager.internal.thoughtspotstaging.cloud"
 username = "admin"
 password = "th0ughtSp0t"
-prodToken = "aW50ZXJuYWxwcm9kOlBydGgwdWdodFNwMHQ2NQ=="
+prodToken = os.getenv('PROD_TOKEN')
 repoUrl = "https://galaxy.corp.thoughtspot.com/dev/scaligent.git"
+gcpAuth = os.getenv('GCP_TOKEN')
 
 headers = {
     "Content-Type": "application/json",
@@ -468,7 +475,7 @@ def createGCPSaasCluster(clusterName, ownerEmail, imageTag):
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
-        "Authorization": "SSWS 00z-s-tSMbobJ7B1mVnRJ7fFlugRhJyzHGiTfsiQOw"
+        "Authorization": gcpAuth
     }
 
     request_body = {

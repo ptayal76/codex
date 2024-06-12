@@ -14,9 +14,15 @@ import argparse
 import requests
 from calendar import monthrange
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+from pathlib import Path
 
-# Customise these values for automation. These can be taken as input args.
+env_path = Path('.') / '.env'
 
+# Load the .env file
+load_dotenv(dotenv_path=env_path)
+
+grafana_token = os.getenv('GRAFANA_TOKEN')
 # start month to capture the metric. Inclusive. Format: '2020-01-01T00:00:00'
 input_start_date = '2024-06-05T19:04:00'
 
@@ -29,9 +35,7 @@ saasEnv = "staging"
 apiRegex = ".*"
 tenantName = "champagne-master-aws"
 statusCodeRegex = "4.*|5.*"
-
 # grafana login session cookie. Obtained from browser logged-in session to 'https://thoughtspot.grafana.net/'
-grafana_session = 'grafana_session=221b7c9fb212bd04df734300527a57e4	'
 
 # output directory where collected metric file per year will be saved.
 output_dir = os.path.join(os.getcwd(), "data")
@@ -60,8 +64,8 @@ def parse_args():
                         help='tenant name')
     parser.add_argument('--statusCodeRegex', type=str, default='4.*|5.*',
                         help='api response status code regex to filter for: 2.*|4.*|5.*')
-    parser.add_argument('--grafana_session', type=str, default='grafana_session_id',
-                        help='cookie grafana_session=sessionId')
+    # parser.add_argument('--grafana_session', type=str, default='grafana_session_id',
+    #                     help='cookie grafana_session=sessionId')
     return parser.parse_args()
 
 def set_vars(args):
@@ -73,7 +77,7 @@ def set_vars(args):
     apiRegex = args.apiRegex
     tenantName = args.tenantName
     statusCodeRegex = args.statusCodeRegex
-    grafana_session = args.grafana_session
+    # grafana_session = args.grafana_session
 
 def makeQueryDict(queryRefId, queryExpr):
     query = {
@@ -147,7 +151,6 @@ def process_api_metric_frames(api_metric_frames_list, csv_writer):
 # This method collect the api metric usage data from start_time to end_time
 def collect_api_metric_usage(csv_writer, start_time, end_time, queryList):
     print(f'Collecting API metric data FROM "{start_time}" TO "{end_time}"')
-
     payload = json.dumps({
         "queries": queryList,
         "from": start_time,
@@ -156,7 +159,7 @@ def collect_api_metric_usage(csv_writer, start_time, end_time, queryList):
     headers = {
         'accept': 'application/json, text/plain, */*',
         'content-type': 'application/json',
-        'Cookie': grafana_session
+        'Authorization': 'Bearer '+ grafana_token
     }
     response = requests.request("POST", url, headers=headers, data=payload, allow_redirects=False)
     result = json.loads(response.text)

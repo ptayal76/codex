@@ -1,15 +1,15 @@
 {
     "rawResponse": {
-        "took": 1555,
+        "took": 1258,
         "timed_out": false,
         "_shards": {
-            "total": 130,
-            "successful": 130,
-            "skipped": 86,
+            "total": 120,
+            "successful": 120,
+            "skipped": 69,
             "failed": 0
         },
         "hits": {
-            "total": 32429641,
+            "total": 32457628,
             "max_score": null,
             "hits": [
                 {
@@ -43163,6 +43163,46 @@
                 {
                     "_index": "tenant-2024.06.07",
                     "_type": "_doc",
+                    "_id": "43a3a69f-abe1-becd-5e93-1abd94c5b7c0",
+                    "_version": 1,
+                    "_score": null,
+                    "_source": {
+                        "task_name": "spotiq",
+                        "agent": "fluentbit",
+                        "offset": 108000,
+                        "service_name": "spotiq",
+                        "log_level": "error",
+                        "message": "Munshi Thrift RPC call returned status error code = UNKNOWN, message = connect() failed: Connection refused",
+                        "private_ip": "10.254.3.12",
+                        "source_file": "munshi_client.cpp",
+                        "cluster_id": "672764c0-dc60-11ee-a6bf-13c83",
+                        "hostname": "ip-10-254-3-12.us-west-2.compute.internal",
+                        "thread_id": "231028",
+                        "@timestamp": "2024-06-07T04:43:27.826Z",
+                        "account_id": "575580285474",
+                        "filename": "/export/logs/orion/spotiq/spotiq/latest/spotiq_main.ERROR",
+                        "ec2_instance_id": "i-064b0f59c838f20b6",
+                        "source_linenum": "37",
+                        "az": "us-west-2a",
+                        "job": "champagne-master-aws"
+                    },
+                    "fields": {
+                        "@timestamp": [
+                            "2024-06-07T04:43:27.826Z"
+                        ]
+                    },
+                    "highlight": {
+                        "cluster_id": [
+                            "@kibana-highlighted-field@672764c0@/kibana-highlighted-field@-@kibana-highlighted-field@dc60@/kibana-highlighted-field@-@kibana-highlighted-field@11ee@/kibana-highlighted-field@-@kibana-highlighted-field@a6bf@/kibana-highlighted-field@-@kibana-highlighted-field@13c83@/kibana-highlighted-field@"
+                        ]
+                    },
+                    "sort": [
+                        1717735407826
+                    ]
+                },
+                {
+                    "_index": "tenant-2024.06.07",
+                    "_type": "_doc",
                     "_id": "096f4fd5-c784-484a-2288-15145d33ac9d",
                     "_version": 1,
                     "_score": null,
@@ -43339,6 +43379,46 @@
                         "filename": "/export/logs/orion/spotiq/spotiq/latest/spotiq_main.INFO",
                         "ec2_instance_id": "i-064b0f59c838f20b6",
                         "source_linenum": "515",
+                        "az": "us-west-2a",
+                        "job": "champagne-master-aws"
+                    },
+                    "fields": {
+                        "@timestamp": [
+                            "2024-06-07T04:43:27.826Z"
+                        ]
+                    },
+                    "highlight": {
+                        "cluster_id": [
+                            "@kibana-highlighted-field@672764c0@/kibana-highlighted-field@-@kibana-highlighted-field@dc60@/kibana-highlighted-field@-@kibana-highlighted-field@11ee@/kibana-highlighted-field@-@kibana-highlighted-field@a6bf@/kibana-highlighted-field@-@kibana-highlighted-field@13c83@/kibana-highlighted-field@"
+                        ]
+                    },
+                    "sort": [
+                        1717735407826
+                    ]
+                },
+                {
+                    "_index": "tenant-2024.06.07",
+                    "_type": "_doc",
+                    "_id": "85241ff5-a0dd-cef8-1b4d-121babbcc918",
+                    "_version": 1,
+                    "_score": null,
+                    "_source": {
+                        "task_name": "spotiq",
+                        "agent": "fluentbit",
+                        "offset": 200000,
+                        "service_name": "spotiq",
+                        "log_level": "error",
+                        "message": "Background fetch failed.",
+                        "private_ip": "10.254.3.12",
+                        "source_file": "feedback_tracker.cpp",
+                        "cluster_id": "672764c0-dc60-11ee-a6bf-13c83",
+                        "hostname": "ip-10-254-3-12.us-west-2.compute.internal",
+                        "thread_id": "231028",
+                        "@timestamp": "2024-06-07T04:43:27.826Z",
+                        "account_id": "575580285474",
+                        "filename": "/export/logs/orion/spotiq/spotiq/latest/spotiq_main.ERROR",
+                        "ec2_instance_id": "i-064b0f59c838f20b6",
+                        "source_linenum": "493",
                         "az": "us-west-2a",
                         "job": "champagne-master-aws"
                     },
@@ -43615,6 +43695,46 @@
                         "filename": "/export/logs/orion/spotiq/spotiq/latest/spotiq_main.INFO",
                         "ec2_instance_id": "i-064b0f59c838f20b6",
                         "source_linenum": "493",
+                        "az": "us-west-2a",
+                        "job": "champagne-master-aws"
+                    },
+                    "fields": {
+                        "@timestamp": [
+                            "2024-06-07T04:43:27.826Z"
+                        ]
+                    },
+                    "highlight": {
+                        "cluster_id": [
+                            "@kibana-highlighted-field@672764c0@/kibana-highlighted-field@-@kibana-highlighted-field@dc60@/kibana-highlighted-field@-@kibana-highlighted-field@11ee@/kibana-highlighted-field@-@kibana-highlighted-field@a6bf@/kibana-highlighted-field@-@kibana-highlighted-field@13c83@/kibana-highlighted-field@"
+                        ]
+                    },
+                    "sort": [
+                        1717735407826
+                    ]
+                },
+                {
+                    "_index": "tenant-2024.06.07",
+                    "_type": "_doc",
+                    "_id": "96e06aa0-713d-894b-3010-a95e2b55d248",
+                    "_version": 1,
+                    "_score": null,
+                    "_source": {
+                        "task_name": "spotiq",
+                        "agent": "fluentbit",
+                        "offset": 185000,
+                        "service_name": "spotiq",
+                        "log_level": "error",
+                        "message": "Error in getting feedback feedbacks from munshi",
+                        "private_ip": "10.254.3.12",
+                        "source_file": "feedback_tracker.cpp",
+                        "cluster_id": "672764c0-dc60-11ee-a6bf-13c83",
+                        "hostname": "ip-10-254-3-12.us-west-2.compute.internal",
+                        "thread_id": "231028",
+                        "@timestamp": "2024-06-07T04:43:27.826Z",
+                        "account_id": "575580285474",
+                        "filename": "/export/logs/orion/spotiq/spotiq/latest/spotiq_main.ERROR",
+                        "ec2_instance_id": "i-064b0f59c838f20b6",
+                        "source_linenum": "515",
                         "az": "us-west-2a",
                         "job": "champagne-master-aws"
                     },
@@ -75661,126 +75781,6 @@
                     "sort": [
                         1717735396777
                     ]
-                },
-                {
-                    "_index": "tenant-2024.06.07",
-                    "_type": "_doc",
-                    "_id": "a3c9517c-7048-5271-a045-30fa4317a800",
-                    "_version": 1,
-                    "_score": null,
-                    "_source": {
-                        "task_name": "oreo",
-                        "agent": "fluentbit_s3",
-                        "offset": 686000,
-                        "service_name": "oreo",
-                        "log_level": "info",
-                        "message": "Issuing rpc with trace_id: 22e0bf37-2726-4a5f-8976-2a24b7f2106d",
-                        "private_ip": "10.254.3.12",
-                        "source_file": "thrift_client.hpp",
-                        "cluster_id": "672764c0-dc60-11ee-a6bf-13c83",
-                        "hostname": "ip-10-254-3-12.us-west-2.compute.internal",
-                        "thread_id": "223174",
-                        "@timestamp": "2024-06-07T04:43:16.777686Z",
-                        "account_id": "575580285474",
-                        "filename": "/export/logs/oreo/oreo_main.INFO",
-                        "ec2_instance_id": "i-064b0f59c838f20b6",
-                        "source_linenum": "342",
-                        "az": "us-west-2a",
-                        "job": "champagne-master-aws"
-                    },
-                    "fields": {
-                        "@timestamp": [
-                            "2024-06-07T04:43:16.777Z"
-                        ]
-                    },
-                    "highlight": {
-                        "cluster_id": [
-                            "@kibana-highlighted-field@672764c0@/kibana-highlighted-field@-@kibana-highlighted-field@dc60@/kibana-highlighted-field@-@kibana-highlighted-field@11ee@/kibana-highlighted-field@-@kibana-highlighted-field@a6bf@/kibana-highlighted-field@-@kibana-highlighted-field@13c83@/kibana-highlighted-field@"
-                        ]
-                    },
-                    "sort": [
-                        1717735396777
-                    ]
-                },
-                {
-                    "_index": "tenant-2024.06.07",
-                    "_type": "_doc",
-                    "_id": "b41ac74b-8541-5cc5-abb9-1722d43c51ec",
-                    "_version": 1,
-                    "_score": null,
-                    "_source": {
-                        "task_name": "oreo",
-                        "agent": "fluentbit_s3",
-                        "offset": 63000,
-                        "service_name": "oreo",
-                        "log_level": "info",
-                        "message": "END : CheckAndMaybeStart falcon.query",
-                        "private_ip": "10.254.3.12",
-                        "source_file": "task.cpp",
-                        "cluster_id": "672764c0-dc60-11ee-a6bf-13c83",
-                        "hostname": "ip-10-254-3-12.us-west-2.compute.internal",
-                        "thread_id": "223174",
-                        "@timestamp": "2024-06-07T04:43:16.777063Z",
-                        "account_id": "575580285474",
-                        "filename": "/export/logs/oreo/oreo_main.INFO",
-                        "ec2_instance_id": "i-064b0f59c838f20b6",
-                        "source_linenum": "1475",
-                        "az": "us-west-2a",
-                        "job": "champagne-master-aws"
-                    },
-                    "fields": {
-                        "@timestamp": [
-                            "2024-06-07T04:43:16.777Z"
-                        ]
-                    },
-                    "highlight": {
-                        "cluster_id": [
-                            "@kibana-highlighted-field@672764c0@/kibana-highlighted-field@-@kibana-highlighted-field@dc60@/kibana-highlighted-field@-@kibana-highlighted-field@11ee@/kibana-highlighted-field@-@kibana-highlighted-field@a6bf@/kibana-highlighted-field@-@kibana-highlighted-field@13c83@/kibana-highlighted-field@"
-                        ]
-                    },
-                    "sort": [
-                        1717735396777
-                    ]
-                },
-                {
-                    "_index": "tenant-2024.06.07",
-                    "_type": "_doc",
-                    "_id": "870adde9-39e5-5447-a812-f27db6fb7ee6",
-                    "_version": 1,
-                    "_score": null,
-                    "_source": {
-                        "task_name": "oreo",
-                        "agent": "fluentbit_s3",
-                        "offset": 364000,
-                        "service_name": "oreo",
-                        "log_level": "info",
-                        "message": "Successfully listed pids recursively for container /tsroot.slice/thoughtspot/oreo/services/falcon.45049/cplan pids = 228936",
-                        "private_ip": "10.254.3.12",
-                        "source_file": "container_manager.cpp",
-                        "cluster_id": "672764c0-dc60-11ee-a6bf-13c83",
-                        "hostname": "ip-10-254-3-12.us-west-2.compute.internal",
-                        "thread_id": "223174",
-                        "@timestamp": "2024-06-07T04:43:16.777364Z",
-                        "account_id": "575580285474",
-                        "filename": "/export/logs/oreo/oreo_main.INFO",
-                        "ec2_instance_id": "i-064b0f59c838f20b6",
-                        "source_linenum": "348",
-                        "az": "us-west-2a",
-                        "job": "champagne-master-aws"
-                    },
-                    "fields": {
-                        "@timestamp": [
-                            "2024-06-07T04:43:16.777Z"
-                        ]
-                    },
-                    "highlight": {
-                        "cluster_id": [
-                            "@kibana-highlighted-field@672764c0@/kibana-highlighted-field@-@kibana-highlighted-field@dc60@/kibana-highlighted-field@-@kibana-highlighted-field@11ee@/kibana-highlighted-field@-@kibana-highlighted-field@a6bf@/kibana-highlighted-field@-@kibana-highlighted-field@13c83@/kibana-highlighted-field@"
-                        ]
-                    },
-                    "sort": [
-                        1717735396777
-                    ]
                 }
             ]
         },
@@ -75855,187 +75855,187 @@
                     {
                         "key_as_string": "2024-06-05T17:00:00.000Z",
                         "key": 1717606800000,
-                        "doc_count": 3742750
+                        "doc_count": 3745972
                     },
                     {
                         "key_as_string": "2024-06-05T18:00:00.000Z",
                         "key": 1717610400000,
-                        "doc_count": 1270201
+                        "doc_count": 1271099
                     },
                     {
                         "key_as_string": "2024-06-05T19:00:00.000Z",
                         "key": 1717614000000,
-                        "doc_count": 1104666
+                        "doc_count": 1105968
                     },
                     {
                         "key_as_string": "2024-06-05T20:00:00.000Z",
                         "key": 1717617600000,
-                        "doc_count": 1033980
+                        "doc_count": 1034456
                     },
                     {
                         "key_as_string": "2024-06-05T21:00:00.000Z",
                         "key": 1717621200000,
-                        "doc_count": 793083
+                        "doc_count": 793119
                     },
                     {
                         "key_as_string": "2024-06-05T22:00:00.000Z",
                         "key": 1717624800000,
-                        "doc_count": 717661
+                        "doc_count": 717697
                     },
                     {
                         "key_as_string": "2024-06-05T23:00:00.000Z",
                         "key": 1717628400000,
-                        "doc_count": 652424
+                        "doc_count": 652460
                     },
                     {
                         "key_as_string": "2024-06-06T00:00:00.000Z",
                         "key": 1717632000000,
-                        "doc_count": 1041341
+                        "doc_count": 1041377
                     },
                     {
                         "key_as_string": "2024-06-06T01:00:00.000Z",
                         "key": 1717635600000,
-                        "doc_count": 655137
+                        "doc_count": 655173
                     },
                     {
                         "key_as_string": "2024-06-06T02:00:00.000Z",
                         "key": 1717639200000,
-                        "doc_count": 622601
+                        "doc_count": 622637
                     },
                     {
                         "key_as_string": "2024-06-06T03:00:00.000Z",
                         "key": 1717642800000,
-                        "doc_count": 805977
+                        "doc_count": 806304
                     },
                     {
                         "key_as_string": "2024-06-06T04:00:00.000Z",
                         "key": 1717646400000,
-                        "doc_count": 1026216
+                        "doc_count": 1027845
                     },
                     {
                         "key_as_string": "2024-06-06T05:00:00.000Z",
                         "key": 1717650000000,
-                        "doc_count": 1049840
+                        "doc_count": 1051241
                     },
                     {
                         "key_as_string": "2024-06-06T06:00:00.000Z",
                         "key": 1717653600000,
-                        "doc_count": 1445959
+                        "doc_count": 1448297
                     },
                     {
                         "key_as_string": "2024-06-06T07:00:00.000Z",
                         "key": 1717657200000,
-                        "doc_count": 1463838
+                        "doc_count": 1465110
                     },
                     {
                         "key_as_string": "2024-06-06T08:00:00.000Z",
                         "key": 1717660800000,
-                        "doc_count": 1002585
+                        "doc_count": 1004364
                     },
                     {
                         "key_as_string": "2024-06-06T09:00:00.000Z",
                         "key": 1717664400000,
-                        "doc_count": 768875
+                        "doc_count": 772595
                     },
                     {
                         "key_as_string": "2024-06-06T10:00:00.000Z",
                         "key": 1717668000000,
-                        "doc_count": 420446
+                        "doc_count": 423443
                     },
                     {
                         "key_as_string": "2024-06-06T11:00:00.000Z",
                         "key": 1717671600000,
-                        "doc_count": 676668
+                        "doc_count": 677982
                     },
                     {
                         "key_as_string": "2024-06-06T12:00:00.000Z",
                         "key": 1717675200000,
-                        "doc_count": 670006
+                        "doc_count": 670063
                     },
                     {
                         "key_as_string": "2024-06-06T13:00:00.000Z",
                         "key": 1717678800000,
-                        "doc_count": 691062
+                        "doc_count": 691164
                     },
                     {
                         "key_as_string": "2024-06-06T14:00:00.000Z",
                         "key": 1717682400000,
-                        "doc_count": 598295
+                        "doc_count": 598337
                     },
                     {
                         "key_as_string": "2024-06-06T15:00:00.000Z",
                         "key": 1717686000000,
-                        "doc_count": 630207
+                        "doc_count": 630243
                     },
                     {
                         "key_as_string": "2024-06-06T16:00:00.000Z",
                         "key": 1717689600000,
-                        "doc_count": 631868
+                        "doc_count": 632174
                     },
                     {
                         "key_as_string": "2024-06-06T17:00:00.000Z",
                         "key": 1717693200000,
-                        "doc_count": 973061
+                        "doc_count": 973572
                     },
                     {
                         "key_as_string": "2024-06-06T18:00:00.000Z",
                         "key": 1717696800000,
-                        "doc_count": 590637
+                        "doc_count": 590739
                     },
                     {
                         "key_as_string": "2024-06-06T19:00:00.000Z",
                         "key": 1717700400000,
-                        "doc_count": 593926
+                        "doc_count": 594503
                     },
                     {
                         "key_as_string": "2024-06-06T20:00:00.000Z",
                         "key": 1717704000000,
-                        "doc_count": 639465
+                        "doc_count": 640008
                     },
                     {
                         "key_as_string": "2024-06-06T21:00:00.000Z",
                         "key": 1717707600000,
-                        "doc_count": 558506
+                        "doc_count": 558566
                     },
                     {
                         "key_as_string": "2024-06-06T22:00:00.000Z",
                         "key": 1717711200000,
-                        "doc_count": 561838
+                        "doc_count": 564373
                     },
                     {
                         "key_as_string": "2024-06-06T23:00:00.000Z",
                         "key": 1717714800000,
-                        "doc_count": 422584
+                        "doc_count": 422620
                     },
                     {
                         "key_as_string": "2024-06-07T00:00:00.000Z",
                         "key": 1717718400000,
-                        "doc_count": 335222
+                        "doc_count": 335258
                     },
                     {
                         "key_as_string": "2024-06-07T01:00:00.000Z",
                         "key": 1717722000000,
-                        "doc_count": 335325
+                        "doc_count": 335361
                     },
                     {
                         "key_as_string": "2024-06-07T02:00:00.000Z",
                         "key": 1717725600000,
-                        "doc_count": 333260
+                        "doc_count": 333296
                     },
                     {
                         "key_as_string": "2024-06-07T03:00:00.000Z",
                         "key": 1717729200000,
-                        "doc_count": 336147
+                        "doc_count": 336201
                     },
                     {
                         "key_as_string": "2024-06-07T04:00:00.000Z",
                         "key": 1717732800000,
-                        "doc_count": 250731
+                        "doc_count": 250758
                     }
                 ]
             }
         }
     },
-    "total": 130,
-    "loaded": 130
+    "total": 120,
+    "loaded": 120
 }

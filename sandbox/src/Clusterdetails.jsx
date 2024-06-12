@@ -1,21 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ClusterDetails.css';
 import { useGlobalState } from './GlobalState.jsx';
-import {Spin} from "antd";
+import { useCluster } from './ClusterContext';
+import { Spin } from "antd";
 
 const ClusterDetails = () => {
-  const [jsonData, setJsonData] = useState(null);
-  const [clusterVersion, setClusterVersion] = useState('');
-  const [commands, setCommands] = useState([]);
-  const [appliedPatches, setAppliedPatches] = useState([]);
-  const [flagsData, setFlagsData] = useState(null);
+  const {
+    jsonData, setJsonData,
+    clusterVersion, setClusterVersion,
+    commands, setCommands,
+    appliedPatches, setAppliedPatches,
+    flagsData, setFlagsData,
+    versionInfo, setVersionInfo,
+    isLoading, setIsLoading,
+    scriptRunning, setScriptRunning
+  } = useCluster();
   const [jsonSearchTerm, setJsonSearchTerm] = useState('');
   const [commandsSearchTerm, setCommandsSearchTerm] = useState('');
   const [flagsSearchTerm, setFlagsSearchTerm] = useState('');
   const [appliedPatchesSearchTerm, setAppliedPatchesSearchTerm] = useState('');
-  const [versionInfo, setVersionInfo] = useState('');
-  const [isloading, setIsloading] = useState(true);
-  const [scruptRunning, setScriptRunning] = useState(false);
   const flagsRef = useRef(null);
   const { cname, setCname } = useGlobalState();
   const { cenv, setCenv } = useGlobalState();
@@ -25,7 +28,7 @@ const ClusterDetails = () => {
     env: cenv
   };
 
-  const renderData =() => {
+  const renderData = () => {
     fetch('./cluster_scripts/clusterDetails.txt')
       .then(response => response.text())
       .then(text => {
@@ -66,10 +69,10 @@ const ClusterDetails = () => {
     fetchPatches();
 
     fetch('./cluster_scripts/version.txt')
-    .then(response => response.text())
-    .then(text => {
-      setVersionInfo(text);
-    });
+      .then(response => response.text())
+      .then(text => {
+        setVersionInfo(text);
+      });
 
     fetch('./cluster_scripts/flagDetails.txt')
       .then(response => response.text())
@@ -142,7 +145,6 @@ const ClusterDetails = () => {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(clusterVersion);
-    // alert('Cluster Version copied to clipboard');
   };
 
   const handleJsonSearchChange = (event) => {
@@ -177,7 +179,7 @@ const ClusterDetails = () => {
 
   const getClusterInfo = async (e) => {
     e.preventDefault();
-    setIsloading(true);
+    setIsLoading(true);
     setScriptRunning(true);
     const response = await fetch('http://localhost:4000/run-check-cluster-script', {
       method: 'POST',
@@ -190,10 +192,10 @@ const ClusterDetails = () => {
     if (response.ok) {
       const data = await response.json();
       renderData();
-      setIsloading(false);
+      setIsLoading(false);
     } else {
       console.error('Error running the script');
-      setIsloading(false);
+      setIsLoading(false);
     }
   };
 
@@ -202,9 +204,11 @@ const ClusterDetails = () => {
       <div className="scroll-button-container">
         <button onClick={getClusterInfo} className="scroll-button">Get Cluster Information</button>
       </div>
-      {isloading ? scruptRunning? <div className="loading-container flex allign-center justify-center">
-            <Spin size="large" />
-          </div>:"" :
+      {isLoading ? scriptRunning ? (
+        <div className="loading-container flex allign-center justify-center">
+          <Spin size="large" />
+        </div>
+      ) : "" : (
         <div>
           <div className="info-container">
             <div className="cluster-version">
@@ -297,7 +301,7 @@ const ClusterDetails = () => {
             </div>
           </div>
         </div>
-      }
+      )}
     </div>
   );
 };
