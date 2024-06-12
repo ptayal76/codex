@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import './CreateKBCluster.css'; // Import the CSS file
 import {generateRandomString} from "./constants.jsx"
 import { useGlobalState } from './GlobalState.jsx';
-
+import PatchesApply from './patchesApply.jsx';
+import CommandsApply from './comandsApply.jsx';
+import { Tabs } from 'antd';
 const bearerToken = 'eyJraWQiOiIweUZSWHY1d2lpelVCVTR4RVdkOW5ONnBuRFZKRGFrd195MFJhWlI4R29VIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIwMHUxNGh6N2ZraXpZVUNmRTB4OCIsImVtYWlsIjoicGl5dXNoLnRheWFsQHRob3VnaHRzcG90LmNvbSIsInZlciI6MSwiaXNzIjoiaHR0cHM6Ly90aG91Z2h0c3BvdC5va3RhLmNvbSIsImF1ZCI6IjBvYXIzZHFvODQ3WU1uWUxaMHg3IiwiaWF0IjoxNzE3NTc0NzkyLCJleHAiOjE3MTc1NzgzOTIsImp0aSI6IklELkhBaDVWWDFteUhrY2JBNkFQR05XVVRudVh4djMxRDNMS2RVTWphWDB0LW8iLCJhbXIiOlsicHdkIl0sImlkcCI6IjBvYWVjOWttYWI4TVVONU1mMHk2Iiwibm9uY2UiOiJyb1lnWVRHd0Nzbml6OWtidHJ4Y1FnZ1U4clpiVlBWb3hnVHZ0aUZXMnN0VnJkRXJCOVl3SUhOQXNBN0JuZXgwIiwiYXV0aF90aW1lIjoxNzE3NDA5ODU4LCJhdF9oYXNoIjoiQ3FxalR4SXNqR0FxT09ZNjZibGE2ZyJ9.WY9WFQEOIYz6j7xLwvRx27V40-uXXgQUplHvaVcc6MWgR3e9rB1Q4PtRlMr-yB7jwyZAduLTjfdFNRDiGC5tBOSSQiUPm-YogwwhFt4MMMqZHTqR5uQBI6PUSVN74ynzY3K1bee9AT9nN0UrvifGBloiWbHPv1WtXLvP6oN2RwlB_zpP-Bw_RwUA06U0LERZuEZ9zbeEB5lfgrwOs4KCb8VUtlSGcgtU0kD9qdq6FzrngynrtUSJDTVl9glFV99kGwQmheZZMxv9HmCwyPODZafNO0QGlIsNX9Odry8CLpdzF4CzxTlM9g6yx9qh-1wVNYzFr-EjndnbeBN8BA7j8A'
 const nonce = 'roYgYTGwCsniz9kbtrxcQggU8rZbVPVoxgTvtiFW2stVrdErB9YwIHNAsA7Bnex0'
 const owner_email = 'piyush.tayal@thoughtspot.com'
@@ -17,7 +19,7 @@ const CreateKBCluster = () => {
   const [gcpInit,setGcpInit]= useState(false)
   const [commands, setCommands] = useState([]);
   const [commandsSearchTerm, setCommandsSearchTerm] = useState('');
-  const cluster_name = cname+'-'+ randomString
+  const cluster_name = cname+ '_'+randomString
   const [image_tag,setImage_tag] = useState('')
   const [k8sData, setK8sData] = useState({
     owner: owner_email,
@@ -139,7 +141,7 @@ const CreateKBCluster = () => {
   }
 
   const handleGCPCluster = async (e) => {
-    gcpInit=false;
+    setGcpInit(false);
     e.preventDefault();
     setGcpData({
       ...gcpdata,
@@ -202,182 +204,198 @@ const CreateKBCluster = () => {
       }
   };
 
-  
+  const items = [
+    {
+      key: '1',
+      label: 'Apply Patch',
+      children: <PatchesApply ownerEmail={owner_email} clusterName={cluster_name} env={cenv}/>,
+    },
+    {
+      key: '2',
+      label: 'Apply Commands',
+      children: <CommandsApply ownerEmail={owner_email} clusterName={cluster_name} env={cenv}/>,
+    },
+  ];
 
   return (
-    <div className='forms'>
-    <div className="form-container">
-      <h2>Create K8s Cluster</h2>
-      <form onSubmit={handleSubmit}>
-      <div className="form-group">
-          <label>name:</label>
-          <input
-            type="text"
-            name="resource_name"
-            value={k8sData.resource_name}
-            onChange={handleChange}
-            required
-          />
-        </div>
+    <div className='flex flex-col gap-6'>
+      <div className='forms'>
+      <div className="form-container">
+        <h2>Create K8s Cluster</h2>
+        <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Team:</label>
-          <input
-            type="text"
-            name="team"
-            value={k8sData.team}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Size:</label>
-          <input
-            type="number"
-            name="size"
-            value={k8sData.size}
-            onChange={handleChange}
-            max="4"
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Lease:</label>
-          <input
-            type="text"
-            name="lease"
-            value={k8sData.lease}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Image TAG:</label>
-          <input
-            type="text"
-            name="image"
-            value={k8sData.image_tag}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit" className="submit-btn">Submit</button>
-      </form>
-    </div>
-    <div className="form-container">
-      <h2>Create AWS SaaS Cluster</h2>
-      <form onSubmit={handleAWSCluster}>
-       <div className="form-group">
-          <label>Cluster Name:</label>
-          <input
-            type="text"
-            name="cluster_name"
-            value={awsData.cluster_name}
-            onChange={handleAWSchange}
-            required
-          />
-        </div>
-      
-        <div className="form-group">
-          <label>Email:</label>
-          <input
-            type="text"
-            name="owner_email"
-            value={awsData.owner_email}
-            onChange={handleAWSchange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Image TAG:</label>
-          <input
-            type="text"
-            name="image_tag"
-            value={image_tag}
-            onChange={handleImageChange}
-            required
-          />
-        </div>
-        <button type="submit" className="submit-btn">Create</button>
-        {awsInit?
-        <div>
-        <p>Cluster Creation Initialized...</p>
-        <button className="submit-btn">Apply Patch</button>
-        <button className="submit-btn">Apply Flags</button>
-        </div>
-        :<p></p>}
-      </form>
-    </div>
-    <div className="form-container">
-      <h2>Create GCP SaaSCluster</h2>
-      <form onSubmit={handleGCPCluster}>
-      <div className="form-group">
-          <label>Cluster Name:</label>
-          <input
-            type="text"
-            name="cluster_name"
-            value={gcpdata.cluster_name}
-            onChange={handleGCPchange}
-            required
-          />
-        </div>
-      
-        <div className="form-group">
-          <label>Email:</label>
-          <input
-            type="text"
-            name="owner_email"
-            value={gcpdata.owner_email}
-            onChange={handleGCPchange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Image TAG:</label>
-          <input
-            type="text"
-            name="image_tag"
-            value={image_tag}
-            onChange={handleImageChange}
-            required
-          />
-        </div>
-        <button type="submit" className="submit-btn">Create</button>
-        {gcpInit?
-        <div>
-        <p>Cluster Creation Initialized...</p>
-        <button className="submit-btn">Apply Patch</button>
-        <button className="submit-btn">Apply Flags</button>
-        </div>
-        :<p></p>}
-      </form>
-    </div>
-    {commands.length > 0 && (
-        <div className="commands-table-container">
-        <h3>Commands</h3>
-        <table className="commands-table">
-          <thead>
-            <tr>
-              <th>Select</th>
-              <th>Command</th>
-            </tr>
-          </thead>
-          <tbody>
-            {commands.map((command, index) => (
-              <tr key={index}>
-                <td>
-                  <input
-                    type="checkbox"
-                    onChange={(e) => handleCheckboxChange(command, e.target.checked)}
-                  />
-                </td>
-                <td>{command}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            <label>name:</label>
+            <input
+              type="text"
+              name="resource_name"
+              value={k8sData.resource_name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Team:</label>
+            <input
+              type="text"
+              name="team"
+              value={k8sData.team}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Size:</label>
+            <input
+              type="number"
+              name="size"
+              value={k8sData.size}
+              onChange={handleChange}
+              max="4"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Lease:</label>
+            <input
+              type="text"
+              name="lease"
+              value={k8sData.lease}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Image TAG:</label>
+            <input
+              type="text"
+              name="image"
+              value={k8sData.image_tag}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <button type="submit" className="submit-btn">Submit</button>
+        </form>
       </div>
-      
-      )}
+      <div className="form-container">
+        <h2>Create AWS SaaS Cluster</h2>
+        <form onSubmit={handleAWSCluster}>
+        <div className="form-group">
+            <label>Cluster Name:</label>
+            <input
+              type="text"
+              name="cluster_name"
+              value={awsData.cluster_name}
+              onChange={handleAWSchange}
+              required
+            />
+          </div>
+        
+          <div className="form-group">
+            <label>Email:</label>
+            <input
+              type="text"
+              name="owner_email"
+              value={awsData.owner_email}
+              onChange={handleAWSchange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Image TAG:</label>
+            <input
+              type="text"
+              name="image_tag"
+              value={image_tag}
+              onChange={handleImageChange}
+              required
+            />
+          </div>
+          <button type="submit" className="submit-btn">Create</button>
+          {awsInit?
+          <div>
+          <p>Cluster Creation Initialized...</p>
+          <button className="submit-btn">Apply Patch</button>
+          <button className="submit-btn">Apply Flags</button>
+          </div>
+          :<p></p>}
+        </form>
+      </div>
+      <div className="form-container">
+        <h2>Create GCP SaaSCluster</h2>
+        <form onSubmit={handleGCPCluster}>
+        <div className="form-group">
+            <label>Cluster Name:</label>
+            <input
+              type="text"
+              name="cluster_name"
+              value={gcpdata.cluster_name}
+              onChange={handleGCPchange}
+              required
+            />
+          </div>
+        
+          <div className="form-group">
+            <label>Email:</label>
+            <input
+              type="text"
+              name="owner_email"
+              value={gcpdata.owner_email}
+              onChange={handleGCPchange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Image TAG:</label>
+            <input
+              type="text"
+              name="image_tag"
+              value={image_tag}
+              onChange={handleImageChange}
+              required
+            />
+          </div>
+          <button type="submit" className="submit-btn">Create</button>
+          {gcpInit?
+          <div>
+          <p>Cluster Creation Initialized...</p>
+          <button className="submit-btn">Apply Patch</button>
+          <button className="submit-btn">Apply Flags</button>
+          </div>
+          :<p></p>}
+        </form>
+      </div>
+      {commands.length > 0 && (
+          <div className="commands-table-container">
+          <h3>Commands</h3>
+          <table className="commands-table">
+            <thead>
+              <tr>
+                <th>Select</th>
+                <th>Command</th>
+              </tr>
+            </thead>
+            <tbody>
+              {commands.map((command, index) => (
+                <tr key={index}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      onChange={(e) => handleCheckboxChange(command, e.target.checked)}
+                    />
+                  </td>
+                  <td>{command}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        )}
+      </div>
+      <div>
+          <Tabs defaultActiveKey="1" items={items}/>
+      </div>
     </div>
   );
 };

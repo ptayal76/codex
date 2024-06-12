@@ -4,6 +4,7 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
+const { default: cluster } = require('cluster');
 const app = express();
 const PORT = 4000;
 
@@ -205,13 +206,12 @@ app.post('/run-check-cluster-script', (req, res) => {
     scriptOutput += data.toString();
     console.log(`stdout: ${data}`);
   });
-
   pythonProcess.stderr.on('data', (data) => {
     console.error(`Python script stderr: ${data}`);
   });
-
   pythonProcess.on('close', (code) => {
     console.log(`Python script exited with code ${code}`);
+    console.log("status code of python script API: ", scriptOutput);
     if (code === 0) {
       console.log("Script run successfully");
       res.status(200).json({ status: "Successful" });
@@ -219,7 +219,6 @@ app.post('/run-check-cluster-script', (req, res) => {
       res.status(500).json({ status: "Error", error: `Python script exited with code ${code}` });
     }
   });
-
   pythonProcess.on('error', (err) => {
     console.error(`Failed to start Python script: ${err}`);
     res.status(500).json({ status: "Error", error: `Failed to start Python script: ${err.message}` });
@@ -284,6 +283,96 @@ app.post('/check-csp-cors-validation', (req, res) => {
       console.log("fileData:", fileData);
     });
   })
+});
+app.post('/apply-patch',(req,res)=>{
+  const {
+    owner_email,
+    cluster_name,
+    patch,
+    env
+  }= req.body;
+  const fullPath = path.join(__dirname, 'cluster_scripts/codex_metrics-final.py');
+  const pythonProcess = spawn(pythonExecutable, [fullPath,"--cluster_name",cluster_name,"--owner_email", owner_email, "--patches", patch, "--scenario_type",4,"--env", env]);
+  let scriptOutput = '';
+
+  pythonProcess.stdout.on('data', (data) => {
+    scriptOutput += data.toString();
+  });
+
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Python script stderr: ${data}`);
+  });
+
+  const JSONFilePath = './sandbox/cluster_scripts/patched.txt';
+  pythonProcess.on('close', (code) => {
+    console.log(`Python script exited with code ${code}`);
+    console.log("ApplyPatchscript Output:",scriptOutput);
+    fs.readFile(JSONFilePath, 'utf8', (err, fileData) => {
+      if (err) {
+        console.error(`readFile error: ${err}`);
+        return res.status(500).json({ error: err.message });
+      }
+    
+      try {
+        res.send(fileData.toString()); // Send the parsed data as JSON response
+      } catch (parseErr) {
+        console.error(`JSON parse error: ${parseErr}`);
+        return res.status(500).send({ error: 'Failed to parse JSON' });
+      }
+    
+      // cleanup
+      console.log("fileData:", fileData);
+    });
+  });
+});
+
+app.post('/apply-commands',(req,res)=>{
+  const {
+    owner_email,
+    cluster_name,
+    commands,
+    env
+  }= req.body;
+  // console.log("owner-email: ", owner_email, " cluster_name: ", cluster_name, " commands: ", commands, " env: ",env);
+  const fullPath = path.join(__dirname, 'cluster_scripts/codex-metrics-final.py');
+  const pythonProcess = spawn(pythonExecutable, [
+    fullPath,
+    '--cluster_name', cluster_name,
+    '--owner_email', owner_email,
+    '--run_cmds', commands[0],
+    '--scenario_type',5,
+    '--env', env
+  ]);
+  let scriptOutput = '';
+  pythonProcess.stdout.on('data', (data) => {
+    scriptOutput += data.toString();
+  });
+  console.log("scriptoutput: ", scriptOutput);
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Python script stderr: ${data}`);
+  });
+
+  const JSONFilePath = './sandbox/cluster_scripts/cmds_run.txt';
+  pythonProcess.on('close', (code) => {
+    console.log(`Python script exited with code ${code}`);
+    console.log("ApplyCommandscript Output:",scriptOutput);
+    fs.readFile(JSONFilePath, 'utf8', (err, fileData) => {
+      if (err) {
+        console.error(`readFile error: ${err}`);
+        return res.status(500).json({ error: err.message });
+      }
+    
+      try {
+        res.send(fileData.toString()); // Send the parsed data as JSON response
+      } catch (parseErr) {
+        console.error(`JSON parse error: ${parseErr}`);
+        return res.status(500).send({ error: 'Failed to parse JSON' });
+      }
+    
+      // cleanup
+      console.log("fileData:", fileData);
+    });
+  });
 });
 
 app.listen(PORT, () => {
