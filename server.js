@@ -291,8 +291,8 @@ app.post('/apply-patch',(req,res)=>{
     patch,
     env
   }= req.body;
-  const fullPath = path.join(__dirname, 'cluster_scripts/codex_metrics-final.py');
-  const pythonProcess = spawn(pythonExecutable, [fullPath,"--cluster_name",cluster_name,"--owner_email", owner_email, "--patches", patch, "--scenario_type",4,"--env", env]);
+  const fullPath = path.join(__dirname, 'cluster_scripts/codex-metrics-final.py');
+  const pythonProcess = spawn(pythonExecutable, [fullPath,"--cluster_name",cluster_name,"--owner_email", owner_email, "--patch_ids", patch, "--scenario_type",4,"--env", env]);
   let scriptOutput = '';
 
   pythonProcess.stdout.on('data', (data) => {
