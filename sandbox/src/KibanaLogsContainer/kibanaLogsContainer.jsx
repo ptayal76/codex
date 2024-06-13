@@ -3,10 +3,14 @@ import MyTable from './Table/table.jsx';
 import './kibanaLogsContainer.css';
 import '../GrafanaLogs.css';
 import { Spin } from "antd";
-
+import { useCluster } from "../ClusterContext.jsx";
 function KibanaLogsContainer() {
-    const [tableData, setTableData] = useState([]);
-    const [tableRowData, setTableRowData] = useState([]);
+    const {
+        kibanaArray,setKibanaArray,
+        loadingKibana, setLoadingKibana,
+        tableRowData, setTableRowData,
+    }= useCluster();
+    
     const [formInputs, setFormInputs] = useState({
         StartTimestamp: '2024-03-01T00:00:00',
         EndTimestamp: '2024-06-01T00:00:00',
@@ -14,12 +18,10 @@ function KibanaLogsContainer() {
         //StateToken: 'stateToken',
         //RefreshToken: 'refreshToken',
     });
-
-    const [loading, setLoading] = useState(false);
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        console.log("Form submitted!");
+        setLoadingKibana(true);
+        console.log("Form submitted!  ->", formInputs);
         try {
             const response = await fetch('http://localhost:4000/trigger-kibana', {
                 method: 'POST',
@@ -35,7 +37,7 @@ function KibanaLogsContainer() {
                 const data = JSON.parse(res.json);
                 if (data) {
                     const transformedData = parseText(data);
-                    setTableData(transformedData);
+                    setKibanaArray(transformedData);
                     const transformedRow = takeRowdata(transformedData);
                     setTableRowData(transformedRow);
                 }
@@ -45,7 +47,7 @@ function KibanaLogsContainer() {
             // Handle errors
         }
         finally {
-            setLoading(false);
+            setLoadingKibana(false);
         }
     };
 
@@ -76,7 +78,6 @@ function KibanaLogsContainer() {
         const { name, value } = event.target;
         setFormInputs(prevState => ({ ...prevState, [name]: value }));
     };
-
     return (
         <div className="container">
             <p className="text-3xl">Kibana Logs</p>
@@ -97,12 +98,12 @@ function KibanaLogsContainer() {
                 ))}
                 <button type="submit" className="submit-button">Fetch Logs</button>
             </form>
-            {loading ? (
+            {loadingKibana ? (
                 <div className="loading-container flex allign-center justify-center">
                     <Spin size="large" />
                 </div>
             ) : (
-                tableData.length ? <MyTable tableRowData={tableRowData} innerJSON={tableData} />: null
+                kibanaArray.length ? <MyTable tableRowData={tableRowData} innerJSON={kibanaArray} />: null
             )}
         </div>
     );

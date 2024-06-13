@@ -78,7 +78,6 @@ export default function App() {
           return <KibanaLogsContainer/>;
       case 'checkConfig':
         return <CheckConfigurations/>
-      case 'other':
       default:
         return (
           <>
@@ -99,7 +98,7 @@ export default function App() {
       <div className="main-content">
         <SearchBar onSearch={handleSearch} />
         {/* <SearchResults results={results} /> */}
-        <div>
+        <div className="py-10">
           {renderContent()}
         </div>
       </div>

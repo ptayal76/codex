@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useGlobalState } from './GlobalState.jsx';
 import './SearchBar.css'; // Import the CSS file for styling
-
+import { Select , Input } from "antd";
 const SearchBar = () => {
   const { cname, setCname } = useGlobalState();
   const { cenv, setCenv } = useGlobalState();
@@ -10,27 +10,36 @@ const SearchBar = () => {
   const handleInputChange = (e) => {
     setCname(e.target.value);
     setQuery(e.target.value);
-  };
-
-  const handleEnvChange = (e) => {
-    setCenv(e.target.value);
+    console.log("Cname: ", e.target.value);
   };
 
   return (
-    <div className="search-bar">
-      <label className="label">Cluster Name</label>
-      <input
-        type="text"
-        placeholder="Search..."
-        value={query}
-        onChange={handleInputChange}
-        className="search-input"
+    <div className="flex flex-row gap-3">
+      <div className="flex flex-row flex-grow gap-4">
+        <Input placeholder="Search..." addonBefore={<strong>Cluster Name :</strong>} onChange={handleInputChange} size="large"/>
+      </div>
+      <Select
+        defaultValue="dev"
+        style={{
+            width: 120,
+        }}
+        options={[
+            {
+                value: 'dev',
+                label: 'dev',
+            },
+            {
+                value: 'staging',
+                label: 'staging',
+            },
+            {
+                value: 'prod',
+                label: 'prod',
+            }
+        ]}
+        onChange={(value)=> setCenv(value)}
+        size="large"
       />
-      <select value={cenv} onChange={handleEnvChange} className="env-dropdown">
-        <option value="dev">dev</option>
-        <option value="staging">staging</option>
-        <option value="prod">prod</option>
-      </select>
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Form, Input, Space , Spin} from 'antd';
 import NewTable from './newTable.jsx';
 import { useState ,useEffect } from 'react';
-
+import { useCluster } from "./ClusterContext.jsx";
 const SubmitButton = ({ form, children, type }) => {
   const [submittable, setSubmittable] = React.useState(false);
 
@@ -23,15 +23,17 @@ const SubmitButton = ({ form, children, type }) => {
   );
 };
 const CheckConfigurations = () => {
-const [form] = Form.useForm();
-const [jsonFile, setJsonFile]= useState(null);
-    const [loading, setLoading]= useState(false);
+    const [form] = Form.useForm();
+    const {
+        jsonCSPFile, setjsonCSPFile,
+        loadingCSP, setLoadingCSP,
+    }= useCluster();
     const handleSubmit = async (values) => {
         const formData = {
             cluster_url: values.cluster_url,
             domain: values.domain,
         };
-        setLoading(true);
+        setLoadingCSP(true);
         try {
             const response = await fetch('http://localhost:4000/check-csp-cors-validation', {
                 method: 'POST',
@@ -45,20 +47,20 @@ const [jsonFile, setJsonFile]= useState(null);
             } else {
                 const res = await response.json();
                 console.log("response--json: ", res);
-                setJsonFile(res);
+                setjsonCSPFile(res);
             }
         } catch (error) {
             console.error('Error:', error);
         }
         finally{
-            setLoading(false);
+            setLoadingCSP(false);
         }
     };
   useEffect(() => {
-        if (jsonFile) {
-            console.log("res is taken by useEffect: ", jsonFile);
+        if (jsonCSPFile) {
+            console.log("res is taken by useEffect: ", jsonCSPFile);
         }
-    }, [jsonFile]);
+    }, [jsonCSPFile]);
 
   return (
   <div className='flex flex-col'>
@@ -102,13 +104,13 @@ const [jsonFile, setJsonFile]= useState(null);
               </Space>
           </Form.Item>
       </Form>
-      {console.log("showJson",jsonFile)}
-      {loading ? (
+      {console.log("showJson",jsonCSPFile)}
+      {loadingCSP ? (
           <div className="loading-container flex allign-center justify-center">
               <Spin size="large" />
           </div>
       ) : (
-          jsonFile!==null?<NewTable myobject={jsonFile}/>:null
+          jsonCSPFile!==null?<NewTable myobject={jsonCSPFile}/>:null
       )
       }
   </div>

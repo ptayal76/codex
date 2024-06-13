@@ -2,13 +2,11 @@ import React, { useEffect, useState } from 'react';
 import './CreateKBCluster.css'; // Import the CSS file
 import {generateRandomString} from "./constants.jsx"
 import { useGlobalState } from './GlobalState.jsx';
-import PatchesApply from './patchesApply.jsx';
-import CommandsApply from './comandsApply.jsx';
-import { Tabs } from 'antd';
+import PatchCommandTab from './patchCommandTab.jsx';
 const bearerToken = 'eyJraWQiOiIweUZSWHY1d2lpelVCVTR4RVdkOW5ONnBuRFZKRGFrd195MFJhWlI4R29VIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIwMHUxNGh6N2ZraXpZVUNmRTB4OCIsImVtYWlsIjoicGl5dXNoLnRheWFsQHRob3VnaHRzcG90LmNvbSIsInZlciI6MSwiaXNzIjoiaHR0cHM6Ly90aG91Z2h0c3BvdC5va3RhLmNvbSIsImF1ZCI6IjBvYXIzZHFvODQ3WU1uWUxaMHg3IiwiaWF0IjoxNzE3NTc0NzkyLCJleHAiOjE3MTc1NzgzOTIsImp0aSI6IklELkhBaDVWWDFteUhrY2JBNkFQR05XVVRudVh4djMxRDNMS2RVTWphWDB0LW8iLCJhbXIiOlsicHdkIl0sImlkcCI6IjBvYWVjOWttYWI4TVVONU1mMHk2Iiwibm9uY2UiOiJyb1lnWVRHd0Nzbml6OWtidHJ4Y1FnZ1U4clpiVlBWb3hnVHZ0aUZXMnN0VnJkRXJCOVl3SUhOQXNBN0JuZXgwIiwiYXV0aF90aW1lIjoxNzE3NDA5ODU4LCJhdF9oYXNoIjoiQ3FxalR4SXNqR0FxT09ZNjZibGE2ZyJ9.WY9WFQEOIYz6j7xLwvRx27V40-uXXgQUplHvaVcc6MWgR3e9rB1Q4PtRlMr-yB7jwyZAduLTjfdFNRDiGC5tBOSSQiUPm-YogwwhFt4MMMqZHTqR5uQBI6PUSVN74ynzY3K1bee9AT9nN0UrvifGBloiWbHPv1WtXLvP6oN2RwlB_zpP-Bw_RwUA06U0LERZuEZ9zbeEB5lfgrwOs4KCb8VUtlSGcgtU0kD9qdq6FzrngynrtUSJDTVl9glFV99kGwQmheZZMxv9HmCwyPODZafNO0QGlIsNX9Odry8CLpdzF4CzxTlM9g6yx9qh-1wVNYzFr-EjndnbeBN8BA7j8A'
 const nonce = 'roYgYTGwCsniz9kbtrxcQggU8rZbVPVoxgTvtiFW2stVrdErB9YwIHNAsA7Bnex0'
 const owner_email = 'piyush.tayal@thoughtspot.com'
-
+import { Collapse } from 'antd';
 
 const CreateKBCluster = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -79,15 +77,6 @@ const CreateKBCluster = () => {
     setGcpData(prevData => ({ ...prevData, image_tag: image_tag }));
   }, [image_tag]);
 
-  const fetchCommands = async () => {
-    try {
-      const response = await fetch('http://localhost:4000/commands-array');
-      const data = await response.json();
-      setCommands(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
   // fetchCommands();
 
   const handleChange = (e) => {
@@ -203,21 +192,8 @@ const CreateKBCluster = () => {
       }
   };
 
-  const items = [
-    {
-      key: '1',
-      label: 'Apply Patch',
-      children: <PatchesApply ownerEmail={owner_email} clusterName={awsData.cluster_name} env={cenv}/>,
-    },
-    {
-      key: '2',
-      label: 'Apply Commands',
-      children: <CommandsApply ownerEmail={owner_email} clusterName={awsData.cluster_name} env={cenv}/>,
-    },
-  ];
-
   return (
-    <div className='flex flex-col gap-6'>
+    <div className='flex flex-col gap-16'>
       <div className='forms'>
       <div className="form-container">
         <h2>Create K8s Cluster</h2>
@@ -393,7 +369,16 @@ const CreateKBCluster = () => {
         )}
       </div>
       <div>
-          <Tabs defaultActiveKey="1" items={items}/>
+        <Collapse
+          size="large"
+          items={[
+            {
+              key: '1',
+              label: "Apply Patch and Commands",
+              children: <PatchCommandTab/>,
+            },
+          ]}
+        />
       </div>
     </div>
   );

@@ -6,16 +6,16 @@
   }
   
   .label {
-    margin-right: 10px; /* Space between label and input */
+     margin-right: 10px; /* Space between label and input */
     font-weight: bold; /* Make the label bold */
   }
   
   .search-input {
-    padding: 8px;
+    /* padding: 8px; */
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    flex-grow: 1; /* Allow the input to take available space */
+    /* flex-grow: 1; Allow the input to take available space */
   }
   
   .env-dropdown {

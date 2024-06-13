@@ -38,6 +38,7 @@ const GrafanaLogs = ({ subTab }) => {
       if (response.ok) {
         const data = await response.json();
         parseCSV(data.csvContent);
+    
       } else {
         console.log(response)
         console.error('Error running the script');
