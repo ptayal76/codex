@@ -19,7 +19,7 @@ const CreateKBCluster = () => {
   const [gcpInit,setGcpInit]= useState(false)
   const [commands, setCommands] = useState([]);
   const [commandsSearchTerm, setCommandsSearchTerm] = useState('');
-  const cluster_name = cname+ '_'+randomString
+  const cluster_name = cname+ '-clone'
   const [image_tag,setImage_tag] = useState('')
   const [k8sData, setK8sData] = useState({
     owner: owner_email,
@@ -68,12 +68,11 @@ const CreateKBCluster = () => {
     owner_email: owner_email,
     image_tag : image_tag
   })
-  useEffect(() => {
-    // const newClusterName = `${cname}-${randomString}`;
-    const newClusterName = `${cname}-clone`;
-    setAwsData(prevData => ({ ...prevData, cluster_name: newClusterName }));
-    setGcpData(prevData => ({ ...prevData, cluster_name: newClusterName }));
-  }, [cname]);
+  // useEffect(() => {
+  //   // const newClusterName = `${cname}-${randomString}`;
+  //   setAwsData(prevData => ({ ...prevData, cluster_name: cluster_name }));
+  //   setGcpData(prevData => ({ ...prevData, cluster_name: cluster_name }));
+  // }, [cname]);
 
   useEffect(() => {
     setAwsData(prevData => ({ ...prevData, image_tag: image_tag }));
@@ -208,12 +207,12 @@ const CreateKBCluster = () => {
     {
       key: '1',
       label: 'Apply Patch',
-      children: <PatchesApply ownerEmail={owner_email} clusterName={cluster_name} env={cenv}/>,
+      children: <PatchesApply ownerEmail={owner_email} clusterName={awsData.cluster_name} env={cenv}/>,
     },
     {
       key: '2',
       label: 'Apply Commands',
-      children: <CommandsApply ownerEmail={owner_email} clusterName={cluster_name} env={cenv}/>,
+      children: <CommandsApply ownerEmail={owner_email} clusterName={awsData.cluster_name} env={cenv}/>,
     },
   ];
 

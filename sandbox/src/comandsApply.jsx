@@ -60,7 +60,7 @@ const CommandsApply = ({ownerEmail, clusterName, env}) => {
         let selectedValues='';
         selectedRowKeys.map((keys)=>{
             selectedValues+= initialData[keys].commands;
-            selectedValues+= " & ";
+            selectedValues+= " && ";
         })
         selectedValues= selectedValues.slice(0, -3);
         console.log("Selected patches/commands", selectedValues);
