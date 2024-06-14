@@ -3,6 +3,7 @@ import CSVDataTable from "./CSVDataTable";
 import './GrafanaLogs.css';
 import { useGlobalState } from './GlobalState.jsx';
 import { Spin } from "antd";
+import StartToEndTime from './StartToEndTIme.jsx';
 
 const GrafanaLogs = ({ subTab }) => {
   const [csvData, setCsvData] = useState([]);
@@ -110,6 +111,7 @@ const GrafanaLogs = ({ subTab }) => {
         ))}
         <button type="submit" className="submit-button">Fetch Grafana Metrics</button>
       </form>
+      <StartToEndTime/>
       <div style={{ marginBottom: '15px' }}>
         <input
           type="text"

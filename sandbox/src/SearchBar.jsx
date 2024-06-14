@@ -10,7 +10,7 @@ const SearchBar = () => {
   const handleInputChange = (e) => {
     setCname(e.target.value);
     setQuery(e.target.value);
-    console.log("Cname: ", e.target.value);
+    console.log("Cname: ", cname);
   };
 
   return (

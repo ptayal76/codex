@@ -197,8 +197,7 @@ def start_rest_api_metric_collection(args):
         queryList = []
         queryList.append(
             makeQueryDict(
-                "prism-public-rest-api-v2-query",
-                "{}{{saas_env=~\"{}\", api=~\"{}\", tenant_name=~\".*{}.*\", quantile=\"0.95\", status_code=~\"{}\"}}".format(metricName, saasEnv, apiRegex, tenantName, statusCodeRegex)))
+                "prism-public-rest-api-v2-query","{}{{saas_env=~\"{}\", api=~\"{}\", tenant_name=~\".*{}.*\", quantile=\"0.95\", status_code=~\"{}\"}}".format(metricName, saasEnv, apiRegex, tenantName, statusCodeRegex)))
         collect_api_metric_usage(writer, start_time_str, end_time_str, queryList)
 
 # Program execution entry point

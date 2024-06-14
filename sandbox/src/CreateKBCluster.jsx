@@ -7,6 +7,7 @@ const bearerToken = 'eyJraWQiOiIweUZSWHY1d2lpelVCVTR4RVdkOW5ONnBuRFZKRGFrd195MFJ
 const nonce = 'roYgYTGwCsniz9kbtrxcQggU8rZbVPVoxgTvtiFW2stVrdErB9YwIHNAsA7Bnex0'
 const owner_email = 'piyush.tayal@thoughtspot.com'
 import { Collapse } from 'antd';
+import { useCluster } from "./ClusterContext";
 
 const CreateKBCluster = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +20,9 @@ const CreateKBCluster = () => {
   const [commandsSearchTerm, setCommandsSearchTerm] = useState('');
   const cluster_name = cname+ '-clone'
   const [image_tag,setImage_tag] = useState('')
+  const {
+    upgradeVersion
+  } = useCluster();
   const [k8sData, setK8sData] = useState({
     owner: owner_email,
     resource_name :"nebula-tse-testing1",
@@ -33,19 +37,21 @@ const CreateKBCluster = () => {
   useEffect(() => {
     const fetchAndParseVersion = async () => {
       try {
-        const response = await fetch('./cluster_scripts/version.txt');
-        const text = await response.text();
-        console.log(text)
-        // Find the line containing 'Upgrade version'
-        const lines = text.split('\n');
-        const upgradeVersionLine = lines.find(line => line.startsWith('Upgrade version'));
+        // const response = await fetch('./cluster_scripts/version.txt');
+        // const text = await response.text();
+        // console.log(text)
+        // // Find the line containing 'Upgrade version'
+        // const lines = text.split('\n');
+        // const upgradeVersionLine = lines.find(line => line.startsWith('Upgrade version'));
         
-        if (upgradeVersionLine) {
-          const upgradeVersion = upgradeVersionLine.split(' ')[2];
-          console.log(upgradeVersion)
-          setImage_tag(upgradeVersion)
-          return;
-        }
+        // if (upgradeVersionLine) {
+        //   const upgradeVersion = upgradeVersionLine.split(' ')[2];
+        //   console.log(upgradeVersion)
+        //   setImage_tag(upgradeVersion)
+        //   return;
+        // }
+        setImage_tag(upgradeVersion);
+        return;
         
         throw new Error('Upgrade version not found in file');
       } catch (error) {

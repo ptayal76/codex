@@ -1,99 +1,108 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './ClusterDetails.css';
-import { useGlobalState } from './GlobalState.jsx';
-import { useCluster } from './ClusterContext';
+import React, { useState, useEffect, useRef } from "react";
+import "./ClusterDetails.css";
+import { useGlobalState } from "./GlobalState.jsx";
+import { useCluster } from "./ClusterContext";
 import { Spin } from "antd";
 
 const ClusterDetails = () => {
   const {
-    jsonData, setJsonData,
-    clusterVersion, setClusterVersion,
-    commands, setCommands,
-    appliedPatches, setAppliedPatches,
-    flagsData, setFlagsData,
-    versionInfo, setVersionInfo,
-    isLoading, setIsLoading,
-    scriptRunning, setScriptRunning
+    jsonData,
+    setJsonData,
+    currentVersion,
+    setCurrentVersion,
+    upgradeVersion,
+    setUpgradeVersion,
+    clusterVersion,
+    setClusterVersion,
+    commands,
+    setCommands,
+    appliedPatches,
+    setAppliedPatches,
+    flagsData,
+    setFlagsData,
+    isLoading,
+    setIsLoading,
+    scriptRunning,
+    setScriptRunning,
   } = useCluster();
-  const [jsonSearchTerm, setJsonSearchTerm] = useState('');
-  const [commandsSearchTerm, setCommandsSearchTerm] = useState('');
-  const [flagsSearchTerm, setFlagsSearchTerm] = useState('');
-  const [appliedPatchesSearchTerm, setAppliedPatchesSearchTerm] = useState('');
+  const [jsonSearchTerm, setJsonSearchTerm] = useState("");
+  const [commandsSearchTerm, setCommandsSearchTerm] = useState("");
+  const [flagsSearchTerm, setFlagsSearchTerm] = useState("");
+  const [appliedPatchesSearchTerm, setAppliedPatchesSearchTerm] = useState("");
   const flagsRef = useRef(null);
   const { cname, setCname } = useGlobalState();
   const { cenv, setCenv } = useGlobalState();
 
-  const clusterdata = {
-    cluster_name: cname,
-    env: cenv
-  };
+  
 
-  const renderData = () => {
-    fetch('./cluster_scripts/clusterDetails.txt')
-      .then(response => response.text())
-      .then(text => {
-        try {
-          const json = JSON.parse(text);
-          setJsonData(json);
-        } catch (error) {
-          console.error('Error parsing JSON:', error);
-        }
-      });
+  // const renderData = () => {
+  //   fetch("./cluster_scripts/clusterDetails.txt")
+  //     .then((response) => response.text())
+  //     .then((text) => {
+  //       try {
+  //         const json = JSON.parse(text);
+  //         setJsonData(json);
+  //       } catch (error) {
+  //         console.error("Error parsing JSON:", error);
+  //       }
+  //     });
 
-    fetch('./cluster_scripts/clusterVersion.txt')
-      .then(response => response.text())
-      .then(text => {
-        setClusterVersion(text);
-      });
+  //   fetch("./cluster_scripts/clusterVersion.txt")
+  //     .then((response) => response.text())
+  //     .then((text) => {
+  //       setClusterVersion(text);
+  //     });
 
-    const fetchCommands = async () => {
-      try {
-        const response = await fetch('http://localhost:4000/commands-array');
-        const data = await response.json();
-        setCommands(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchCommands();
+  //   const fetchCommands = async () => {
+  //     try {
+  //       const response = await fetch("http://localhost:4000/commands-array");
+  //       const data = await response.json();
+  //       setCommands(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   fetchCommands();
 
-    const fetchPatches = async () => {
-      try {
-        const response = await fetch('http://localhost:4000/patches-array');
-        const data = await response.json();
-        setAppliedPatches(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchPatches();
+  //   const fetchPatches = async () => {
+  //     try {
+  //       const response = await fetch("http://localhost:4000/patches-array");
+  //       const data = await response.json();
+  //       setAppliedPatches(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   fetchPatches();
 
-    fetch('./cluster_scripts/version.txt')
-      .then(response => response.text())
-      .then(text => {
-        setVersionInfo(text);
-      });
+  //   fetch("./cluster_scripts/version.txt")
+  //     .then((response) => response.text())
+  //     .then((text) => {
+  //       setVersionInfo(text);
+  //     });
 
-    fetch('./cluster_scripts/flagDetails.txt')
-      .then(response => response.text())
-      .then(text => {
-        try {
-          const json = JSON.parse(text);
-          setFlagsData(json);
-        } catch (error) {
-          console.error('Error parsing JSON:', error);
-        }
-      });
-  };
+  //   fetch("./cluster_scripts/flagDetails.txt")
+  //     .then((response) => response.text())
+  //     .then((text) => {
+  //       try {
+  //         const json = JSON.parse(text);
+  //         setFlagsData(json);
+  //       } catch (error) {
+  //         console.error("Error parsing JSON:", error);
+  //       }
+  //     });
+  // };
 
-  const renderJson = (data, searchTerm = '') => {
+  const renderJson = (data, searchTerm = "") => {
     const filterData = (data) => {
-      if (typeof data === 'object' && data !== null) {
+      if (typeof data === "object" && data !== null) {
         return Object.keys(data)
-          .filter(key => key.toLowerCase().includes(searchTerm.toLowerCase()))
-          .reduce((res, key) => (res[key] = data[key], res), {});
+          .filter((key) => key.toLowerCase().includes(searchTerm.toLowerCase()))
+          .reduce((res, key) => ((res[key] = data[key]), res), {});
       } else if (Array.isArray(data)) {
-        return data.filter(item => JSON.stringify(item).toLowerCase().includes(searchTerm.toLowerCase()));
+        return data.filter((item) =>
+          JSON.stringify(item).toLowerCase().includes(searchTerm.toLowerCase())
+        );
       }
       return data;
     };
@@ -119,7 +128,7 @@ const ClusterDetails = () => {
           </tbody>
         </table>
       );
-    } else if (typeof filteredData === 'object' && filteredData !== null) {
+    } else if (typeof filteredData === "object" && filteredData !== null) {
       return (
         <table className="json-table">
           <thead>
@@ -129,7 +138,7 @@ const ClusterDetails = () => {
             </tr>
           </thead>
           <tbody>
-            {Object.keys(filteredData).map(key => (
+            {Object.keys(filteredData).map((key) => (
               <tr key={key}>
                 <td>{key}</td>
                 <td>{renderJson(filteredData[key])}</td>
@@ -163,17 +172,17 @@ const ClusterDetails = () => {
     setAppliedPatchesSearchTerm(event.target.value);
   };
 
-  const filteredCommands = commands.filter(command =>
+  const filteredCommands = commands.filter((command) =>
     command.toLowerCase().includes(commandsSearchTerm.toLowerCase())
   );
 
-  const filteredAppliedPatches = appliedPatches.filter(patch =>
+  const filteredAppliedPatches = appliedPatches.filter((patch) =>
     patch.toLowerCase().includes(appliedPatchesSearchTerm.toLowerCase())
   );
 
   const scrollToFlags = () => {
     if (flagsRef.current) {
-      flagsRef.current.scrollIntoView({ behavior: 'smooth' });
+      flagsRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -181,20 +190,40 @@ const ClusterDetails = () => {
     e.preventDefault();
     setIsLoading(true);
     setScriptRunning(true);
-    const response = await fetch('http://localhost:4000/run-check-cluster-script', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(clusterdata),
-    });
+    try {
+      const clusterdata = {
+        cluster_name: cname,
+        env: cenv,
+      };
+      console.log(clusterdata)
+      const response = await fetch("http://localhost:4000/get-cluster-info", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(clusterdata),
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      renderData();
-      setIsLoading(false);
-    } else {
-      console.error('Error running the script');
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data)
+        // Assuming data structure from the server matches your previous file-based structure
+        setClusterVersion(data.clusterId);
+        setJsonData(data.clusterDetails);
+        setCommands(data.commands);
+        setCurrentVersion(data.currentVersion);
+        setUpgradeVersion(data.upgradeVersion);
+        // setVersionInfo(`Current Version: ${data.currentVersion}\nUpgrade Version: ${data.upgradeVersion}`);
+        setAppliedPatches(data.patches);
+        setFlagsData(data.flagsData); // Assuming this is part of your data structure
+
+        setIsLoading(false);
+      } else {
+        console.error("Error running the script");
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching cluster information:", error);
       setIsLoading(false);
     }
   };
@@ -202,27 +231,38 @@ const ClusterDetails = () => {
   return (
     <div className="json-viewer-container">
       <div className="scroll-button-container">
-        <button onClick={getClusterInfo} className="scroll-button">Get Cluster Information</button>
+        <button onClick={getClusterInfo} className="scroll-button">
+          Get Cluster Information
+        </button>
       </div>
-      {isLoading ? scriptRunning ? (
-        <div className="loading-container flex allign-center justify-center">
-          <Spin size="large" />
-        </div>
-      ) : "" : (
+      {isLoading ? (
+        scriptRunning ? (
+          <div className="loading-container flex allign-center justify-center">
+            <Spin size="large" />
+          </div>
+        ) : (
+          ""
+        )
+      ) : (
         <div>
           <div className="info-container">
             <div className="cluster-version">
               <span className="cluster-version-text">
                 Cluster Id: <strong>{clusterVersion}</strong>
               </span>
-              <button onClick={handleCopy} className="copy-button">Copy</button>
+              <button onClick={handleCopy} className="copy-button">
+                Copy
+              </button>
             </div>
             <div className="version-info">
-              <pre>{versionInfo}</pre>
+              <pre>Current Version {currentVersion}</pre>
+              <pre>Upgrade Version {upgradeVersion}</pre>
             </div>
           </div>
           <div className="scroll-button-container">
-            <button onClick={scrollToFlags} className="scroll-button">Go to Flags</button>
+            <button onClick={scrollToFlags} className="scroll-button">
+              Go to Flags
+            </button>
           </div>
           <div className="tables-wrapper">
             <div className="tables-container left">
@@ -259,7 +299,11 @@ const ClusterDetails = () => {
                   onChange={handleJsonSearchChange}
                   className="search-input"
                 />
-                {jsonData ? renderJson(jsonData, jsonSearchTerm) : <p>Loading...</p>}
+                {jsonData ? (
+                  renderJson(jsonData, jsonSearchTerm)
+                ) : (
+                  <p>Loading...</p>
+                )}
               </div>
             </div>
             <div className="tables-container right">
@@ -296,7 +340,11 @@ const ClusterDetails = () => {
                   onChange={handleFlagsSearchChange}
                   className="search-input"
                 />
-                {flagsData ? renderJson(flagsData, flagsSearchTerm) : <p>Loading...</p>}
+                {flagsData ? (
+                  renderJson(flagsData, flagsSearchTerm)
+                ) : (
+                  <p>Loading...</p>
+                )}
               </div>
             </div>
           </div>

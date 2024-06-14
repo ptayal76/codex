@@ -11,7 +11,8 @@ export const ClusterProvider = ({ children }) => {
   const [commands, setCommands] = useState([]);
   const [appliedPatches, setAppliedPatches] = useState([]);
   const [flagsData, setFlagsData] = useState(null);
-  const [versionInfo, setVersionInfo] = useState('');
+  const [currentVersion, setCurrentVersion] = useState('');
+  const [upgradeVersion, setUpgradeVersion] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [scriptRunning, setScriptRunning] = useState(false);
 
@@ -32,7 +33,8 @@ export const ClusterProvider = ({ children }) => {
       commands, setCommands,
       appliedPatches, setAppliedPatches,
       flagsData, setFlagsData,
-      versionInfo, setVersionInfo,
+      currentVersion,setCurrentVersion,
+      upgradeVersion,setUpgradeVersion,
       isLoading, setIsLoading,
       scriptRunning, setScriptRunning,
       

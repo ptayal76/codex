@@ -85,8 +85,8 @@ payload = json.dumps({
                         {
                             "range": {
                                 "@timestamp": {
-                                    "gte": "2024-06-05T04:39:21.113Z",
-                                    "lte": "2024-06-07T04:48:09.592Z",
+                                    "gte": "2024-03-01T00:00:00",
+                                    "lte": "2024-06-01T00:00:00",
                                     "format": "strict_date_optional_time"
                                 }
                             }

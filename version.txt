@@ -1,2 +1,0 @@
-Current version 9.12.0.cl-272
-Upgrade version 9.12.5.cl-220

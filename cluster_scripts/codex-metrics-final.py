@@ -466,6 +466,7 @@ def createAWSSaasCluster(clusterName, ownerEmail, imageTag, feature, team):
     request_body_json = json.dumps(request_body)
     url = f"{url}/api/v2/clusters"
     response = requests.post(url, auth=(username, password), headers=headers, data=request_body_json)
+    print(response)
     return response.status_code
 
 def createGCPSaasCluster(clusterName, ownerEmail, imageTag):
@@ -689,6 +690,7 @@ def main(argv):
             f.write(str(gcp))
     elif scenario == 3:
         aws = createAWSSaasCluster(clusterName,ownerEmail,imageTag,feature,team)
+        print(aws)
         aws_file_path = os.path.dirname(os.path.realpath(__file__))+'/../sandbox/cluster_scripts/aws.txt'
         with open(aws_file_path, 'w', encoding='utf-8') as f:
             f.write(str(aws))

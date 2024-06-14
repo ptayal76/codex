@@ -3,9 +3,9 @@ import { Tabs , Input, Form, Select } from 'antd';
 import PatchesApply from './patchesApply.jsx';
 import CommandsApply from './comandsApply.jsx';
 const PatchCommandTab = () =>{
-    const [ownerEmail, setOwnerEmail]= useState("hello");
-    const [clusterName, setClusterName]= useState("hello");
-    const [cenv, setCENV]= useState("hello");
+    const [ownerEmail, setOwnerEmail]= useState("");
+    const [clusterName, setClusterName]= useState("");
+    const [cenv, setCENV]= useState("dev");
     const items = [
         {
             key: '1',

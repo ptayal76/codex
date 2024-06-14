@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table } from 'antd';
 import Highlighter from 'react-highlight-words';
+import { useCluster } from "./ClusterContext";
 
 const CommandsApply = ({ownerEmail, clusterName, env}) => {
     const [searchText, setSearchText] = useState('');
@@ -12,6 +13,9 @@ const CommandsApply = ({ownerEmail, clusterName, env}) => {
     const searchInput = useRef(null);
     const [initialData, setInitialData]= useState([]);
     const [isLoading,setIsLoading]= useState(false);
+    const {
+        commands
+    } = useCluster();
     const handleChange = (selectedKeys, confirm, dataIndex) => {
         setSearchText(selectedKeys[0]);
         setSearchedColumn(dataIndex);
@@ -23,24 +27,24 @@ const CommandsApply = ({ownerEmail, clusterName, env}) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('./cluster_scripts/commands.txt');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch data');
-                }
-                const text = await response.text();
+                // const response = await fetch('./cluster_scripts/commands.txt');
+                // if (!response.ok) {
+                //     throw new Error('Failed to fetch data');
+                // }
+                // const text = await response.text();
                 
-                // Preprocess the text to make it valid JSON
-                const dataArrayString = text.trim();
-                const formattedString = dataArrayString.replace(/'/g, '"'); // Replace single quotes with double quotes
+                // // Preprocess the text to make it valid JSON
+                // const dataArrayString = text.trim();
+                // const formattedString = dataArrayString.replace(/'/g, '"'); // Replace single quotes with double quotes
                 
-                // Remove the enclosing square brackets if they exist
-                const cleanString = formattedString.slice(1, -1);
+                // // Remove the enclosing square brackets if they exist
+                // const cleanString = formattedString.slice(1, -1);
                 
-                // Split the string by comma to get individual elements
-                const dataArray = cleanString.split(',').map(item => item.trim().replace(/^"|"$/g, ''));
+                // // Split the string by comma to get individual elements
+                // const dataArray = cleanString.split(',').map(item => item.trim().replace(/^"|"$/g, ''));
                 
                 // Map to objects with key and commands
-                const fetchedArray = dataArray.map((value, index) => ({
+                const fetchedArray = commands.map((value, index) => ({
                     key: index.toString(),
                     commands: value,
                 }));
@@ -58,6 +62,8 @@ const CommandsApply = ({ownerEmail, clusterName, env}) => {
     
     const applySelected= async () =>{
         let selectedValues='';
+        console.log(`owner email: ${ownerEmail}`);
+        console.log(`cluster name: ${clusterName}`);
         selectedRowKeys.map((keys)=>{
             selectedValues+= initialData[keys].commands;
             selectedValues+= " && ";
