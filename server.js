@@ -27,52 +27,11 @@ const pythonExecutable = "/usr/local/bin/python3"; // Replace with your actual p
 
 app.post("/trigger-kibana", async (req, res) => {
   const { clusterId, initialTime, endTime } = req.body;
-  console.log(clusterId)
-  console.log(initialTime)
-  console.log(endTime)
-  const outputFile = await fetchKibana(clusterId, initialTime, endTime);
-  fs.readFile(outputFile, "utf8", (err, fileData) => {
-    if (err) {
-      console.error(`readFile error: ${err}`);
-      return res.status(500).json({ error: err.message });
-    }
-    res.json({ json: fileData });
-
-    // cleanup
-    // console.log(fileData);
-  });
-
-  
-  // const fullPath = path.join(__dirname, "cluster_scripts/final-script.py");
-
-  // const pythonProcess = spawn(pythonExecutable, [
-  //   fullPath,
-  //   "--cluster_id",
-  //   clusterId,
-  //   "--initial_time",
-  //   initialTime,
-  //   "--end_time",
-  //   endTime,
-  //   "--msg",
-  //   msg,
-  // ]);
-  // pythonProcess.stdout.on("data", (data) => {
-  //   console.log(data);
-  // });
-  // const JSONFilePath = "./Kibana.txt";
-  // pythonProcess.on("close", (code) => {
-  //   console.log(`child process exited with code ${code}`);
-  //   fs.readFile(JSONFilePath, "utf8", (err, fileData) => {
-  //     if (err) {
-  //       console.error(`readFile error: ${err}`);
-  //       return res.status(500).json({ error: err.message });
-  //     }
-  //     res.json({ json: fileData });
-
-  //     // cleanup
-  //     console.log(fileData);
-  //   });
-  // });
+  console.log(clusterId);
+  console.log(initialTime);
+  console.log(endTime);
+  const kibanaData = await fetchKibana(clusterId, initialTime, endTime);
+  res.json({ json: kibanaData });
 });
 
 app.get("/", (req, res) => {
@@ -86,48 +45,23 @@ app.post("/run-grafana-script", async (req, res) => {
   const saasEnv = "staging|prod";
   const apiRegex = ".*";
   const statusCodeRegex = "2.*|4.*|5.*";
-  const outputFile = await startRestApiMetricCollection(
-    input_start_date,
-    input_end_date,
-    metricName,
-    saasEnv,
-    apiRegex,
-    tenantName,
-    statusCodeRegex
-  );
-  fs.readFile(outputFile, "utf8", (err, data) => {
-    if (err) {
-      console.error(`readFile error: ${err}`);
-      return res.status(500).json({ error: err.message });
-    }
+  try {
+    const csvContent = await startRestApiMetricCollection(
+      input_start_date,
+      input_end_date,
+      metricName,
+      saasEnv,
+      apiRegex,
+      tenantName,
+      statusCodeRegex
+    );
 
-    res.json({ csvContent: data });
-  });
-
-  // const scriptPath = path.join(__dirname, 'grafana_logs', 'grafana_script.py');
-  // console.log(scriptPath);
-  // const pythonProcess = spawn(pythonExecutable, [scriptPath, '--input_start_date', input_start_date, '--input_end_date', input_end_date, '--metricName', 'request_duration_seconds', '--saasEnv', 'staging|prod', '--apiRegex', '.*', '--tenantName', tenantName, '--statusCodeRegex', '2.*|4.*|5.*']);
-  // pythonProcess.stdout.on('data', (data) => {
-  //     console.log(`Python script stdout: ${data}`);
-  //     var string = data + '';
-  //     const logsArray=string.split('\n');
-  //     const csvFilePathLine = logsArray.find(line => line.includes('data save path:'));
-  //     if (!csvFilePathLine) {
-  //       return res.status(500).json({ error: 'CSV file path not found in logs' });
-  //     }
-  //     const csvFilePath = csvFilePathLine.split('data save path: ')[1].trim();
-  //     fs.readFile(csvFilePath, 'utf8', (err, data) => {
-  //       if (err) {
-  //         console.error(`readFile error: ${err}`);
-  //         return res.status(500).json({ error: err.message });
-  //       }
-
-  //       res.json({ csvContent: data });
-  //     });
-  // });
-  // pythonProcess.stderr.on('data', (data) => {
-  //     console.error(`Python script stderr: ${data}`);
-  // });
+    res.json({ csvContent: csvContent });
+    // });
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    res.status(500).json({ error: error.message });
+  }
 });
 app.get("/commands-array", (req, res) => {
   fs.readFile("./sandbox/cluster_scripts/commands.txt", "utf8", (err, data) => {
@@ -183,48 +117,6 @@ app.post("/run-AWS-cluster", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-// app.post('/run-AWS-cluster', (req,res) => {
-//   const {
-//     cluster_name,
-//     owner_email,
-//     image_tag
-//   } = req.body;
-//   const scriptPath = path.join(__dirname, 'cluster_scripts', 'codex-metrics-final.py');
-//   // console.log(scriptPath);
-//   console.log(cluster_name)
-//   console.log(owner_email)
-//   console.log(image_tag)
-//   const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', cluster_name, '--owner_email', owner_email, '--scenario_type', 3, '--image_tag', image_tag]);
-//   // const pythonProcess = spawn(pythonExecutable, [scriptPath, '--cluster_name', 'champagne-master-aws-clone2', '--owner_email', 'piyush.tayal@thoughtspot.com', '--scenario_type', 3, '--image_tag', '9.12.5.cl-220']);
-//   pythonProcess.stdout.on('data', (data) => {
-//       console.log(data)
-//   });
-//   pythonProcess.stderr.on('data', (data) => {
-//       console.error(`Python script stderr: ${data}`);
-//   });
-//   pythonProcess.on('close', (code) => {
-//     console.log(`Python script exited with code ${code}`);
-//     if (code === 0) {
-//       console.log("Script run successfully");
-//       fs.readFile('./sandbox/cluster_scripts/aws.txt', 'utf8', (err, data) => {
-//         if (err) {
-//             console.error(err);
-//             res.status(500).send('Error reading file');
-//         } else {
-//             // Remove leading and trailing brackets and quotes
-//             if(data=='201'){
-//               res.status(200).json({ status: "Successful" });
-//             }else{
-//               res.status(500).json({ status: "Error", error: `Cluster not created` });
-//             }
-//         }
-//     });
-//     } else {
-//       res.status(500).json({ status: "Error", error: `Python script exited with code ${code}` });
-//     }
-//   });
-// })
 
 app.post("/run-GCP-cluster", (req, res) => {
   const { cluster_name, owner_email, image_tag } = req.body;
@@ -315,46 +207,19 @@ app.post("/get-cluster-info", async (req, res) => {
   }
 });
 
-// app.post("/trigger-kibana", (req, res) => {
-//   const { clusterId, initialTime, endTime, msg } = req.body;
-
-//   console.log(req.body);
-//   // const fullPath = path.join(__dirname, 'cluster_scripts/CorsCSP.py');
-//   const fullPath = path.join(__dirname, "Kibana/final-script.py");
-
-//   const pythonProcess = spawn(pythonExecutable, [
-//     fullPath,
-//     "--cluster_id",
-//     clusterId,
-//     "--initial_time",
-//     initialTime,
-//     "--end_time",
-//     endTime,
-//     "--msg",
-//     msg,
-//   ]);
-//   pythonProcess.stdout.on("data", (data) => {
-//     console.log("test : " + data);
-//   });
-
-//   const JSONFilePath = "./Kibana.txt";
-//   pythonProcess.on("close", (code) => {
-//     console.log(`child process exited with code ${code}`);
-//     fs.readFile(JSONFilePath, "utf8", (err, fileData) => {
-//       if (err) {
-//         console.error(`readFile error: ${err}`);
-//         return res.status(500).json({ error: err.message });
-//       }
-//       res.json({ json: fileData });
-//       console.log(fileData);
-//     });
-//   });
-// });
-
-app.post("/check-csp-cors-validation", (req, res) => {
+app.post("/check-csp-cors-validation", async (req, res) => {
   const { cluster_url, domain } = req.body;
   console.log("cluster_url : ", cluster_url);
   console.log("domain: ", domain);
+
+  // try {
+  //   const response = await CheckCorsCSP(cluster_url, domain);
+  //   console.log(response)
+  //   res.json(response); // Send the response as JSON
+  // } catch (error) {
+  //   res.status(500).json({ error: error.message });
+  // }
+
   const fullPath = path.join(__dirname, "cluster_scripts/CorsCSP.py");
   const pythonProcess = spawn(pythonExecutable, [
     fullPath,

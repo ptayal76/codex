@@ -124,16 +124,7 @@ const fetchKibana = async (cluster_id, initial_time, end_time) => {
         });
 
         const parsedData = response.data;
-        const fileName = path.resolve(__dirname, './Kibana.txt');
-        console.log(fileName);
-        fs.writeFile(fileName, JSON.stringify(parsedData, null, 4), (err) => {
-            if (err) {
-                console.error('Error writing to file', err);
-            } else {
-                console.log('File has been written successfully');
-            }
-        });
-        return fileName.toString();
+        return JSON.stringify(parsedData, null, 4);
     } catch (error) {
         console.error('Error making request:', error.message);
     }

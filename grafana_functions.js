@@ -3,7 +3,8 @@ const path = require('path');
 const axios = require('axios');
 const dotenv = require('dotenv');
 const { format, parseISO } = require('date-fns');
-const { createObjectCsvWriter } = require('csv-writer');
+const { createObjectCsvStringifier } = require('csv-writer');
+const StringWriter = require('string-writer');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -11,7 +12,6 @@ dotenv.config();
 const grafanaToken = process.env.GRAFANA_TOKEN;
 
 const url = "https://thoughtspot.grafana.net/api/ds/query";
-const outputDir = path.join(__dirname, "data");
 
 const metricKeys = ['time', 'api', 'cluster', 'collection_level', 'error', 'method', 'org_id', 'rel_version', 'saas_env', 'service_name', 'status', 'tenant_id', 'tenant_name', 'duration'];
 
@@ -28,7 +28,7 @@ const makeQueryDict = (queryRefId, queryExpr) => {
     };
 };
 
-const processApiMetricFrames = async (apiMetricFramesList, csvWriter) => {
+const processApiMetricFrames = async (apiMetricFramesList, csvStringifier, stringWriter) => {
     for (const apiMetricFrame of apiMetricFramesList) {
         let timestampIndex = 0;
         let durationValueIndex = 1;
@@ -74,12 +74,12 @@ const processApiMetricFrames = async (apiMetricFramesList, csvWriter) => {
 
             }
         }
-        // Write the sample to the CSV
-        await csvWriter.writeRecords([apiMetricSample]); // Ensure sequential writing
+        // Write the sample to the string writer
+        stringWriter.write(csvStringifier.stringifyRecords([apiMetricSample])); // Ensure sequential writing
     }
 };
 
-const collectApiMetricUsage = async (csvWriter, startTime, endTime, queryList) => {
+const collectApiMetricUsage = async (csvStringifier, stringWriter, startTime, endTime, queryList) => {
     console.log(`Collecting API metric data FROM "${startTime}" TO "${endTime}"`);
 
     const payload = {
@@ -106,7 +106,7 @@ const collectApiMetricUsage = async (csvWriter, startTime, endTime, queryList) =
         for (const query of queryList) {
             // console.log(query.expr);
             const apiMetricFramesList = result.results[query.refId].frames;
-            await processApiMetricFrames(apiMetricFramesList, csvWriter);
+            await processApiMetricFrames(apiMetricFramesList, csvStringifier, stringWriter);
         }
     } catch (error) {
         console.error('Error fetching API metric usage:', error);
@@ -121,18 +121,15 @@ const startRestApiMetricCollection = async (inputStartDate, inputEndDate, metric
     const startTimeStr = format(inputStartDateTime, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     const endTimeStr = format(inputEndDateTime, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-    if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
-    }
-
-    const outputFile = path.join(outputDir, `${inputStartDateTime.getFullYear()}_${inputStartDateTime.getMonth() + 1}_to_${inputEndDateTime.getFullYear()}_${inputEndDateTime.getMonth() + 1}_rest_api_metric.csv`);
-
-    const csvWriter = createObjectCsvWriter({
-        path: outputFile,
+    const stringWriter = new StringWriter();
+    const csvStringifier = createObjectCsvStringifier({
         header: metricKeys.map(key => ({ id: key, title: key })),
     });
 
-    console.log("Data save path: " + outputFile);
+    // Write the header
+    stringWriter.write(csvStringifier.getHeaderString());
+
+    console.log("Starting data collection");
 
     const queryList = [];
     queryList.push(
@@ -142,20 +139,10 @@ const startRestApiMetricCollection = async (inputStartDate, inputEndDate, metric
         )
     );
 
-    await collectApiMetricUsage(csvWriter, startTimeStr, endTimeStr, queryList);
-    console.log("Comnpleted fetching grafana")
-    return outputFile.toString();
+    await collectApiMetricUsage(csvStringifier, stringWriter, startTimeStr, endTimeStr, queryList);
+    console.log("Completed fetching Grafana");
+
+    return stringWriter.toString();
 };
 
-module.exports= {startRestApiMetricCollection};
-
-// Example usage
-// const inputStartDate = '2024-06-05T19:04:00';
-// const inputEndDate = '2024-06-06T19:04:00';
-// const metricName = 'request_duration_seconds';
-// const saasEnv = 'staging';
-// const apiRegex = '.*';
-// const tenantName = 'champagne-master-aws';
-// const statusCodeRegex = '4.*|5.*';
-
-// startRestApiMetricCollection(inputStartDate, inputEndDate, metricName, saasEnv, apiRegex, tenantName, statusCodeRegex);
+module.exports= { startRestApiMetricCollection };
