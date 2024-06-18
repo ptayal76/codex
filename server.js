@@ -26,12 +26,13 @@ const pythonExecutable = "/usr/local/bin/python3"; // Replace with your actual p
 //const pythonExecutable = '/usr/bin/python3'; // Replace with your actual path
 
 app.post("/trigger-kibana", async (req, res) => {
-  const { clusterId, initialTime, endTime } = req.body;
-  console.log(clusterId);
-  console.log(initialTime);
-  console.log(endTime);
-  const kibanaData = await fetchKibana(clusterId, initialTime, endTime);
-  res.json({ json: kibanaData });
+  const { Cluster_Id, StartTimestamp, EndTimestamp } = req.body;
+  console.log(Cluster_Id);
+  console.log(StartTimestamp);
+  console.log(EndTimestamp);
+  const kibanaData = await fetchKibana(Cluster_Id, StartTimestamp, EndTimestamp);
+  res.json(kibanaData);
+  console.log("kibaana data:: ", kibanaData);
 });
 
 app.get("/", (req, res) => {

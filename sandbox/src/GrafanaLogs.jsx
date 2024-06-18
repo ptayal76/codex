@@ -151,7 +151,6 @@ const GrafanaLogs = ({ subTab }) => {
         </div>
         <button type="submit" className="submit-button">Fetch Grafana Metrics</button>
       </form>
-      <StartToEndTime/>
       <div style={{ marginBottom: '15px' }}>
         <input
           type="text"

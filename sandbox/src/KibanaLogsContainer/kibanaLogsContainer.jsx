@@ -44,13 +44,13 @@ function KibanaLogsContainer() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formInputs),
+                body: JSON.stringify(kibanaFormInputs),
             });
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             } else {
                 const res = await response.json();
-                const data = JSON.parse(res.json);
+                const data = JSON.parse(res);
                 if (data) {
                     const transformedData = parseText(data);
                     setKibanaArray(transformedData);
@@ -146,7 +146,7 @@ function KibanaLogsContainer() {
                     <Spin size="large" />
                 </div>
             ) : (
-                kibanaArray.length ? <MyTable tableRowData={tableRowData} innerJSON={kibanaArray} />: null
+                <MyTable tableRowData={tableRowData} innerJSON={kibanaArray} />
             )}
         </div>
     );
