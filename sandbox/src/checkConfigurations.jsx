@@ -74,10 +74,11 @@ const CheckConfigurations = () => {
               cluster_url: "https://172.32.46.211:8443",
               domain: "https://asda.csb.app",
           }}
-      >
+          size="large"
+        >
           <Form.Item
               name="cluster_url"
-              label="Cluster Host URL"
+              label={<span style={{ fontWeight: 'bold'}}>Cluster Host URL</span>}
               rules={[
                   {
                       required: true,
@@ -88,7 +89,7 @@ const CheckConfigurations = () => {
           </Form.Item>
           <Form.Item
               name="domain"
-              label="Embed Enviroment Domain"
+              label={<span style={{ fontWeight: 'bold'}}>Embed Environment Domain</span>}
               rules={[
                   {
                       required: true,

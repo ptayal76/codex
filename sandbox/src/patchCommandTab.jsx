@@ -22,7 +22,7 @@ const PatchCommandTab = () =>{
         <div className="flex flex-col gap-6">
             <div className="flex flex-row gap-4">
                 <Input addonBefore={<strong>Cluster Name :</strong>} onChange={(event) => setClusterName(event.target.value)} />
-                <Input addonBefore={<strong>Cluster Name :</strong>} onChange={(event) => setOwnerEmail(event.target.value)} />
+                <Input addonBefore={<strong>Owner Email :</strong>} onChange={(event) => setOwnerEmail(event.target.value)} />
                 <Select
                     defaultValue="dev"
                     style={{

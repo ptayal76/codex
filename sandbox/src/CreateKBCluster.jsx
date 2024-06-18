@@ -380,7 +380,7 @@ const CreateKBCluster = () => {
           items={[
             {
               key: '1',
-              label: "Apply Patch and Commands",
+              label: <span style={{ fontWeight: 'bold'}}>Apply Patch and Commands</span>,
               children: <PatchCommandTab/>,
             },
           ]}

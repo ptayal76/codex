@@ -4,24 +4,40 @@ import './kibanaLogsContainer.css';
 import '../GrafanaLogs.css';
 import { Spin } from "antd";
 import { useCluster } from "../ClusterContext.jsx";
+import { DatePicker , Input} from 'antd';
+const { RangePicker } = DatePicker;
+import dayjs from 'dayjs';
+
+const rangePresets = [
+    {
+        label: 'Last Week',
+        value: [dayjs().add(-7, 'd'), dayjs()],
+    },
+    {
+        label: 'Last 2 Weeks',
+        value: [dayjs().add(-14, 'd'), dayjs()],
+    },
+    {
+        label: 'Last 30 days',
+        value: [dayjs().add(-30, 'd'), dayjs()],
+    },
+    {
+        label: 'Last 90 days',
+        value: [dayjs().add(-90, 'd'), dayjs()],
+    },
+];
+
 function KibanaLogsContainer() {
     const {
         kibanaArray,setKibanaArray,
         loadingKibana, setLoadingKibana,
         tableRowData, setTableRowData,
+        kibanaFormInputs, setKibanaFormInputs,
     }= useCluster();
-    
-    const [formInputs, setFormInputs] = useState({
-        clusterId: '672764c0-dc60-11ee-a6bf-13c83',
-        initialTime: '2024-03-01T00:00:00',
-        endTime: '2024-06-01T00:00:00',
-        //StateToken: 'stateToken',
-        //RefreshToken: 'refreshToken',
-    });
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoadingKibana(true);
-        console.log("Form submitted!  ->", formInputs);
+        console.log("Form submitted!  ->", kibanaFormInputs);
         try {
             const response = await fetch('http://localhost:4000/trigger-kibana', {
                 method: 'POST',
@@ -75,29 +91,56 @@ function KibanaLogsContainer() {
     };
 
     const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setFormInputs(prevState => ({ ...prevState, [name]: value }));
+        setKibanaFormInputs(prevState => ({
+            ...prevState,
+            Cluster_Id: event.target.value,
+        }));
     };
+    const onOk = (value) => {
+        console.log('onOk: ', value);
+    };
+    const [startDateDefault, startTimeDefault]= kibanaFormInputs.StartTimestamp.split("T");
+    const [endDateDefault , endTimeDefault]= kibanaFormInputs.EndTimestamp.split("T");
+    const defaultRange = [dayjs(startDateDefault+'      '+startTimeDefault), dayjs(endDateDefault+'      '+endTimeDefault)];
     return (
         <div className="container">
-            <p className="text-3xl">Kibana Logs</p>
-            <form onSubmit={handleSubmit} className="input-form">
-                {Object.keys(formInputs).map((key) => (
-                    <div key={key} className="input-group">
-                        <label className="input-label">
-                            {key}:
-                            <input
-                                type="text"
-                                name={key}
-                                value={formInputs[key]}
-                                onChange={handleInputChange}
-                                className="input-field"
-                            />
-                        </label>
-                    </div>
-                ))}
+            <p className="text-3xl py-8">Kibana Logs</p>
+            <form onSubmit={handleSubmit} className="input-form gap-6">
+                <Input addonBefore={<strong>Cluster ID :</strong>} onChange={handleInputChange} size="large" defaultValue={kibanaFormInputs.Cluster_Id}/>    
+                <div className='flex flex-row allign-center flex-grow'>
+                <span className="px-3 py-2 bg-gray-50 border border-gray-300 border-r-0 rounded-l-md font-semibold">Select Date and Time:</span>
+                <RangePicker
+                    showTime={{ format: 'HH:mm:ss' }}
+                    format="YYYY-MM-DD      HH:mm:ss"
+                    onChange={(value, dateString) => {
+                        console.log('Selected Time: ', value);
+                        console.log('Formatted Selected Time: ', dateString);
+                        const [startDate,startTime]= dateString[0].split("      ");
+                        const [endDate, endTime]= dateString[1].split("      ");
+                        const StartTimeStamp= startDate+'T'+startTime;
+                        const EndTimeStamp= endDate+ 'T'+endTime;
+                        setKibanaFormInputs(prevState => ({
+                            ...prevState,
+                            StartTimestamp: StartTimeStamp,
+                            EndTimestamp: EndTimeStamp,
+                        }));
+                    }}
+                    onOk={onOk}
+                    defaultValue={defaultRange}
+                    presets={[
+                        {
+                            label: <span aria-label="Current Time to End of Day">Till Now today</span>,
+                            value: () => [dayjs().startOf('day'), dayjs()],
+                        },
+                        ...rangePresets,
+                    ]}
+                    className="border border-gray-300 rounded-r-md"
+                    style={{width: '50%'}}
+                />
+                </div>
                 <button type="submit" className="submit-button">Fetch Logs</button>
             </form>
+           
             {loadingKibana ? (
                 <div className="loading-container flex allign-center justify-center">
                     <Spin size="large" />

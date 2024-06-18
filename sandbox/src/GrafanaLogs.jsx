@@ -1,32 +1,54 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import CSVDataTable from "./CSVDataTable";
 import './GrafanaLogs.css';
 import { useGlobalState } from './GlobalState.jsx';
 import { Spin } from "antd";
-import StartToEndTime from './StartToEndTIme.jsx';
+import { useCluster } from "./ClusterContext.jsx";
+import { DatePicker} from 'antd';
+const { RangePicker } = DatePicker;
+import dayjs from 'dayjs';
 
+const rangePresets = [
+    {
+        label: 'Last Week',
+        value: [dayjs().add(-7, 'd'), dayjs()],
+    },
+    {
+        label: 'Last 2 Weeks',
+        value: [dayjs().add(-14, 'd'), dayjs()],
+    },
+    {
+        label: 'Last 30 days',
+        value: [dayjs().add(-30, 'd'), dayjs()],
+    },
+    {
+        label: 'Last 90 days',
+        value: [dayjs().add(-90, 'd'), dayjs()],
+    },
+];
 const GrafanaLogs = ({ subTab }) => {
-  const [csvData, setCsvData] = useState([]);
-  const { cname, setCname } = useGlobalState();
-  const [formInputs, setFormInputs] = useState({
-    input_start_date: '2023-06-06T08:00:00',
-    input_end_date: '2024-06-07T09:00:00',
-  });
+  const { 
+    cname, setCname,
+  } = useGlobalState();
+  const {
+    loadingGrafana, setLoadingGrafana,
+    grafanaFormInputs,setGrafanaFormInputs,
+    grafanaCSVData, setGrafanaCSVData,
+  } = useCluster();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-
+  
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormInputs(prevState => ({ ...prevState, [name]: value }));
   };
 
-  const [loading, setLoading] = useState(false);
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setLoading(true);
+    setLoadingGrafana(true);
     try{
       const payload = {
-        ...formInputs,
+        ...grafanaFormInputs,
         'tenantName': cname
       }
       const response = await fetch('http://localhost:4000/run-grafana-script', {
@@ -50,7 +72,7 @@ const GrafanaLogs = ({ subTab }) => {
       // Handle errors
     }
     finally {
-      setLoading(false);
+      setLoadingGrafana(false);
     }
   };
 
@@ -70,8 +92,7 @@ const GrafanaLogs = ({ subTab }) => {
         parsedData.push(row);
       }
     }
-
-    setCsvData(parsedData);
+    setGrafanaCSVData(parsedData);
   };
 
   const handleSearchChange = (event) => {
@@ -82,33 +103,52 @@ const GrafanaLogs = ({ subTab }) => {
     setFilterStatus(event.target.value);
   };
 
-  const filteredData = csvData.filter(row => {
+  const filteredData = grafanaCSVData.filter(row => {
     return (
       Object.values(row).some(value =>
         value.toLowerCase().includes(searchTerm.toLowerCase())
       ) && (filterStatus === "" || row["status"] === filterStatus)
     );
   });
-
+  console.log("gInputs: ",grafanaFormInputs);
+  const [startDateDefault, startTimeDefault]= grafanaFormInputs.input_start_date.split("T");
+  const [endDateDefault , endTimeDefault]= grafanaFormInputs.input_end_date.split("T");
+  const defaultRange = [dayjs(startDateDefault+'      '+startTimeDefault), dayjs(endDateDefault+'      '+endTimeDefault)];
   return (
     <div className="container">
-      <p className="text-3xl">Grafana Metrics</p>
+      <p className="text-3xl py-6">Grafana Metrics</p>
         <h1>{subTab}</h1>
-      <form onSubmit={handleSubmit} className="input-form">
-        {Object.keys(formInputs).map((key) => (
-          <div key={key} className="input-group">
-            <label className="input-label">
-              {key}:
-              <input
-                type="text"
-                name={key}
-                value={formInputs[key]}
-                onChange={handleInputChange}
-                className="input-field"
-              />
-            </label>
-          </div>
-        ))}
+      <form onSubmit={handleSubmit} className="input-form gap-4">
+        <div className='flex flex-row allign-center flex-grow'>
+            <span className="px-3 py-2 bg-gray-50 border border-gray-300 border-r-0 rounded-l-md font-semibold">Select Date and Time:</span>
+            <RangePicker
+                showTime={{ format: 'HH:mm:ss' }}
+                format="YYYY-MM-DD      HH:mm:ss"
+                onChange={(value, dateString) => {
+                    console.log('Selected Time: ', value);
+                    console.log('Formatted Selected Time: ', dateString);
+                    const [startDate,startTime]= dateString[0].split("      ");
+                    const [endDate, endTime]= dateString[1].split("      ");
+                    const StartTimeStamp= startDate+'T'+startTime;
+                    const EndTimeStamp= endDate+ 'T'+endTime;
+                    setGrafanaFormInputs(prevState => ({
+                        ...prevState,
+                        input_start_date: StartTimeStamp,
+                        input_end_date: EndTimeStamp,
+                    }));
+                }}
+                defaultValue={defaultRange}
+                presets={[
+                    {
+                        label: <span aria-label="Current Time to End of Day">Till Now today</span>,
+                        value: () => [dayjs().startOf('day'), dayjs()],
+                    },
+                    ...rangePresets,
+                ]}
+                className="border border-gray-300 rounded-r-md"
+                style={{width: '50%'}}
+            />
+        </div>
         <button type="submit" className="submit-button">Fetch Grafana Metrics</button>
       </form>
       <StartToEndTime/>
@@ -126,7 +166,7 @@ const GrafanaLogs = ({ subTab }) => {
           <option value="failure">Failure</option>
         </select> */}
       </div>
-      {loading ? (
+      {loadingGrafana ? (
           <div className="loading-container flex allign-center justify-center">
             <Spin size="large" />
           </div>
