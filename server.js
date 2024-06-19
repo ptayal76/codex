@@ -17,7 +17,7 @@ const { startRestApiMetricCollection } = require("./grafana_functions.js");
 const { fetchKibana } = require("./kibana_functions.js");
 const { CheckCorsCSP } = require("./corsCSP_functions.js");
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(bodyParser.json());

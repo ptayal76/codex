@@ -3,6 +3,7 @@ import { Button, Form, Input, Space , Spin} from 'antd';
 import NewTable from './newTable.jsx';
 import { useState ,useEffect } from 'react';
 import { useCluster } from "./ClusterContext.jsx";
+import { useGlobalState } from './GlobalState.jsx';
 const SubmitButton = ({ form, children, type }) => {
   const [submittable, setSubmittable] = React.useState(false);
 
@@ -28,6 +29,7 @@ const CheckConfigurations = () => {
         jsonCSPFile, setjsonCSPFile,
         loadingCSP, setLoadingCSP,
     }= useCluster();
+    const {apiUrl} = useGlobalState();
     const handleSubmit = async (values) => {
         const formData = {
             cluster_url: values.cluster_url,
@@ -35,7 +37,7 @@ const CheckConfigurations = () => {
         };
         setLoadingCSP(true);
         try {
-            const response = await fetch('http://localhost:4000/check-csp-cors-validation', {
+            const response = await fetch(`${apiUrl}/check-csp-cors-validation`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -28,7 +28,7 @@ const rangePresets = [
 ];
 const GrafanaLogs = ({ subTab }) => {
   const { 
-    cname, setCname,
+    cname, setCname,apiUrl
   } = useGlobalState();
   const {
     loadingGrafana, setLoadingGrafana,
@@ -51,7 +51,7 @@ const GrafanaLogs = ({ subTab }) => {
         ...grafanaFormInputs,
         'tenantName': cname
       }
-      const response = await fetch('http://localhost:4000/run-grafana-script', {
+      const response = await fetch(`${apiUrl}/run-grafana-script`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

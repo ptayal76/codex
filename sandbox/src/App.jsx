@@ -1,8 +1,4 @@
 import React, { useState, useEffect } from "react";
-import TabsComponent from "./TabsComponent.jsx";
-import ScrollableComponent from "./ScrollableComponent.jsx";
-import StyledComponent from "./StyledComponent.jsx";
-import ResponsiveComponent from "./ResponsiveComponent.jsx";
 import SearchBar from "./SearchBar.jsx";
 import FormComponent from './CreateKBCluster.jsx';
 import NavigationDrawer from './NavigationDrawer.jsx';
@@ -20,40 +16,6 @@ export default function App() {
   const [scrollableData, setScrollableData] = useState([]);
   const [activeTab, setActiveTab] = useState('checkCluster');
 
-  useEffect(() => {
-    const callApi = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/api/scrollable");
-        const data = await response.json();
-        setScrollableData(data);
-        console.log(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    callApi();
-  }, []);
-
-  const handleSearch = (query) => {
-    const dummyResults = [
-      {
-        title: `Result for ${query} 1`,
-        link: "#",
-        description: "This is a description for result 1.",
-      },
-      {
-        title: `Result for ${query} 2`,
-        link: "#",
-        description: "This is a description for result 2.",
-      },
-      {
-        title: `Result for ${query} 3`,
-        link: "#",
-        description: "This is a description for result 3.",
-      },
-    ];
-    setResults(dummyResults);
-  };
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -81,10 +43,7 @@ export default function App() {
       default:
         return (
           <>
-            <TabsComponent />
-            <ScrollableComponent response={scrollableData} />
-            <StyledComponent />
-            <ResponsiveComponent />
+            
           </>
         );
     }
@@ -96,7 +55,7 @@ export default function App() {
       <Heading />
       <NavigationDrawer onTabChange={handleTabChange} />
       <div className="main-content">
-        <SearchBar onSearch={handleSearch} />
+        <SearchBar />
         {/* <SearchResults results={results} /> */}
         <div className="py-10">
           {renderContent()}

@@ -7,6 +7,7 @@ import { useCluster } from "../ClusterContext.jsx";
 import { DatePicker , Input} from 'antd';
 const { RangePicker } = DatePicker;
 import dayjs from 'dayjs';
+import { useGlobalState } from "../GlobalState.jsx";
 
 const rangePresets = [
     {
@@ -34,12 +35,13 @@ function KibanaLogsContainer() {
         tableRowData, setTableRowData,
         kibanaFormInputs, setKibanaFormInputs,
     }= useCluster();
+    const {apiUrl}=useGlobalState();
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoadingKibana(true);
         console.log("Form submitted!  ->", kibanaFormInputs);
         try {
-            const response = await fetch('http://localhost:4000/trigger-kibana', {
+            const response = await fetch(`${apiUrl}/trigger-kibana`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

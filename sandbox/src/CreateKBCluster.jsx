@@ -23,6 +23,7 @@ const CreateKBCluster = () => {
   const {
     upgradeVersion
   } = useCluster();
+  const {apiUrl} = useGlobalState();
   const [k8sData, setK8sData] = useState({
     owner: owner_email,
     resource_name :"nebula-tse-testing1",
@@ -117,7 +118,7 @@ const CreateKBCluster = () => {
       image_tag: image_tag
     });
     console.log(awsData);
-    const response = await fetch('http://localhost:4000/run-AWS-cluster', {
+    const response = await fetch(`${apiUrl}/run-AWS-cluster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -141,7 +142,7 @@ const CreateKBCluster = () => {
       ...gcpdata,
       image_tag: image_tag
     });
-    const response = await fetch('http://localhost:4000/run-GCP-cluster', {
+    const response = await fetch(`${apiUrl}/run-GCP-cluster`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -25,6 +25,7 @@ const ClusterDetails = () => {
     scriptRunning,
     setScriptRunning,
   } = useCluster();
+  const {apiUrl}= useGlobalState();
   const [jsonSearchTerm, setJsonSearchTerm] = useState("");
   const [commandsSearchTerm, setCommandsSearchTerm] = useState("");
   const [flagsSearchTerm, setFlagsSearchTerm] = useState("");
@@ -32,66 +33,6 @@ const ClusterDetails = () => {
   const flagsRef = useRef(null);
   const { cname, setCname } = useGlobalState();
   const { cenv, setCenv } = useGlobalState();
-
-  
-
-  // const renderData = () => {
-  //   fetch("./cluster_scripts/clusterDetails.txt")
-  //     .then((response) => response.text())
-  //     .then((text) => {
-  //       try {
-  //         const json = JSON.parse(text);
-  //         setJsonData(json);
-  //       } catch (error) {
-  //         console.error("Error parsing JSON:", error);
-  //       }
-  //     });
-
-  //   fetch("./cluster_scripts/clusterVersion.txt")
-  //     .then((response) => response.text())
-  //     .then((text) => {
-  //       setClusterVersion(text);
-  //     });
-
-  //   const fetchCommands = async () => {
-  //     try {
-  //       const response = await fetch("http://localhost:4000/commands-array");
-  //       const data = await response.json();
-  //       setCommands(data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-  //   fetchCommands();
-
-  //   const fetchPatches = async () => {
-  //     try {
-  //       const response = await fetch("http://localhost:4000/patches-array");
-  //       const data = await response.json();
-  //       setAppliedPatches(data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-  //   fetchPatches();
-
-  //   fetch("./cluster_scripts/version.txt")
-  //     .then((response) => response.text())
-  //     .then((text) => {
-  //       setVersionInfo(text);
-  //     });
-
-  //   fetch("./cluster_scripts/flagDetails.txt")
-  //     .then((response) => response.text())
-  //     .then((text) => {
-  //       try {
-  //         const json = JSON.parse(text);
-  //         setFlagsData(json);
-  //       } catch (error) {
-  //         console.error("Error parsing JSON:", error);
-  //       }
-  //     });
-  // };
 
   const renderJson = (data, searchTerm = "") => {
     const filterData = (data) => {
@@ -196,7 +137,7 @@ const ClusterDetails = () => {
         env: cenv,
       };
       console.log(clusterdata)
-      const response = await fetch("http://localhost:4000/get-cluster-info", {
+      const response = await fetch(`${apiUrl}/get-cluster-info`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

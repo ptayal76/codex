@@ -3,11 +3,13 @@ import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { useCluster } from "./ClusterContext";
+import { useGlobalState } from './GlobalState';
 
 const PatchesApply = ({ownerEmail, clusterName, env}) => {
     const {
         appliedPatches
     } = useCluster();
+    const {apiUrl} = useGlobalState();
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const [filteredData, setFilteredData] = useState([]);
@@ -78,7 +80,7 @@ const PatchesApply = ({ownerEmail, clusterName, env}) => {
         setIsLoading(true);
         if(selectedValues!==''){
             try {
-                const response = await fetch('http://localhost:4000/apply-patch', {
+                const response = await fetch(`${apiUrl}/apply-patch`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

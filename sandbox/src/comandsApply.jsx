@@ -3,6 +3,7 @@ import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { useCluster } from "./ClusterContext";
+import { useGlobalState } from './GlobalState';
 
 const CommandsApply = ({ownerEmail, clusterName, env}) => {
     const [searchText, setSearchText] = useState('');
@@ -16,6 +17,7 @@ const CommandsApply = ({ownerEmail, clusterName, env}) => {
     const {
         commands
     } = useCluster();
+    const {apiUrl} = useGlobalState();
     const handleChange = (selectedKeys, confirm, dataIndex) => {
         setSearchText(selectedKeys[0]);
         setSearchedColumn(dataIndex);
@@ -80,7 +82,7 @@ const CommandsApply = ({ownerEmail, clusterName, env}) => {
         setIsLoading(true);
         if(selectedValues!==''){
             try {
-                const response = await fetch('http://localhost:4000/apply-commands', {
+                const response = await fetch(`${apiUrl}/apply-commands`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
