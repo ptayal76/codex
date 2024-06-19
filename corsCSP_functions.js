@@ -5,71 +5,75 @@ const https = require('https');
 
 dotenv.config();
 const checkCors = async (inputUrl, domain) => {
-    // return new Promise((resolve) => {
-        const url = `${inputUrl}/api/rest/2.0/auth/token/full`;
+  const url = `${inputUrl}/api/rest/2.0/auth/token/full`;
 
-        const payload = JSON.stringify({
-            "username": "tsadmin",
-            "validity_time_in_sec": 3000,
-            "org_id": 0,
-            "password": "admin",
-            "user_parameters": {
-                "runtime_filters": [
-                    {
-                        "column_name": "Color",
-                        "operator": "IN",
-                        "values": [
-                            "red",
-                            "green"
-                        ],
-                        "persist": true
-                    }
-                ],
-                "parameters": [],
-                "runtime_sorts": []
-            }
-        });
+  const payload = JSON.stringify({
+      "username": "tsadmin",
+      "validity_time_in_sec": 3000,
+      "org_id": 0,
+      "password": "admin",
+      "user_parameters": {
+          "runtime_filters": [
+              {
+                  "column_name": "Color",
+                  "operator": "IN",
+                  "values": [
+                      "red",
+                      "green"
+                  ],
+                  "persist": true
+              }
+          ],
+          "parameters": [],
+          "runtime_sorts": []
+      }
+  });
 
-        const headers = {
-        'accept': 'application/json',
-        'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
-        'content-type': 'application/json',
-        'origin': domain,
-        'priority': 'u=1, i',
-        'referer': domain,
-        'sec-ch-ua': '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"macOS"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'cross-site'
-        };
-        let reachable = "TRUE";
-        // console.log("hi1")
-        const agent = new https.Agent({  
-            rejectUnauthorized: false
-          });
-          
-        try {
-            reachable = "TRUE";
-            const optResp = await axios.options(url, { headers: headers, data: payload, timeout: 5000,httpsAgent: agent });
-            // console.log(optResp)
-            if (optResp.status === 204) {
-                return ["PASS", reachable];
-            } else if (optResp.status === 404) {
-                return ["FAIL", reachable];
-            }
-        } catch (error) {
-            if (error.response) {
-                reachable = `HTTP error occurred: ${error.response.statusText}`;
-            } else if (error.request) {
-                reachable = `No response received: ${error.message}`;
-            } else {
-                reachable = `Request error occurred: ${error.message}`;
-            }
-            console.log(err)
-        }
-        return ["UNVERIFIED", reachable];
+  const headers = {
+      'accept': 'application/json',
+      'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+      'content-type': 'application/json',
+      'origin': domain,
+      'priority': 'u=1, i',
+      'referer': domain,
+      'sec-ch-ua': '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"macOS"',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'cross-site'
+  };
+  let reachable = "TRUE";
+
+  const agent = new https.Agent({  
+      rejectUnauthorized: false
+  });
+
+  try {
+      const optResp = await axios.options(url, { headers: headers, data: payload, timeout: 5000, httpsAgent: agent });
+      
+      if (optResp.status === 204) {
+          return ["PASS", "TRUE"];
+      } else if (optResp.status === 404) {
+          return ["FAIL", "TRUE"];
+      } 
+      // else {
+      //     return ["UNVERIFIED", "TRUE"];
+      // }
+  } catch (error) {
+      if (error.code === 'ECONNABORTED') {
+          // Handle timeout error
+          return ["UNVERIFIED", "TIMEOUT"]; // Assuming TIMEOUT status needs to be handled separately
+      } else if (error.response) {
+        reachable = `HTTP error occurred: ${error.response.statusText}`;
+    } else if (error.request) {
+        reachable = `No response received: ${error.message}`;
+    } else {
+        reachable = `Request error occurred: ${error.message}`;
+    }
+    console.log(err)
+}
+return ["UNVERIFIED", reachable];
 };
 
 
