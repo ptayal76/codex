@@ -11,9 +11,11 @@ const {
   createAWSSaasCluster,
   applyPatches,
   applyTSCLICommands,
+  createGCPSaasCluster
 } = require("./clusterFunctions.js"); // Replace 'yourFileName' with the actual filename where getAllClusterInfo is defined
 const { startRestApiMetricCollection } = require("./grafana_functions.js");
 const { fetchKibana } = require("./kibana_functions.js");
+const { CheckCorsCSP } = require("./corsCSP_functions.js");
 const app = express();
 const PORT = 4000;
 
@@ -21,7 +23,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use(express.json());
-const pythonExecutable = "/usr/local/bin/python3"; // Replace with your actual path
+// const pythonExecutable = "/usr/local/bin/python3"; // Replace with your actual path
 // const pythonExecutable = '/opt/homebrew/bin/python3.11'; // Replace with your actual path
 //const pythonExecutable = '/usr/bin/python3'; // Replace with your actual path
 
@@ -119,58 +121,76 @@ app.post("/run-AWS-cluster", async (req, res) => {
   }
 });
 
-app.post("/run-GCP-cluster", (req, res) => {
+app.post("/run-GCP-cluster", async (req, res) => {
   const { cluster_name, owner_email, image_tag } = req.body;
-  console.log(req.body);
-  const scriptPath = path.join(
-    __dirname,
-    "cluster_scripts",
-    "codex-metrics-final.py"
+  console.log(
+    `Creating GCP cluster: ${cluster_name}, ${owner_email}, ${image_tag}`
   );
-  console.log(scriptPath);
-  const pythonProcess = spawn(pythonExecutable, [
-    scriptPath,
-    "--cluster_name",
-    cluster_name,
-    "--owner_email",
-    owner_email,
-    "--scenario_type",
-    2,
-    "--image_tag",
-    image_tag,
-  ]);
-  pythonProcess.stdout.on("data", () => {
-    return res.status(200).json({ status: "Successfull" });
-  });
-  pythonProcess.stderr.on("data", (data) => {
-    console.error(`Python script stderr: ${data}`);
-  });
-  pythonProcess.on("close", (code) => {
-    console.log(`Python script exited with code ${code}`);
-    if (code === 0) {
-      console.log("Script run successfully");
-      fs.readFile("./sandbox/cluster_scripts/gcp.txt", "utf8", (err, data) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send("Error reading file");
-        } else {
-          // Remove leading and trailing brackets and quotes
-          if (data == "201") {
-            res.status(200).json({ status: "Successful" });
-          } else {
-            res
-              .status(500)
-              .json({ status: "Error", error: `Cluster not created` });
-          }
-        }
-      });
+  try {
+    const status = await createGCPSaasCluster(
+      cluster_name,
+      owner_email,
+      image_tag
+    );
+    if (status >= 200 && status < 300) {
+      res.status(200).json({ status: "Successful" });
     } else {
-      res.status(500).json({
-        status: "Error",
-        error: `Python script exited with code ${code}`,
-      });
+      res.status(500).json({ error: "Internal server error" });
     }
-  });
+  } catch (error) {
+    console.error("Error creating GCP cluster:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+
+  // const scriptPath = path.join(
+  //   __dirname,
+  //   "cluster_scripts",
+  //   "codex-metrics-final.py"
+  // );
+  // console.log(scriptPath);
+  // const pythonProcess = spawn(pythonExecutable, [
+  //   scriptPath,
+  //   "--cluster_name",
+  //   cluster_name,
+  //   "--owner_email",
+  //   owner_email,
+  //   "--scenario_type",
+  //   2,
+  //   "--image_tag",
+  //   image_tag,
+  // ]);
+  // pythonProcess.stdout.on("data", () => {
+  //   return res.status(200).json({ status: "Successfull" });
+  // });
+  // pythonProcess.stderr.on("data", (data) => {
+  //   console.error(`Python script stderr: ${data}`);
+  // });
+  // pythonProcess.on("close", (code) => {
+  //   console.log(`Python script exited with code ${code}`);
+  //   if (code === 0) {
+  //     console.log("Script run successfully");
+  //     fs.readFile("./sandbox/cluster_scripts/gcp.txt", "utf8", (err, data) => {
+  //       if (err) {
+  //         console.error(err);
+  //         res.status(500).send("Error reading file");
+  //       } else {
+  //         // Remove leading and trailing brackets and quotes
+  //         if (data == "201") {
+  //           res.status(200).json({ status: "Successful" });
+  //         } else {
+  //           res
+  //             .status(500)
+  //             .json({ status: "Error", error: `Cluster not created` });
+  //         }
+  //       }
+  //     });
+  //   } else {
+  //     res.status(500).json({
+  //       status: "Error",
+  //       error: `Python script exited with code ${code}`,
+  //     });
+  //   }
+  // });
 });
 
 app.post("/get-cluster-info", async (req, res) => {
@@ -213,40 +233,14 @@ app.post("/check-csp-cors-validation", async (req, res) => {
   console.log("cluster_url : ", cluster_url);
   console.log("domain: ", domain);
 
-  // try {
-  //   const response = await CheckCorsCSP(cluster_url, domain);
-  //   console.log(response)
-  //   res.json(response); // Send the response as JSON
-  // } catch (error) {
-  //   res.status(500).json({ error: error.message });
-  // }
+  try {
+    const response = await CheckCorsCSP(cluster_url, domain);
+    console.log(response)
+    res.json(response); // Send the response as JSON
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 
-  const fullPath = path.join(__dirname, "cluster_scripts/CorsCSP.py");
-  const pythonProcess = spawn(pythonExecutable, [
-    fullPath,
-    cluster_url,
-    domain,
-  ]);
-  console.log("Python script started");
-  // pythonProcess.stdout.on('data', (data) => {
-  //   console.log("Output from Python script: ", data);
-  // });
-  pythonProcess.stderr.on("data", (data) => {
-    console.error(`Python script stderr: ${data}`);
-  });
-
-  const JSONFilePath = "./CorsCsp.txt";
-  pythonProcess.on("close", (code) => {
-    fs.readFile(JSONFilePath, "utf8", (err, fileData) => {
-      if (err) {
-        console.error(`readFile error: ${err}`);
-        return res.status(500).json({ error: err.message });
-      }
-      res.json(fileData);
-      // cleanup
-      console.log("fileData:", fileData);
-    });
-  });
 });
 app.post("/apply-patch", async (req, res) => {
   const { owner_email, cluster_name, patch, env } = req.body;

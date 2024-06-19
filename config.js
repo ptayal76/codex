@@ -15,6 +15,7 @@ module.exports = {
     },
     username: process.env.USERNAME,
     password: process.env.PASSWORD,
+    gcpAuth: process.env.GCP_TOKEN,
     headers: {
         "Content-Type": "application/json",
         "Accept": "application/json"

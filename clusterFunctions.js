@@ -7,7 +7,8 @@ const {
     headersProd,
     username,
     password,
-    headers
+    headers,
+    gcpAuth
 } = require('./config');
 async function getAllClusterInfo(clusterName, env) {
     let page = 0;
@@ -189,7 +190,7 @@ async function getFlagDetails(clusterId, env) {
 
 async function createAWSSaasCluster(clusterName, ownerEmail, imageTag, feature, team) {
 
-    const url = "https://life-cycle-manager.internal.thoughtspotdev.cloud/api/v2/clusters";
+    const url = `${hostnameDev}/api/v2/clusters`;
 
     const commonTags = {
         "Owner": ownerEmail,
@@ -236,6 +237,68 @@ async function createAWSSaasCluster(clusterName, ownerEmail, imageTag, feature, 
     } catch (error) {
         console.error('Error creating AWS SaaS cluster:', error);
         throw error;
+    }
+}
+
+async function createGCPSaasCluster(clusterName, ownerEmail, imageTag) {
+    const url = "https://ops.internal.thoughtspotdev.cloud/api/v1/kube-server/apis/thoughtspot.com/v2/namespaces/cosmos/tenants";
+
+    const headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": gcpAuth
+    };
+
+    const requestBody = {
+        "apiVersion": "thoughtspot.com/v2",
+        "kind": "Tenant",
+        "metadata": {
+            "name": "replace-with-id",
+            "namespace": "cosmos"
+        },
+        "spec": {
+            "adminEmail": ownerEmail,
+            "applyFleetPatches": true,
+            "billingModel": "Query",
+            "data_disk_size": 200,
+            "dns": clusterName,
+            "dryRun": false,
+            "enableWakeupKey": false,
+            "env": {
+                "atomID": "1dd1a600-92ba-462e-b745-d8fc8d1b1e80",
+                "cellID": "611a9ce4-63f0-4979-a43a-98e10b39",
+                "cloud": "GCP",
+                "gcp": {
+                    "project": "ts-dev-03",
+                    "region": "us-east4"
+                },
+                "tenantID": ""
+            },
+            "eulaGracePeriod": 0,
+            "fasterDeliveryEnabled": false,
+            "idlesenseEnabled": false,
+            "isClusterIdle": false,
+            "maintenance": false,
+            "mode": "Active",
+            "nodeType": "e2-highmem-8",
+            "paid": false,
+            "productType": "ENTERPRISE",
+            "release": imageTag,
+            "sku": "ts-100s-1-ent-prod-500u-cloud-pot",
+            "tags": {
+                "classification": "restricted",
+                "ephemeral": false
+            },
+            "useSpotVM": true
+        }
+    };
+
+    try {
+        const response = await axios.post(url, requestBody, { headers });
+        return response.status;
+    } catch (error) {
+        console.error(`Error: ${error.response ? error.response.status : error.message}`);
+        return error.response ? error.response.status : 500;
     }
 }
 
@@ -397,4 +460,4 @@ async function applyTSCLICommands(clusterName,userEmail,commands, env) {
     }
 }
 
-module.exports = { getAllClusterInfo,getFlagDetails,createAWSSaasCluster,applyPatches,getClusterVersion,applyTSCLICommands };
+module.exports = { getAllClusterInfo,getFlagDetails,createAWSSaasCluster,applyPatches,getClusterVersion,applyTSCLICommands,createGCPSaasCluster };
