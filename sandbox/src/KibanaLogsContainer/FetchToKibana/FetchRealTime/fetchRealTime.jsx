@@ -1,11 +1,14 @@
 import {React, useState} from "react";
-import { Input } from 'antd';
+import { Input, message } from 'antd';
 import { Radio , Select} from 'antd';
 import { useCluster } from "../../../ClusterContext.jsx";
 const FetchRealTime = ()=> {
     const [cenv, setCenv]= useState("staging");
     const userEmail= "tanmay.pani@thoughtspot.com";
-    const [anyMessage, setAnyMessage]= useState(null);
+    const [anyMessage, setAnyMessage]= useState({
+        message: null,
+        status: null
+    });
     const [permanentFileService, setPermanentFileService]= useState({
         files: null,
         services: null
