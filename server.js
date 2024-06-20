@@ -21,7 +21,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.use(express.json());
 // const pythonExecutable = "/usr/local/bin/python3"; // Replace with your actual path
@@ -305,3 +305,4 @@ app.post("/apply-commands", async (req, res) => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
   
+  module.exports = {app};
