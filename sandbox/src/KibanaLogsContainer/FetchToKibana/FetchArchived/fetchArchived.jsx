@@ -214,7 +214,7 @@ const FetchArchived = ()=> {
                                 setCenv(value)
                                 setArchivedFormInputs({
                                     ...archivedFormInputs,
-                                    env: cenv
+                                    env: value
                                 })
                             }}
                             size="default"

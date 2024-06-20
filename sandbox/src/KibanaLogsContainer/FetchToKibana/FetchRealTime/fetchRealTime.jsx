@@ -13,10 +13,6 @@ const FetchRealTime = ()=> {
         files: null,
         services: null
     })
-    const [temporaryFileService, setTemporaryFileService]= useState({
-        files: null,
-        services: null
-    })
     const {kibanaFormInputs}= useCluster();
     const { Cluster_Id}= kibanaFormInputs;
     const [realTimeFormInputs, setRealTimeFormInputs]= useState({
