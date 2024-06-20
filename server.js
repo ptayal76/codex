@@ -5,6 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
 const { default: cluster } = require("cluster");
+
 const {
   getAllClusterInfo,
   getFlagDetails,
@@ -14,7 +15,7 @@ const {
   createGCPSaasCluster
 } = require("./clusterFunctions.js"); // Replace 'yourFileName' with the actual filename where getAllClusterInfo is defined
 const { startRestApiMetricCollection } = require("./grafana_functions.js");
-const { fetchKibana } = require("./kibana_functions.js");
+const { fetchKibana, getArchivedLogs, getLogCollectionStatus, enableLogCollection, enableRealTimeFetchLogs } = require("./kibana_functions.js");
 const { CheckCorsCSP } = require("./corsCSP_functions.js");
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -27,6 +28,7 @@ app.use(express.json());
 // const pythonExecutable = '/opt/homebrew/bin/python3.11'; // Replace with your actual path
 //const pythonExecutable = '/usr/bin/python3'; // Replace with your actual path
 
+//kibana API's
 app.post("/trigger-kibana", async (req, res) => {
   const { Cluster_Id, StartTimestamp, EndTimestamp } = req.body;
   console.log(Cluster_Id);
@@ -36,10 +38,25 @@ app.post("/trigger-kibana", async (req, res) => {
   res.json(kibanaData);
   console.log("kibaana data:: ", kibanaData);
 });
-
-app.get("/", (req, res) => {
-  res.json({ message: "Hello from the backend!" });
-});
+app.post("/fetch-archived-logs", async (req,res)=>{
+  const { clusterId, userEmail, files, logDuration, services, startDate, env } =req.body;
+  console.log("fetch-archived-logs triggered");
+  console.log(`clusterId: ${clusterId}, useremail: ${userEmail}, files: ${files}, logDuration: ${logDuration}, services : ${services}, startDate: ${startDate}, env: ${env}`);
+  const date = new Date(startDate);
+  const unixTimestamp = Math.floor(date.getTime() / 1000);
+  console.log("unixTimeStamp : ", unixTimestamp);
+  const archivedLogsStatus= await getArchivedLogs(clusterId, userEmail, files,logDuration, services, unixTimestamp, env);
+  res.json(archivedLogsStatus);
+  console.log("archivedLogsStatus: ", archivedLogsStatus);
+})
+app.post("/fetch-real-time-logs", async (req,res)=>{
+  const { clusterId, userEmail, files, logDuration, services, env } =req.body;
+  console.log("fetch-realTime-logs triggered");
+  console.log(`clusterId: ${clusterId}, useremail: ${userEmail}, files: ${files}, logDuration: ${logDuration}, services : ${services}, env: ${env}`);
+  const realTimeLogsStatus= await enableRealTimeFetchLogs(clusterId, userEmail, files,logDuration, services, env);
+  res.json(realTimeLogsStatus);
+  console.log("realTimeLogsStatus: ", realTimeLogsStatus);
+})
 
 app.post("/run-grafana-script", async (req, res) => {
   const { input_start_date, input_end_date, tenantName } = req.body;
@@ -58,7 +75,7 @@ app.post("/run-grafana-script", async (req, res) => {
       tenantName,
       statusCodeRegex
     );
-
+    
     res.json({ csvContent: csvContent });
     // });
   } catch (error) {
@@ -220,7 +237,7 @@ app.post("/get-cluster-info", async (req, res) => {
       patches,
       flagsData: flagDetails, // Assuming this is part of your data structure
     };
-
+    
     res.json(responseData); // Send the combined data in response
   } catch (error) {
     console.error("Error running check cluster script:", error);
@@ -284,6 +301,7 @@ app.post("/apply-commands", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
+  

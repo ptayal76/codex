@@ -3,6 +3,18 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
+const dotenv = require('dotenv');
+dotenv.config();
+
+const hostnameProd = "https://life-cycle-manager.internal.thoughtspot.cloud";
+const hostnameDev = "https://life-cycle-manager.internal.thoughtspotdev.cloud";
+const hostnameStaging = "https://life-cycle-manager.internal.thoughtspotstaging.cloud";
+const username = process.env.USERNAME;
+const password = process.env.PASSWORD;
+const prodToken = process.env.PROD_TOKEN;
+const repoUrl = "https://galaxy.corp.thoughtspot.com/dev/scaligent.git";
+const gcpAuth = process.env.GCP_TOKEN;
+
 // Load environment variables
 const stateToken = process.env.KIBANA_STATE_TOKEN;
 const refreshToken = process.env.KIBANA_REFRESH_TOKEN;
@@ -12,8 +24,10 @@ const url = "https://vpc-cosmos-logs-4wtep3mnjhirrckhgaaqedsrtq.us-west-2.es.ama
 const prodUrl = "https://vpc-cosmos-logs-vtnxecylwjjggwhuqg66jqrw6y.us-east-1.es.amazonaws.com";
 
 // Main function
+
 const fetchKibana = async (cluster_id, initial_time, end_time) => {
     // console.log({stateToken,refreshToken})
+    console.log(`clusterId : ${cluster_id}  initial_time: ${initial_time}   end_time: ${end_time}`);
     const payload = {
         "params": {
             "index": "tenant-*",
@@ -130,5 +144,192 @@ const fetchKibana = async (cluster_id, initial_time, end_time) => {
     }
 };
 
+async function getArchivedLogs(clusterId, userEmail, files, logDuration, services, startDate,env) {
+    if (!clusterId) {
+        return null;
+    }
+    console.log("inside");
+    console.log(`clusterId: ${clusterId}, useremail: ${userEmail}, files: ${files}, logDuration: ${logDuration}, services : ${services}, startDate: ${startDate}`);
+    const headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Email": userEmail
+    };
+
+    const requestBody = {
+        files: files,
+        logDuration: logDuration,
+        services: services,
+        startDate: startDate
+    };
+    let url;
+    let options = {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(requestBody)
+    };
+
+    if (env === "prod") {
+        headers["Authorization"] = `Basic ${prodToken}`;
+        url = `${hostnameProd}/api/v2/clusters/${clusterId}/archivedlogs`;
+    } else if (env === "dev") {
+        url = `${hostnameDev}/api/v2/clusters/${clusterId}/archivedlogs`;
+        options.headers = {
+            ...headers,
+            "Authorization": `Basic ${btoa(username + ':' + password)}`
+        };
+    } else {
+        url = `${hostnameStaging}/api/v2/clusters/${clusterId}/archivedlogs`;
+        options.headers = {
+            ...headers,
+            "Authorization": `Basic ${btoa(username + ':' + password)}`
+        };
+    }
+
+    const response = await fetch(url, options);
+    const data = await response.json();
+    const required_object= {
+        status: response.status,
+        message: data.message
+    }
+    return required_object;
+}
+
+
+async function getLogCollectionStatus(clusterId, userEmail, env) {
+    if (!clusterId) {
+        return null;
+    }
+
+    const headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Email": userEmail
+    };
+
+    let currUrl;
+    let response;
+
+    if (env === "prod") {
+        headers["Authorization"] = `Basic ${prodToken}`;
+        currUrl = `${hostnameProd}/api/v2/clusters/${clusterId}/logcollection`;
+        response = await fetch(currUrl, {
+            method: "GET",
+            headers: headers
+        });
+    } else if (env === "dev") {
+        currUrl = `${hostnameDev}/api/v2/clusters/${clusterId}/logcollection`;
+        response = await fetch(currUrl, {
+            method: "GET",
+            headers: headers,
+            credentials: 'include' // Assuming the same credentials for dev and staging
+        });
+    } else {
+        currUrl = `${hostnameStaging}/api/v2/clusters/${clusterId}/logcollection`;
+        response = await fetch(currUrl, {
+            method: "GET",
+            headers: headers,
+            credentials: 'include' // Assuming the same credentials for dev and staging
+        });
+    }
+    return response.status;
+}
+
+async function enableLogCollection(clusterName, userEmail, env) {
+    const clusterId = await getClusterVersion(clusterName, env);
+    if (!clusterId) {
+        return null;
+    }
+
+    const headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Email": userEmail
+    };
+
+    let url, options;
+    if (env === "prod") {
+        url = `${hostnameProd}/api/v2/clusters/${clusterId}/logcollection/enable`;
+        options = {
+            method: 'POST',
+            headers: headersProd
+        };
+    } else if (env === "dev") {
+        url = `${hostnameDev}/api/v2/clusters/${clusterId}/logcollection/enable`;
+        options = {
+            method: 'POST',
+            headers: headers,
+            auth: {
+                username: username,
+                password: password
+            }
+        };
+    } else {
+        url = `${hostnameStaging}/api/v2/clusters/${clusterId}/logcollection/enable`;
+        options = {
+            method: 'POST',
+            headers: headers,
+            auth: {
+                username: username,
+                password: password
+            }
+        };
+    }
+
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+        throw new Error('Failed to enable log collection');
+    }
+
+    return response.status;
+}
+
+async function enableRealTimeFetchLogs(clusterId, userEmail, files, logDuration, services,env){
+    console.log("inside");
+    console.log(`clusterId: ${clusterId}, useremail: ${userEmail}, files: ${files}, logDuration: ${logDuration}, services : ${services}`);
+    const headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Email": userEmail
+    };
+    const requestBody = {
+        active: true,
+        files: files,
+        activeMinutes: logDuration,
+        services: services,
+    };
+    let url;
+    let options = {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(requestBody)
+    };
+
+    if (env === "prod") {
+        headers["Authorization"] = `Basic ${prodToken}`;
+        url = `${hostnameProd}/api/v2/clusters/${clusterId}/realtimelogs`;
+    } else if (env === "dev") {
+        url = `${hostnameDev}/api/v2/clusters/${clusterId}/realtimelogs`;
+        options.headers = {
+            ...headers,
+            "Authorization": `Basic ${btoa(username + ':' + password)}`
+        };
+    } else {
+        url = `${hostnameStaging}/api/v2/clusters/${clusterId}/realtimelogs`;
+        options.headers = {
+            ...headers,
+            "Authorization": `Basic ${btoa(username + ':' + password)}`
+        };
+    }
+    const response = await fetch(url, options);
+    const data = await response.json();
+    const required_object= {
+        status: response.status,
+        message: data.message
+    }
+    return required_object;
+}
+
 // Call the main function with appropriate arguments
-module.exports = {fetchKibana}
+module.exports = {fetchKibana, getArchivedLogs, getLogCollectionStatus, enableLogCollection, enableRealTimeFetchLogs}

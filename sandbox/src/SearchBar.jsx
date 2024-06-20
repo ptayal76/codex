@@ -19,7 +19,7 @@ const SearchBar = () => {
         <Input placeholder="Search..." addonBefore={<strong>Cluster Name :</strong>} onChange={handleInputChange} size="large"/>
       </div>
       <Select
-        defaultValue="dev"
+        defaultValue={cenv}
         style={{
             width: 120,
         }}

@@ -2,9 +2,10 @@ import { useState } from "react";
 import MyTable from './Table/table.jsx';
 import './kibanaLogsContainer.css';
 import '../GrafanaLogs.css';
-import { Spin } from "antd";
+import KibanaTabs from "./FetchToKibana/tabs.jsx";
+import { Spin, Tabs } from "antd";
 import { useCluster } from "../ClusterContext.jsx";
-import { DatePicker , Input} from 'antd';
+import { DatePicker , Input, Collapse} from 'antd';
 const { RangePicker } = DatePicker;
 import dayjs from 'dayjs';
 import { useGlobalState } from "../GlobalState.jsx";
@@ -105,9 +106,9 @@ function KibanaLogsContainer() {
     const [endDateDefault , endTimeDefault]= kibanaFormInputs.EndTimestamp.split("T");
     const defaultRange = [dayjs(startDateDefault+'      '+startTimeDefault), dayjs(endDateDefault+'      '+endTimeDefault)];
     return (
-        <div className="container">
-            <p className="text-3xl py-8">Kibana Logs</p>
-            <form onSubmit={handleSubmit} className="input-form gap-6">
+        <div className="container flex flex-col gap-6">
+            <p className="text-3xl">Kibana Logs</p>
+            <div onSubmit={handleSubmit} className="input-form gap-6 flex flex-col">
                 <Input addonBefore={<strong>Cluster ID :</strong>} onChange={handleInputChange} size="large" defaultValue={kibanaFormInputs.Cluster_Id}/>    
                 <div className='flex flex-row allign-center flex-grow'>
                 <span className="px-3 py-2 bg-gray-50 border border-gray-300 border-r-0 rounded-l-md font-semibold">Select Date and Time:</span>
@@ -140,8 +141,18 @@ function KibanaLogsContainer() {
                     style={{width: '50%'}}
                 />
                 </div>
-                <button type="submit" className="submit-button">Fetch Logs</button>
-            </form>
+                <Collapse
+                    size="large"
+                    items={[
+                        {
+                        key: '1',
+                        label: <strong>Trigger logs to Kibana</strong>,
+                        children: <KibanaTabs/>,
+                        },
+                    ]}
+                />
+                <button className="submit-button" onClick={handleSubmit}>Fetch Logs</button>
+            </div>
            
             {loadingKibana ? (
                 <div className="loading-container flex allign-center justify-center">
