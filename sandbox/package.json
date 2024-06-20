@@ -12,8 +12,10 @@
   "dependencies": {
     "antd": "^5.18.0",
     "chart.js": "4.4.3",
+    "dayjs": "^1.11.11",
     "dotenv": "^16.4.5",
     "moment": "^2.30.1",
+    "network-viewer": "^1.1.14",
     "papaparse": "^5.4.1",
     "react": "^18.2.0",
     "react-calendar": "^5.0.0",

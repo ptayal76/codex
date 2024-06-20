@@ -72,6 +72,12 @@ const NavigationDrawer = ({ onTabChange }) => {
             <img src="/static/icons/sandbox-svgrepo-com.svg" alt="Sandbox" className="tab-icon"/>
             Sandbox
           </div>
+          <div
+              className={`tab ${activeTab === 'harAnalyze' && 'active'}`}
+              onClick={() => handleTabClick('harAnalyze')}
+          >
+            HAR Analyze
+          </div>
         </div>
       </div>
   );

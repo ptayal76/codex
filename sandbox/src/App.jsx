@@ -10,6 +10,7 @@ import KibanaLogsContainer from './KibanaLogsContainer/kibanaLogsContainer.jsx';
 import CheckConfigurations from "./checkConfigurations.jsx";
 import Heading from './Heading';
 import { ClusterProvider } from './ClusterContext';
+import HarAnalyze from "./Har_analyse.jsx";
 
 export default function App() {
   const [results, setResults] = useState([]);
@@ -40,6 +41,8 @@ export default function App() {
           return <KibanaLogsContainer/>;
       case 'checkConfig':
         return <CheckConfigurations/>
+        case 'harAnalyze':
+          return <HarAnalyze/>
       default:
         return (
           <>

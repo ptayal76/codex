@@ -21,7 +21,7 @@ const refreshToken = process.env.KIBANA_REFRESH_TOKEN;
 
 // Define the URLs
 const url = "https://vpc-cosmos-logs-4wtep3mnjhirrckhgaaqedsrtq.us-west-2.es.amazonaws.com";
-const prodUrl = "https://vpc-cosmos-logs-vtnxecylwjjggwhuqg66jqrw6y.us-east-1.es.amazonaws.com";
+// const url = "https://vpc-cosmos-logs-vtnxecylwjjggwhuqg66jqrw6y.us-east-1.es.amazonaws.com";
 
 // Main function
 

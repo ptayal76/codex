@@ -97,6 +97,7 @@ const CommandsApply = ({ownerEmail, clusterName, env}) => {
                         console.log("response from apply-commands: ", res);
                         //here is the response in string format
                     }
+                    alert("Patches are being Applied.")
                 }
             } catch (error) {
                 console.error('Error:', error);

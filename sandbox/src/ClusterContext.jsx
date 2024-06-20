@@ -19,7 +19,7 @@ export const ClusterProvider = ({ children }) => {
   //for grafana
   const [loadingGrafana, setLoadingGrafana]= useState(false);
   const [grafanaFormInputs, setGrafanaFormInputs]= useState({
-    input_start_date: '2023-06-06T08:00:00',
+    input_start_date: '2024-06-06T08:00:00',
     input_end_date: '2024-06-07T09:00:00',
   });
   const [grafanaCSVData, setGrafanaCSVData]= useState([]);

@@ -95,6 +95,7 @@ const PatchesApply = ({ownerEmail, clusterName, env}) => {
                         console.log("response from apply-patch")
                         //response as a string
                     }
+                    alert("Patches are being Applied.")
                 }
             } catch (error) {
                 console.error('Error:', error);
