@@ -29,6 +29,19 @@ app.use(express.json());
 //const pythonExecutable = '/usr/bin/python3'; // Replace with your actual path
 
 //kibana API's
+app.get("/", (req, res) => {
+  console.log("hi");
+  if (req.method === "OPTIONS") {
+    res.status = 200;
+    res.send();
+  }
+  res.json({ message: "Hello from the backend!" });
+});
+
+app.get("/api/v1/emojies", (req, res) => {
+  console.log("hi");
+  res.json({ message: [1,2,3,4] });
+});
 app.post("/trigger-kibana", async (req, res) => {
   const { Cluster_Id, StartTimestamp, EndTimestamp } = req.body;
   console.log(Cluster_Id);
