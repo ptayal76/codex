@@ -1,13 +1,9 @@
-const axios = require('axios');
-const dotenv = require('dotenv');
-const { format, parseISO } = require('date-fns');
-const { createObjectCsvStringifier } = require('csv-writer');
-const StringWriter = require('string-writer');
+import React, { useState } from 'react';
+import axios from 'axios';
+import { format, parseISO } from 'date-fns';
 
-// Load environment variables from .env file
-dotenv.config();
 
-const grafanaToken = process.env.GRAFANA_TOKEN;
+const grafanaToken = import.meta.env.VITE_GRAFANA_TOKEN;
 
 const url = "https://thoughtspot.grafana.net/api/ds/query";
 
@@ -26,7 +22,8 @@ const makeQueryDict = (queryRefId, queryExpr) => {
     };
 };
 
-const processApiMetricFrames = async (apiMetricFramesList, csvStringifier, stringWriter) => {
+const processApiMetricFrames = async (apiMetricFramesList) => {
+    let csvContent = '';
     for (const apiMetricFrame of apiMetricFramesList) {
         let timestampIndex = 0;
         let durationValueIndex = 1;
@@ -70,14 +67,15 @@ const processApiMetricFrames = async (apiMetricFramesList, csvStringifier, strin
                 apiMetricSample.time = format(new Date(timestampValue), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                 apiMetricSample.duration = apiMetricFrame.data.values[durationValueIndex][itemIndex];
 
+                // Append to CSV content
+                csvContent += metricKeys.map(key => apiMetricSample[key]).join(',') + '\n';
             }
         }
-        // Write the sample to the string writer
-        stringWriter.write(csvStringifier.stringifyRecords([apiMetricSample])); // Ensure sequential writing
     }
+    return csvContent;
 };
 
-const collectApiMetricUsage = async (csvStringifier, stringWriter, startTime, endTime, queryList) => {
+const collectApiMetricUsage = async (startTime, endTime, queryList) => {
     console.log(`Collecting API metric data FROM "${startTime}" TO "${endTime}"`);
 
     const payload = {
@@ -98,34 +96,27 @@ const collectApiMetricUsage = async (csvStringifier, stringWriter, startTime, en
 
         if (!result.results) {
             console.log(JSON.stringify(result, null, 4));
-            process.exit(1);
+            return '';
         }
 
+        let csvContent = '';
         for (const query of queryList) {
-            // console.log(query.expr);
             const apiMetricFramesList = result.results[query.refId].frames;
-            await processApiMetricFrames(apiMetricFramesList, csvStringifier, stringWriter);
+            csvContent += await processApiMetricFrames(apiMetricFramesList);
         }
+        return csvContent;
     } catch (error) {
         console.error('Error fetching API metric usage:', error);
-        process.exit(1);
+        return '';
     }
 };
 
-const startRestApiMetricCollection = async (inputStartDate, inputEndDate, metricName, saasEnv, apiRegex, tenantName, statusCodeRegex) => {
+async function startRestApiMetricCollection (inputStartDate, inputEndDate, metricName, saasEnv, apiRegex, tenantName, statusCodeRegex) {
     const inputStartDateTime = parseISO(inputStartDate);
     const inputEndDateTime = parseISO(inputEndDate);
 
     const startTimeStr = format(inputStartDateTime, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     const endTimeStr = format(inputEndDateTime, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-    const stringWriter = new StringWriter();
-    const csvStringifier = createObjectCsvStringifier({
-        header: metricKeys.map(key => ({ id: key, title: key })),
-    });
-
-    // Write the header
-    stringWriter.write(csvStringifier.getHeaderString());
 
     console.log("Starting data collection");
 
@@ -137,10 +128,38 @@ const startRestApiMetricCollection = async (inputStartDate, inputEndDate, metric
         )
     );
 
-    await collectApiMetricUsage(csvStringifier, stringWriter, startTimeStr, endTimeStr, queryList);
+    let csvContent = metricKeys.join(',') + '\n'; // CSV header
+    csvContent += await collectApiMetricUsage(startTimeStr, endTimeStr, queryList);
     console.log("Completed fetching Grafana");
 
-    return stringWriter.toString();
+    return csvContent;
 };
 
-module.exports= { startRestApiMetricCollection };
+export default startRestApiMetricCollection;
+
+
+// const App = () => {
+//     const [data, setData] = useState('');
+
+//     const handleFetchData = async () => {
+//         const result = await startRestApiMetricCollection(
+//             '2023-01-01T00:00:00Z',
+//             '2023-01-02T00:00:00Z',
+//             'api_metric_name',
+//             'production',
+//             '.*',
+//             'tenantName',
+//             '.*'
+//         );
+//         setData(result);
+//     };
+
+//     return (
+//         <div>
+//             <button onClick={handleFetchData}>Fetch Data</button>
+//             <pre>{data}</pre>
+//         </div>
+//     );
+// };
+
+// export default startRestApiMetricCollection;

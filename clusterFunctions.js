@@ -10,6 +10,117 @@ const {
     headers,
     gcpAuth
 } = require('./config');
+
+async function getClusterDetails(clusterName,env) {
+    let page = 0;
+    const size = 100;
+    let clusterStateList = true;
+    let clusterDetails = null;
+    let clusterId = null;
+
+    try {
+        while (clusterStateList) {
+            let url;
+            let response1;
+
+            if (env === 'prod') {
+                url = `${hostnameProd}/api/v2/clusters/state?page=${page}&size=${size}`;
+                response1 = await axios.get(url, { headers: headersProd });
+            } else if (env === 'dev') {
+                url = `${hostnameDev}/api/v2/clusters/state?page=${page}&size=${size}`;
+                response1 = await axios.get(url, { auth: { username, password }, headers });
+            } else {
+                url = `${hostnameStaging}/api/v2/clusters/state?page=${page}&size=${size}`;
+                response1 = await axios.get(url, { auth: { username, password }, headers });
+            }
+
+            clusterStateList = response1.data.clusterStateList;
+
+            if (!clusterStateList || clusterStateList.length === 0) {
+                break;
+            }
+
+            for (const cluster of clusterStateList) {
+                if (cluster.clusterName === clusterName && cluster.operationalState !== 'DELETE') {
+                    clusterId = cluster.clusterId;
+                    clusterDetails = cluster;
+                }
+            }
+
+            page += 1;
+        }
+
+        if (!clusterId) {
+            console.log(`Cluster ${clusterName} not found`);
+            return null;
+        }
+        return {clusterId,clusterDetails};
+    } catch (error) {
+        console.error(`Error fetching cluster details: ${error.message}`);
+        throw error; // Re-throw the error after logging it
+    }
+}
+
+async function getClusterOtherDetails(clusterId,env){
+    let commands = [];
+    let patches = [];
+    let upgradeVersion = null;
+    let currentVersion = null;
+    let versionFound = false;
+
+    try {
+        let url;
+        let response2;
+
+        if (env === 'prod') {
+            url = `${hostnameProd}/api/v2/workflows/clusters/${clusterId}`;
+            response2 = await axios.get(url, { headers: headersProd });
+        } else if (env === 'dev') {
+            url = `${hostnameDev}/api/v2/workflows/clusters/${clusterId}`;
+            response2 = await axios.get(url, { auth: { username, password }, headers });
+        } else {
+            url = `${hostnameStaging}/api/v2/workflows/clusters/${clusterId}`;
+            response2 = await axios.get(url, { auth: { username, password }, headers });
+        }
+
+        const workflowDetails = response2.data;
+
+        for (const workflow of workflowDetails) {
+            if (workflow.metadata) {
+                if (workflow.metadata.command) {
+                    commands.push(workflow.metadata.command);
+                }
+                if (workflow.metadata.patch_id) {
+                    patches.push(workflow.metadata.patch_id);
+                }
+            }
+            if (!versionFound && workflow.workflowType === 'Cluster-Upgrade') {
+                if (workflow.status === 'SUCCEEDED') {
+                    if (workflow.metadata) {
+                        if (workflow.metadata.current_version) {
+                            currentVersion = workflow.metadata.current_version;
+                        }
+                        if (workflow.metadata.upgrade_version) {
+                            upgradeVersion = workflow.metadata.upgrade_version;
+                        }
+                        versionFound = true;
+                    }
+                }
+            }
+        }
+
+        return {
+            commands,
+            currentVersion,
+            upgradeVersion,
+            patches
+        };
+    } catch (error) {
+        console.error(`Error fetching cluster other details: ${error.message}`);
+        throw error; // Re-throw the error after logging it
+    }
+}
+
 async function getAllClusterInfo(clusterName, env) {
     let page = 0;
     const size = 100;
@@ -460,4 +571,4 @@ async function applyTSCLICommands(clusterName,userEmail,commands, env) {
     }
 }
 
-module.exports = { getAllClusterInfo,getFlagDetails,createAWSSaasCluster,applyPatches,getClusterVersion,applyTSCLICommands,createGCPSaasCluster };
+module.exports = { getAllClusterInfo,getFlagDetails,createAWSSaasCluster,applyPatches,getClusterVersion,applyTSCLICommands,createGCPSaasCluster, getClusterDetails,getClusterOtherDetails };

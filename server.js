@@ -12,7 +12,9 @@ const {
   createAWSSaasCluster,
   applyPatches,
   applyTSCLICommands,
-  createGCPSaasCluster
+  createGCPSaasCluster,
+  getClusterDetails,
+  getClusterOtherDetails
 } = require("./clusterFunctions.js"); // Replace 'yourFileName' with the actual filename where getAllClusterInfo is defined
 const { startRestApiMetricCollection } = require("./grafana_functions.js");
 const { fetchKibana, getArchivedLogs, getLogCollectionStatus, enableLogCollection, enableRealTimeFetchLogs } = require("./kibana_functions.js");
@@ -222,6 +224,61 @@ app.post("/run-GCP-cluster", async (req, res) => {
   //   }
   // });
 });
+
+app.post("/get-cluster-details", async (req,res) => {
+  const { cluster_name, env } = req.body; // Assuming clusterName and env are passed as query parameters
+  console.log(cluster_name, env);
+  try {
+    const {clusterId,clusterDetails} = await getClusterDetails(cluster_name,env);
+    if(!clusterId){
+      res.status(404).json({ error: `Cluster ${cluster_name} not found` });
+    }
+    const response = {
+      clusterId,
+      clusterDetails
+    };
+    res.json(response);
+  } catch (error) {
+    console.error("Error getting cluster details: ", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+})
+
+app.post("/get-cluster-other-details", async (req,res) => {
+  const { cluster_id, env } = req.body; // Assuming clusterid and env are passed as query parameters
+  console.log(cluster_id, env);
+  try {
+    const {commands,
+      currentVersion,
+      upgradeVersion,
+      patches} = await getClusterOtherDetails(cluster_id,env);
+    const response = {
+      commands,
+      currentVersion,
+      upgradeVersion,
+      patches
+    };
+    res.json(response);
+  } catch (error) {
+    console.error("Error getting cluster other details: ", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+})
+
+app.post("/get-cluster-flags", async (req,res) => {
+  const { cluster_id, env } = req.body; // Assuming clusterid and env are passed as query parameters
+  console.log(cluster_id, env);
+  try {
+    const flagDetails = await getFlagDetails(cluster_id,env);
+    const response = {
+      flagsData: flagDetails,
+    };
+    res.json(response);
+  } catch (error) {
+    console.error("Error getting cluster flags: ", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+})
 
 app.post("/get-cluster-info", async (req, res) => {
   const { cluster_name, env } = req.body; // Assuming clusterName and env are passed as query parameters

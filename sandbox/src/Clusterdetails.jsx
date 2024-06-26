@@ -3,6 +3,7 @@ import "./ClusterDetails.css";
 import { useGlobalState } from "./GlobalState.jsx";
 import { useCluster } from "./ClusterContext";
 import { Spin } from "antd";
+import getClusterDetails from "./apis/ClusterFunctions.jsx";
 
 const ClusterDetails = () => {
   const {
@@ -137,32 +138,39 @@ const ClusterDetails = () => {
         env: cenv,
       };
       console.log(clusterdata)
-      const response = await fetch(`${apiUrl}/get-cluster-info`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(clusterdata),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data)
-        // Assuming data structure from the server matches your previous file-based structure
-        setClusterVersion(data.clusterId);
-        setJsonData(data.clusterDetails);
-        setCommands(data.commands);
-        setCurrentVersion(data.currentVersion);
-        setUpgradeVersion(data.upgradeVersion);
-        // setVersionInfo(`Current Version: ${data.currentVersion}\nUpgrade Version: ${data.upgradeVersion}`);
-        setAppliedPatches(data.patches);
-        setFlagsData(data.flagsData); // Assuming this is part of your data structure
-
-        setIsLoading(false);
-      } else {
-        console.error("Error running the script");
-        setIsLoading(false);
-      }
+      // const response = await fetch(`${apiUrl}/get-cluster-info`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(clusterdata),
+      // });
+        const clusterInfo = await getClusterDetails(cname,cenv);
+        console.log(clusterInfo);
+        if(clusterInfo){
+          setClusterVersion(clusterInfo.clusterId);
+          setJsonData(clusterInfo.clusterDetails)
+          const clusterFetched = {
+            cluster_id: clusterInfo.clusterId,
+            env: cenv,
+          };
+          const resp2 = await fetch(`${apiUrl}/get-cluster-other-details`, {
+            method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(clusterFetched),
+          })
+          const data2 = await resp2.json();
+          setCommands(data2.commands);
+          setCurrentVersion(data2.currentVersion);
+          setUpgradeVersion(data2.upgradeVersion);
+          setAppliedPatches(data2.patches);
+          setIsLoading(false);
+        }else{
+          console.error(`Error running the script: ${error}`);
+          setIsLoading(false);
+        }
     } catch (error) {
       console.error("Error fetching cluster information:", error);
       setIsLoading(false);

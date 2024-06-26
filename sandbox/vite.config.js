@@ -8,6 +8,9 @@ export default defineConfig({
   build: {
     outDir: 'dist'  // Ensure this matches "distDir" in vercel.json
   },
+  server: {
+    port: 5173, // Change this to your desired port number
+  },
   define: {
     'process.env': process.env
   }
