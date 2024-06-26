@@ -1,11 +1,11 @@
 // GlobalStateContext.js
 import React, { createContext, useContext, useState } from "react";
-
+import useLocalStorage from './useLocalStorage';
 const GlobalStateContext = createContext();
 
 export const GlobalStateProvider = ({ children }) => {
-  const [cname, setCname] = useState("");
-  const [cenv, setCenv] = useState("dev");
+  const [cname, setCname] = useLocalStorage("cname", "");
+  const [cenv, setCenv] = useLocalStorage("cenv","dev");
   const apiUrl = import.meta.env.VITE_API_URL;
   const hostnameDev = import.meta.env.VITE_HOSTNAME_DEV;
   const hostnameProd = import.meta.env.VITE_HOSTNAME_PROD;

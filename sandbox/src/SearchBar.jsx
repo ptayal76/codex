@@ -16,7 +16,7 @@ const SearchBar = () => {
   return (
     <div className="flex flex-row gap-3">
       <div className="flex flex-row flex-grow gap-4">
-        <Input placeholder="Search..." addonBefore={<strong>Cluster Name :</strong>} onChange={handleInputChange} size="large"/>
+        <Input defaultValue={cname} placeholder="Search..." addonBefore={<strong>Cluster Name :</strong>} onChange={handleInputChange} size="large"/>
       </div>
       <Select
         defaultValue={cenv}

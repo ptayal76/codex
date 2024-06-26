@@ -5,7 +5,7 @@ import { OktaAuth } from "@okta/okta-auth-js";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import Home from "./Home.jsx";
 import LoginDashboard from "./Login.jsx";
-
+import { ClusterProvider } from "./ClusterContext.jsx";
 export default function App() {
   const restoreOriginalUri = async () => {
     window.location.href = "/home";
@@ -20,11 +20,14 @@ export default function App() {
 
   return (
     <Security oktaAuth={oktaAuthConfig} restoreOriginalUri={restoreOriginalUri}>
-      <Router>
-          <SecureRoute path="/home" component={Home}/>
-          <Route path="/" component={LoginDashboard}/>
-          <Route path="/login/callback" component={LoginCallback} />
-      </Router>
+      <ClusterProvider>
+        <Router>
+            <SecureRoute path="/home" component={Home}/>
+            <Route path="/" component={LoginDashboard}/>
+            <Route path="/login/callback" component={LoginCallback} />
+        </Router>
+      </ClusterProvider>
+      
     </Security>
   );
 }

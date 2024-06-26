@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './NavigationDrawer.css';
-
+import { useCluster } from "./ClusterContext";
 const NavigationDrawer = ({ onTabChange }) => {
-  const [activeTab, setActiveTab] = useState('checkCluster');
+  const {activeTab, setActiveTab} = useCluster();
   // const [isGrafanaLogsOpen, setIsGrafanaLogsOpen] = useState(false);
 
   // const handleTabClick = (tab) => {

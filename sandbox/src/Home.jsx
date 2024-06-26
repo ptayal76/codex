@@ -9,13 +9,13 @@ import Sandbox from "./Sanbox.jsx";
 import KibanaLogsContainer from "./KibanaLogsContainer/kibanaLogsContainer.jsx";
 import CheckConfigurations from "./checkConfigurations.jsx";
 import Heading from "./Heading";
-import { ClusterProvider } from "./ClusterContext";
+import { ClusterProvider, useCluster } from "./ClusterContext";
 import HarAnalyze from "./Har_analyse.jsx";
 import { OktaAuth } from "@okta/okta-auth-js";
 import { Security } from "@okta/okta-react";
 
 const Home = () => {
-  const [activeTab, setActiveTab] = useState("checkCluster");
+  const {activeTab, setActiveTab} = useCluster();
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     // setActiveSubTab('');
@@ -51,7 +51,7 @@ const Home = () => {
   };
   return (
     <Security oktaAuth={oktaAuthConfig} restoreOriginalUri={restoreOriginalUri}>
-      <ClusterProvider>
+      {/* <ClusterProvider> */}
         <div className="app-container">
           <Heading />
           <NavigationDrawer onTabChange={handleTabChange} />
@@ -61,7 +61,7 @@ const Home = () => {
             <div className="py-10">{renderContent()}</div>
           </div>
         </div>
-      </ClusterProvider>
+      {/* </ClusterProvider> */}
     </Security>
   );
 };
