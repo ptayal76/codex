@@ -19,14 +19,13 @@ const gcpAuth = process.env.GCP_TOKEN;
 const stateToken = process.env.KIBANA_STATE_TOKEN;
 const refreshToken = process.env.KIBANA_REFRESH_TOKEN;
 
-// Define the URLs
-const url = "https://vpc-cosmos-logs-4wtep3mnjhirrckhgaaqedsrtq.us-west-2.es.amazonaws.com";
-// const url = "https://vpc-cosmos-logs-vtnxecylwjjggwhuqg66jqrw6y.us-east-1.es.amazonaws.com";
 
 // Main function
 
 const fetchKibana = async (cluster_id, initial_time, end_time) => {
     // console.log({stateToken,refreshToken})
+    const url = "https://vpc-cosmos-logs-4wtep3mnjhirrckhgaaqedsrtq.us-west-2.es.amazonaws.com";
+    const prodUrl = "https://vpc-cosmos-logs-vtnxecylwjjggwhuqg66jqrw6y.us-east-1.es.amazonaws.com";
     console.log(`clusterId : ${cluster_id}  initial_time: ${initial_time}   end_time: ${end_time}`);
     const payload = {
         "params": {
@@ -207,82 +206,71 @@ async function getLogCollectionStatus(clusterId, userEmail, env) {
         "User-Email": userEmail
     };
 
-    let currUrl;
+    let url;
     let response;
-
     if (env === "prod") {
         headers["Authorization"] = `Basic ${prodToken}`;
-        currUrl = `${hostnameProd}/api/v2/clusters/${clusterId}/logcollection`;
-        response = await fetch(currUrl, {
+        url = `${hostnameProd}/api/v2/clusters/${clusterId}/logcollection`;
+        response = await fetch(url, {
             method: "GET",
             headers: headers
         });
     } else if (env === "dev") {
-        currUrl = `${hostnameDev}/api/v2/clusters/${clusterId}/logcollection`;
-        response = await fetch(currUrl, {
+        url = `${hostnameDev}/api/v2/clusters/${clusterId}/logcollection`;
+        headers["Authorization"] = `Basic ${btoa(username + ':' + password)}`;
+        response = await fetch(url, {
             method: "GET",
             headers: headers,
-            credentials: 'include' // Assuming the same credentials for dev and staging
         });
     } else {
-        currUrl = `${hostnameStaging}/api/v2/clusters/${clusterId}/logcollection`;
-        response = await fetch(currUrl, {
+        url = `${hostnameStaging}/api/v2/clusters/${clusterId}/logcollection`;
+        headers["Authorization"] = `Basic ${btoa(username + ':' + password)}`;
+        response = await fetch(url, {
             method: "GET",
             headers: headers,
-            credentials: 'include' // Assuming the same credentials for dev and staging
         });
     }
     return response.status;
 }
 
-async function enableLogCollection(clusterName, userEmail, env) {
-    const clusterId = await getClusterVersion(clusterName, env);
+async function enableLogCollection(clusterId, userEmail, env) {
     if (!clusterId) {
         return null;
     }
-
     const headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
         "User-Email": userEmail
     };
-
-    let url, options;
+    let url;
+    let options = {
+        method: 'POST',
+        headers: headers,
+    };
     if (env === "prod") {
+        headers["Authorization"] = `Basic ${prodToken}`;
         url = `${hostnameProd}/api/v2/clusters/${clusterId}/logcollection/enable`;
-        options = {
-            method: 'POST',
-            headers: headersProd
-        };
     } else if (env === "dev") {
         url = `${hostnameDev}/api/v2/clusters/${clusterId}/logcollection/enable`;
-        options = {
-            method: 'POST',
-            headers: headers,
-            auth: {
-                username: username,
-                password: password
-            }
+        options.headers= {
+            ...headers,
+            "Authorization": `Basic ${btoa(username + ':' + password)}`
         };
     } else {
         url = `${hostnameStaging}/api/v2/clusters/${clusterId}/logcollection/enable`;
-        options = {
-            method: 'POST',
-            headers: headers,
-            auth: {
-                username: username,
-                password: password
-            }
+        options.headers = {
+            ...headers,
+            "Authorization": `Basic ${btoa(username + ':' + password)}`
         };
     }
 
     const response = await fetch(url, options);
-
-    if (!response.ok) {
-        throw new Error('Failed to enable log collection');
+    const data = await response.json();
+    const required_object= {
+        status: response.status,
+        message: data.message
     }
-
-    return response.status;
+    return required_object;
 }
 
 async function enableRealTimeFetchLogs(clusterId, userEmail, files, logDuration, services,env){
