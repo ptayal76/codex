@@ -146,7 +146,7 @@ function KibanaLogsContainer() {
                     items={[
                         {
                         key: '1',
-                        label: <strong>Trigger logs to Kibana</strong>,
+                        label: <strong>Set Logs for Fetching</strong>,
                         children: <KibanaTabs/>,
                         },
                     ]}

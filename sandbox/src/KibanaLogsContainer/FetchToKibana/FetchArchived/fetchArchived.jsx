@@ -238,7 +238,7 @@ const FetchArchived = ()=> {
                            )
                     : null
                 }
-                <button className="submit-button w-1/4" onClick={handleSubmit}>Get Archived Logs</button>
+                <button className="submit-button w-1/4" onClick={handleSubmit}>Get Past Logs</button>
                 {
                     anyMessage.message? (
                         <div>

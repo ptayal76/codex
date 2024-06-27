@@ -6,12 +6,12 @@ const KibanaTabs = () =>{
     const items = [
         {
             key: '1',
-            label: 'Fetch Archived Logs',
+            label: 'Get Past Logs',
             children: <FetchArchived/>,
         },
         {
             key: '2',
-            label: 'Fetch Real Time Logs',
+            label: 'Get Real Time Logs',
             children: <FetchRealTime/>,
         },
     ];
