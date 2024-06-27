@@ -65,7 +65,7 @@ const CheckConfigurations = () => {
     }, [jsonCSPFile]);
 
   return (
-  <div className='flex flex-col'>
+  <div className='flex flex-col px-5'>
       <Form
           form={form}
           name="validateOnly"
@@ -76,29 +76,27 @@ const CheckConfigurations = () => {
               cluster_url: "https://172.32.46.211:8443",
               domain: "https://asda.csb.app",
           }}
-          size="large"
+          size="default"
         >
           <Form.Item
               name="cluster_url"
-              label={<span style={{ fontWeight: 'bold'}}>Cluster Host URL</span>}
               rules={[
                   {
                       required: true,
                   },
               ]}
           >
-              <Input />
+              <Input addonBefore={<strong>Cluster Host URL :</strong>}/>
           </Form.Item>
           <Form.Item
               name="domain"
-              label={<span style={{ fontWeight: 'bold'}}>Embed Environment Domain</span>}
               rules={[
                   {
                       required: true,
                   },
               ]}
           >
-              <Input />
+              <Input addonBefore={<strong>Embed Environment Domain :</strong>}/>
           </Form.Item>
           <Form.Item>
               <Space>
