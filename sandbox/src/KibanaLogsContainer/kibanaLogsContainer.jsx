@@ -5,7 +5,7 @@ import '../GrafanaLogs.css';
 import KibanaTabs from "./FetchToKibana/tabs.jsx";
 import { Spin, Tabs } from "antd";
 import { useCluster } from "../ClusterContext.jsx";
-import { DatePicker , Input, Collapse} from 'antd';
+import { DatePicker , Input, Collapse, Select} from 'antd';
 const { RangePicker } = DatePicker;
 import dayjs from 'dayjs';
 import { useGlobalState } from "../GlobalState.jsx";
@@ -96,7 +96,7 @@ function KibanaLogsContainer() {
     const handleInputChange = (event) => {
         setKibanaFormInputs(prevState => ({
             ...prevState,
-            Cluster_Id: event.target.value,
+            Cluster_Name: event.target.value,
         }));
     };
     const onOk = (value) => {
@@ -109,7 +109,37 @@ function KibanaLogsContainer() {
         <div className="container flex flex-col gap-6">
             <p className="text-3xl">Kibana Logs</p>
             <div onSubmit={handleSubmit} className="input-form gap-6 flex flex-col">
-                <Input addonBefore={<strong>Cluster ID :</strong>} onChange={handleInputChange} size="large" defaultValue={kibanaFormInputs.Cluster_Id}/>    
+                <div className="flex flex-row w-1/2 gap-4">
+                    <Input name="Cluster_Name" addonBefore={<strong>Cluster Name :</strong>} onChange={handleInputChange} size="large" defaultValue={kibanaFormInputs.Cluster_Name}/> 
+                    <Select
+                        defaultValue={kibanaFormInputs.Env}
+                        style={{
+                            width: 120,
+                        }}
+                        options={[
+                            {
+                                value: 'dev',
+                                label: 'dev',
+                            },
+                            {
+                                value: 'staging',
+                                label: 'staging',
+                            },
+                            {
+                                value: 'prod',
+                                label: 'prod',
+                            }
+                        ]}
+                        onChange={(value)=> {
+                            setKibanaFormInputs(prevState => ({
+                                ...prevState,
+                                Env: value,
+                            }));
+                        }}
+                        size="large"
+                        name= "Env"
+                    />   
+                </div>
                 <div className='flex flex-row allign-center flex-grow'>
                 <span className="px-3 py-2 bg-gray-50 border border-gray-300 border-r-0 rounded-l-md font-semibold">Select Date and Time:</span>
                 <RangePicker

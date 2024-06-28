@@ -35,7 +35,8 @@ export const ClusterProvider = ({ children }) => {
   const [kibanaFormInputs, setKibanaFormInputs]= useLocalStorage("kibanaFormInputs", {
     StartTimestamp: '2024-04-10T00:00:00',
     EndTimestamp: '2024-06-18T00:00:00',
-    Cluster_Id: '672764c0-dc60-11ee-a6bf-13c83',
+    Cluster_Name: 'Metadata',
+    Env: 'prod',
   });
 
   //for checkConfigurations

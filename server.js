@@ -45,11 +45,12 @@ app.get("/api/v1/emojies", (req, res) => {
   res.json({ message: [1,2,3,4] });
 });
 app.post("/trigger-kibana", async (req, res) => {
-  const { Cluster_Id, StartTimestamp, EndTimestamp } = req.body;
-  console.log(Cluster_Id);
+  const { Cluster_Name, StartTimestamp, EndTimestamp, Env } = req.body;
+  console.log(Cluster_Name);
   console.log(StartTimestamp);
   console.log(EndTimestamp);
-  const kibanaData = await fetchKibana(Cluster_Id, StartTimestamp, EndTimestamp);
+  console.log(Env);
+  const kibanaData = await fetchKibana(Cluster_Name, StartTimestamp, EndTimestamp, Env);
   res.json(kibanaData);
   console.log("kibaana data:: ", kibanaData);
 });
@@ -72,6 +73,22 @@ app.post("/fetch-real-time-logs", async (req,res)=>{
   res.json(realTimeLogsStatus);
   console.log("realTimeLogsStatus: ", realTimeLogsStatus);
 })
+// app.post("/fetch-real-time-logs", async (req,res)=>{
+//   const { clusterId, userEmail} =req.body;
+//   console.log("fetch-realTime-logs triggered");
+//   console.log(`clusterId: ${clusterId}, useremail: ${userEmail}, files: ${files}, logDuration: ${logDuration}, services : ${services}, env: ${env}`);
+//   const realTimeLogsStatus= await enableRealTimeFetchLogs(clusterId, userEmail, files,logDuration, services, env);
+//   res.json(realTimeLogsStatus);
+//   console.log("realTimeLogsStatus: ", realTimeLogsStatus);
+// })
+// app.post("/fetch-real-time-logs", async (req,res)=>{
+//   const { clusterId, userEmail } =req.body;
+//   console.log("fetch-realTime-logs triggered");
+//   console.log(`clusterId: ${clusterId}, useremail: ${userEmail}, files: ${files}, logDuration: ${logDuration}, services : ${services}, env: ${env}`);
+//   const realTimeLogsStatus= await enableRealTimeFetchLogs(clusterId, userEmail, files,logDuration, services, env);
+//   res.json(realTimeLogsStatus);
+//   console.log("realTimeLogsStatus: ", realTimeLogsStatus);
+// })
 
 app.post("/run-grafana-script", async (req, res) => {
   const { input_start_date, input_end_date, tenantName } = req.body;

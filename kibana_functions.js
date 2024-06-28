@@ -14,19 +14,44 @@ const password = process.env.PASSWORD;
 const prodToken = process.env.PROD_TOKEN;
 const repoUrl = "https://galaxy.corp.thoughtspot.com/dev/scaligent.git";
 const gcpAuth = process.env.GCP_TOKEN;
+const kibanaProdUrl=  process.env.KIBANA_PROD_URL;
+const kibanaDevUrl=  process.env.KIBANA_DEV_URL;
+const kibanaStagingUrl=process.env.KIBANA_STAGING_URL;
+const kiabanaProdStateToken= process.env.KIBANA_PROD_STATE_TOKEN;
+const kiabanaDevStateToken= process.env.KIBANA_DEV_STATE_TOKEN;
+const kiabanaStagingStateToken= process.env.KIBANA_STAGING_STATE_TOKEN;
+
+const kiabanaProdRefreshToken= process.env.KIBANA_PROD_REFRESH_TOKEN;
+const kiabanaDevRefreshToken= process.env.KIBANA_DEV_REFRESH_TOKEN;
+const kiabanaStagingRefreshToken= process.env.KIBANA_STAGING_REFRESH_TOKEN;
 
 // Load environment variables
-const stateToken = process.env.KIBANA_STATE_TOKEN;
-const refreshToken = process.env.KIBANA_REFRESH_TOKEN;
+
 
 
 // Main function
 
-const fetchKibana = async (cluster_id, initial_time, end_time) => {
-    // console.log({stateToken,refreshToken})
-    const url = "https://vpc-cosmos-logs-4wtep3mnjhirrckhgaaqedsrtq.us-west-2.es.amazonaws.com";
-    const prodUrl = "https://vpc-cosmos-logs-vtnxecylwjjggwhuqg66jqrw6y.us-east-1.es.amazonaws.com";
-    console.log(`clusterId : ${cluster_id}  initial_time: ${initial_time}   end_time: ${end_time}`);
+const fetchKibana = async (cluster_name, initial_time, end_time, env) => {
+    let url='';
+    let stateToken;
+    let refreshToken;
+    if(env=== "dev"){
+        url= kibanaDevUrl;
+        stateToken= kiabanaDevStateToken;
+        refreshToken= kiabanaDevRefreshToken;
+    }
+    else if(env==="staging"){
+        url= kibanaStagingUrl;
+        stateToken= kiabanaStagingStateToken;
+        refreshToken= kiabanaStagingRefreshToken;
+    }
+    else{
+        url= kibanaProdUrl;
+        stateToken= kiabanaProdStateToken;
+        refreshToken= kiabanaProdRefreshToken;
+    }
+    console.log("url: ", url);
+    console.log(`clusterName : ${cluster_name}  initial_time: ${initial_time}   end_time: ${end_time} env: ${env}`);
     const payload = {
         "params": {
             "index": "tenant-*",
@@ -75,7 +100,7 @@ const fetchKibana = async (cluster_id, initial_time, end_time) => {
                             },
                             {
                                 "match_phrase": {
-                                    "cluster_id": cluster_id
+                                    "job": cluster_name
                                 }
                             },
                             {
