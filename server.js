@@ -14,7 +14,7 @@ const {
   applyTSCLICommands,
   createGCPSaasCluster,
   getClusterDetails,
-  getClusterOtherDetails
+  getClusterCommandsPatches
 } = require("./clusterFunctions.js"); // Replace 'yourFileName' with the actual filename where getAllClusterInfo is defined
 const { startRestApiMetricCollection } = require("./grafana_functions.js");
 const { fetchKibana, getArchivedLogs, getLogCollectionStatus, enableLogCollection, enableRealTimeFetchLogs } = require("./kibana_functions.js");
@@ -261,14 +261,17 @@ app.post("/get-cluster-details", async (req,res) => {
   }
 })
 
-app.post("/get-cluster-other-details", async (req,res) => {
-  const { cluster_id, env } = req.body; // Assuming clusterid and env are passed as query parameters
-  console.log(cluster_id, env);
+app.post("/get-cluster-patches-commands", async (req,res) => {
+  const { cname, cenv } = req.body; // Assuming clusterid and env are passed as query parameters
+  console.log("recieved: ", req.body);
+  console.log(`clusterName: ${cname}  env: ${cenv}` );
   try {
-    const {commands,
+    const {
+      commands,
       currentVersion,
       upgradeVersion,
-      patches} = await getClusterOtherDetails(cluster_id,env);
+      patches
+    } = await getClusterCommandsPatches(cname,cenv);
     const response = {
       commands,
       currentVersion,
@@ -276,11 +279,13 @@ app.post("/get-cluster-other-details", async (req,res) => {
       patches
     };
     res.json(response);
+    console.log("response: ", response);
   } catch (error) {
     console.error("Error getting cluster other details: ", error);
     res.status(500).json({ error: "Internal server error" });
   }
 })
+
 
 app.post("/get-cluster-flags", async (req,res) => {
   const { cluster_id, env } = req.body; // Assuming clusterid and env are passed as query parameters
