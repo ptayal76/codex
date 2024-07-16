@@ -5,7 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
 const { default: cluster } = require("cluster");
-
+const { JSDOM } = require('jsdom');
 const {
   getAllClusterInfo,
   getFlagDetails,
@@ -53,6 +53,38 @@ app.post("/trigger-kibana", async (req, res) => {
   const kibanaData = await fetchKibana(Cluster_Name, StartTimestamp, EndTimestamp, Env);
   res.json(kibanaData);
   console.log("kibaana data:: ", kibanaData);
+//   fetch("https://vpc-cosmos-logs-4wtep3mnjhirrckhgaaqedsrtq.us-west-2.es.amazonaws.com/_plugin/kibana/app/kibana?code=4aa594d5-921c-4fa7-aa1a-5212d5df5ec7&state=2dd6aee8-0e47-42ab-82b1-0da590f6cc10", {
+//   headers: {
+//     accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+//     "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+//     priority: "u=0, i",
+//     "sec-ch-ua": "\"Chromium\";v=\"124\", \"Google Chrome\";v=\"124\", \"Not-A.Brand\";v=\"99\"",
+//     "sec-ch-ua-mobile": "?0",
+//     "sec-ch-ua-platform": "\"macOS\"",
+//     "sec-fetch-dest": "document",
+//     "sec-fetch-mode": "navigate",
+//     "sec-fetch-site": "cross-site",
+//     "sec-fetch-user": "?1",
+//     "upgrade-insecure-requests": "1",
+//     cookie: "STATE-TOKEN=2dd6aee8-0e47-42ab-82b1-0da590f6cc10"
+//   },
+//   referrerPolicy: "strict-origin-when-cross-origin",
+//   body: null,
+//   method: "GET"
+// })
+//   .then(response => {
+//     if (!response.ok) {
+//       throw new Error('Network response was not ok');
+//     }
+//     return response;  // Assuming the response is HTML
+//   })
+//   .then(data => {
+//     console.log(data);
+//   })
+//   .catch(error => {
+//     console.error('Error:', error);
+//   });
+  
 });
 app.post("/fetch-archived-logs", async (req,res)=>{
   const { clusterId, userEmail, files, logDuration, services, startDate, env } =req.body;
@@ -115,34 +147,7 @@ app.post("/run-grafana-script", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-app.get("/commands-array", (req, res) => {
-  fs.readFile("./sandbox/cluster_scripts/commands.txt", "utf8", (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Error reading file");
-    } else {
-      // Remove leading and trailing brackets and quotes
-      const stringArray = data.slice(2, -2).split("', '");
-      res.json(stringArray);
-    }
-  });
-});
-app.get("/patches-array", (req, res) => {
-  fs.readFile(
-    "./sandbox/cluster_scripts/appliedPatches.txt",
-    "utf8",
-    (err, data) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send("Error reading file");
-      } else {
-        // Remove leading and trailing brackets and quotes
-        const stringArray = data.slice(2, -2).split("', '");
-        res.json(stringArray);
-      }
-    }
-  );
-});
+
 
 app.post("/run-AWS-cluster", async (req, res) => {
   const { cluster_name, owner_email, image_tag } = req.body;
@@ -344,9 +349,10 @@ app.post("/check-csp-cors-validation", async (req, res) => {
 
   try {
     const response = await CheckCorsCSP(cluster_url, domain);
-    console.log(response)
+    console.log("csp cors response: ",response);
     res.json(response); // Send the response as JSON
   } catch (error) {
+    console.log("res error:: ", error);
     res.status(500).json({ error: error.message });
   }
 
@@ -393,6 +399,131 @@ app.post("/apply-commands", async (req, res) => {
   }
 });
 
+app.post("/trigger-okta", async (req, res)=>{
+  const {username , password}= req.body;
+  console.log("user: ", username);
+  console.log("pass: ", password);
+  const url= "https://thoughtspot.okta.com/api/v1/authn";
+  const requestBody= {
+    username: `${username}`,
+    password: `${password}`,
+    options: {
+      multiOptionalFactorEnroll: true,
+      warnBeforePasswordExpired: true
+    }
+  };
+  const options= {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(requestBody)
+  };
+
+  const response = await fetch(url,options);
+  const data = await response.json();
+  console.log("recieved data:: ", data);
+  if(data?.status==="SUCCESS"){
+    const sessionToken = data.sessionToken;
+    const authurl = `https://trial-6881328.okta.com/oauth2/v1/authorize?client_id=0oafv1rpjlFgvFw9g697&response_type=code&response_mode=form_post&scope=openid&redirect_uri=http://localhost:5173/login/callback&state=someRandomState&nonce=test1&sessionToken=${sessionToken}&code_challenge=qjrzSW9gMiUgpUvqgEPE4_-8swvyCtfOVvg55o5S_es&code_challenge_method=S256`;
+    const authorize = await fetch(authurl,{
+      method: 'GET'
+    })
+    const htmlrecieved= await authorize.text();
+    console.log("authdata:: ", htmlrecieved);
+    if(htmlrecieved){
+      const dom = new JSDOM(htmlrecieved);
+      const document = dom.window.document;
+      // Extract the value of the "code" input field
+      const code = document.querySelector('input[name="code"]').value;
+      console.log('Extracted code:', code);
+      const tokenURL= "https://trial-6881328.okta.com/oauth2/v1/token";
+      const tokenbody = new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: '0oafv1rpjlFgvFw9g697',
+        redirect_uri: 'http://localhost:5173/login/callback',
+        code: code,
+        code_verifier: 'M25iVXpKU3puUjFaYWg3T1NDTDQtcW1ROUY5YXlwalNoc0hhakxifmZHag'
+      });
+      
+      const tokenResponse = await fetch(tokenURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json'
+        },
+        body: tokenbody.toString()
+      });
+      const tokens= await tokenResponse.json();
+      console.log("tokens:: ", tokens);
+      res.json(tokens);
+    }
+  }
+  else if(data.status==="MFA_REQUIRED"){
+    const stateToken = data.stateToken;
+    const factorId= data['_embedded'].factors[0].id;
+    console.log(`factorId: ${factorId}, `);
+    const mfaUrl= `https://thoughtspot.okta.com/api/v1/authn/factors/${factorId}/verify`;
+    const mfaBody ={
+      stateToken : stateToken
+    }
+    const resp = await fetch(mfaUrl,{
+      method :'POST',
+      body: JSON.stringify(mfaBody),
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    const jsdata= await resp.json();
+    console.log("jsframe:: ", jsdata);
+    res.json(jsdata);
+  }
+});
+
+  app.post('/duo-complete',async (req,res)=>{
+    console.log("recieved :: ", req.body);
+    const {sig_response, stateToken}= req.body;
+    const response = await fetch('https://thoughtspot.okta.com/api/v1/authn/factors/dsf14k4l7elGB3Ux70x8/lifecycle/duoCallback', {
+      method: 'POST',
+      headers: {
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+        'cache-control': 'max-age=0',
+        'content-type': 'application/x-www-form-urlencoded',
+        'priority': 'u=0, i',
+        'sec-ch-ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-ch-ua-platform-version': '"14.5.0"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'cross-site',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+      },
+      body: `stateToken=${encodeURIComponent(stateToken)}&sig_response=${encodeURIComponent(sig_response)}`
+    })
+    if(response){
+      console.log("response :::", response);
+      res.redirect(`http://localhost:3000/admin/debug/kibana-logs/authenticateKibana`);
+      const url= "https://thoughtspot.okta.com/api/v1/authn/factors/dsf14k4l7elGB3Ux70x8/verify"
+      const body= {
+        stateToken : stateToken
+      }
+      const verifyResponse = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await verifyResponse.json();
+      console.log("data:: ", data);
+    }
+    
+  });
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
